@@ -1,0 +1,860 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"index",
+				"indexOf"
+			],
+			[
+				"height",
+				"min-height"
+			],
+			[
+				"sinc",
+				"sinceI"
+			],
+			[
+				"marg",
+				"margin-top"
+			],
+			[
+				"margin",
+				"margin-bottom"
+			],
+			[
+				"l",
+				"length"
+			],
+			[
+				"drop",
+				"dropdown"
+			],
+			[
+				"Ex",
+				"Exclude"
+			],
+			[
+				"inline",
+				"inline-block"
+			],
+			[
+				"th",
+				"thead	Tag"
+			],
+			[
+				"ma",
+				"manage"
+			],
+			[
+				"hight",
+				"height"
+			],
+			[
+				"bo",
+				"border"
+			],
+			[
+				"mar",
+				"margin-top"
+			],
+			[
+				"bac",
+				"background-color"
+			],
+			[
+				"TR",
+				"TRows"
+			],
+			[
+				"get",
+				"getFile"
+			],
+			[
+				"Aut",
+				"authorize"
+			],
+			[
+				"comp",
+				"compid"
+			],
+			[
+				"br",
+				"browser"
+			],
+			[
+				"se",
+				"session"
+			],
+			[
+				"socket",
+				"sockets"
+			],
+			[
+				"font",
+				"font-size"
+			],
+			[
+				"Reli",
+				"religionID"
+			],
+			[
+				"enter",
+				"enterbinary"
+			],
+			[
+				"study",
+				"changeStudyR"
+			],
+			[
+				"node",
+				"nodeName"
+			],
+			[
+				"File",
+				"FileSaver"
+			],
+			[
+				"ty",
+				"typeR"
+			],
+			[
+				"dr",
+				"dropdownThree"
+			],
+			[
+				"adde",
+				"addEndBoolean"
+			],
+			[
+				"add",
+				"addBoolean"
+			],
+			[
+				"cou",
+				"counter"
+			],
+			[
+				"condi",
+				"conditions"
+			],
+			[
+				"addb",
+				"addButtons"
+			],
+			[
+				"B",
+				"Boolean"
+			],
+			[
+				"ch",
+				"chosenID"
+			],
+			[
+				"label",
+				"label1"
+			],
+			[
+				"tr",
+				"trialsUnder"
+			],
+			[
+				"comput",
+				"computeD"
+			],
+			[
+				"d",
+				"diff"
+			],
+			[
+				"var",
+				"variance"
+			],
+			[
+				"avg",
+				"avgCon1"
+			],
+			[
+				"pro",
+				"prototype"
+			],
+			[
+				"parce",
+				"parcelArray"
+			],
+			[
+				"compute",
+				"computeData"
+			],
+			[
+				"compte",
+				"computeData"
+			],
+			[
+				"D",
+				"dataArray"
+			],
+			[
+				"com",
+				"computeData"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"compu",
+				"computeD"
+			],
+			[
+				"S",
+				"Scorer"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "js/api.js",
+			"settings":
+			{
+				"buffer_size": 3991,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "<%@ page import=\"java.io.*, java.util.*\" %>\n<HTML>\n    <HEAD>\n        <TITLE>Index of Files</TITLE>\n    </HEAD>\n\n    <BODY>\n        <H1>Index of Files</H1>\n         <A target=\"_blank\" HREF=\"<%= \"/implicit/research/data/jsprefresh.jsp?user=\"+request.getParameter(\"user\")%>\">clear jsp cache </A> \n            <br/>\n        \n        <% \n            try{\n            String loc=request.getRequestURL().toString();\n            //start path after implicit/ , end before showFiles.jsp \n            loc=loc.substring(loc.indexOf(\"it/\")+2,loc.lastIndexOf(\"/\"));\n            String file= application.getRealPath(\"/\")+\"user/\"+request.getParameter(\"user\")\n            +\"/\"+request.getParameter(\"study\")+\"/\";         \n            File f = new File(file);\n            String [] fileNames = f.list();\n            \n            File [] fileObjects= f.listFiles();\n            HashMap sizeMap=new HashMap();\n            for (int i = 0; i < fileObjects.length; i++) {\n                \n                sizeMap.put(fileNames[i],fileObjects[i]);\n                }\n              java.util.Arrays.sort(fileNames, String.CASE_INSENSITIVE_ORDER);  \n	    \n\n            \n        %>\n        <UL>\n        <%\n            for (int i = 0; i < fileNames.length; i++) {\n                if(!((File)sizeMap.get(fileNames[i])).isDirectory()){\n        %>\n        <LI>\n          <A target=\"_blank\" HREF=\"<%= \"/implicit/user/\"+request.getParameter(\"user\")\n            +\"/\"+request.getParameter(\"study\")+\"/\"+fileNames[i] %>\"><%= fileNames[i] %></A>\n          &nbsp;&nbsp;&nbsp;&nbsp;\n          <%\n          if( fileNames[i].contains(\"expt.xml\"))\n          {%>\n          <A target=\"_blank\" HREF=\"<%= \"/implicit/Validate?study=/user/\"+request.getParameter(\"user\")\n            +\"/\"+request.getParameter(\"study\")+\"/\"+fileNames[i] %>\">Run study validator </A> &nbsp;&nbsp;&nbsp;&nbsp;\n        \n        <A target=\"_blank\" HREF=\"<%= \"/implicit/Launch?study=/user/\"+request.getParameter(\"user\")\n            +\"/\"+request.getParameter(\"study\")+\"/\"+fileNames[i]+\"&refresh=true\" %>\">Test the study </A>\n            &nbsp;&nbsp;&nbsp;&nbsp;\n             <A target=\"_blank\" HREF=\"<%= \"/implicit/StudyTest?study=Launch?study=/user/\"+request.getParameter(\"user\")\n            +\"/\"+request.getParameter(\"study\")+\"/\"+fileNames[i] %>\">Run data tester </A>\n            &nbsp;&nbsp;&nbsp;&nbsp;\n          <%\n          }else{\n            if (fileNames[i].contains(\".js\") && (!(fileNames[i].contains(\".jsp\")))){\n              %>\n                <A target=\"_blank\" HREF=\"<%= \"/implicit/user/bgoldenberg/validateFile.jsp?study=/user/\"+request.getParameter(\"user\")\n                +\"/\"+request.getParameter(\"study\")+\"/\"+fileNames[i]+\"&file=\"+fileNames[i] %>\">Check js syntax </A>\n\n              <%\n\n            }\n\n          }\n          \n          %>\n          (<%= Long.toString(((File)sizeMap.get(fileNames[i])).length()) %> bytes long)\n        <%\n                }\n            }\n\n         }catch(Exception e){\n           %>\n         </br></br></br>\n            <div style=\"border:2px solid;border-radius:25px;width:40%;margin-left:30%\">\n              </br></br></br><h1 style=\"margin-left:20%;position:relative;top:-15px;\">User or Study Name is Incorrect</h1>\n              <h2 style=\"margin-left:37%;\">Please Try Again</h2>\n            </div>\n            <%\n          }   \n        %>\n        </UL>\n    </BODY>\n</HTML>",
+			"settings":
+			{
+				"buffer_size": 3351,
+				"line_ending": "Windows",
+				"name": "<%@ page import=\"java.io.*, java.util.*\" %>"
+			}
+		},
+		{
+			"file": "js/app.js",
+			"settings":
+			{
+				"buffer_size": 12921,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/validate.js",
+			"settings":
+			{
+				"buffer_size": 3323,
+				"line_ending": "Windows",
+				"name": "<script type=\"text/javascript\">"
+			}
+		},
+		{
+			"file": "dashboard2.html",
+			"settings":
+			{
+				"buffer_size": 14980,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/rightMenu.js",
+			"settings":
+			{
+				"buffer_size": 2154,
+				"line_ending": "Windows",
+				"name": "(function ($, window) {"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+		],
+		"width": 416.0
+	},
+	"console":
+	{
+		"height": 258.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/js/menu.js",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/css/menu.css",
+		"/C/Program Files/tomcat5.5.15/webapps/PItracker/PITracking.html",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/dashboard3.html",
+		"/D/Users/admin/Dropbox/messagefromcard.txt",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/RDEDatabase",
+		"/C/projects/metupalim/assets/js/app.js",
+		"/C/projects/workspace/rc4/app/user/yba/aamp/aamp.expt.xml",
+		"/D/Users/admin/AppData/Local/Temp/7zOA171.tmp/README.txt",
+		"/C/projects/eduGame/eduGame.html",
+		"/C/Program Files/tomcat5.5.15/conf/Catalina/localhost/implicit.xml",
+		"/C/projects/workspace/rc4/app/WEB-INF/web.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/js/Baloon.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/assets/sfx/bubbles-pop.htm",
+		"/D/Users/admin/Desktop/data.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/js/easeljs/easeljs-0.7.1.min.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/assets/baloon.png",
+		"/C/projects/game1/index.html",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/RandomStudiesConfig.xml",
+		"/C/projects/workspace/rc4/app/user/yba/multi2/multi2.expt.xml",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/RandomStudiesConfigold.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/elfinder-2.0-rc1/elfinder.html",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGeneratorDev/deploy.html",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGeneratorDev/deploy.js",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGenerator/bootstrap/js/models/project.js",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/dashboard.html",
+		"/C/Program Files/tomcat5.5.15/webapps/CKFinderJava-2.4.1/WEB-INF/config.xml",
+		"/C/projects/nodeProject/map.js",
+		"/C/projects/nodeProject/db.js",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGeneratorDev/msg.html",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/vcv (1).xml",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/ff2.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGenerator/deploy.js",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGenerator/deploy.html",
+		"/C/projects/workspace/rc4/app/showfiles.jsp",
+		"/C/Program Files/tomcat5.5.15/webapps/IdoGame/WEB-INF/web.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/IdoGame/IdoGame.html",
+		"/C/Program Files/tomcat5.5.15/webapps/webfileSystem/install.txt",
+		"/C/Program Files/apache-tomcat-7.0.42/bin/startup.sh",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGenerator/bootstrap/js/templates/list.html",
+		"/C/Program Files/tomcat5.5.15/webapps/PItracker/css/custom-theme/jquery-ui-1.10.0.custom.oldII.css",
+		"/C/Program Files/tomcat5.5.15/webapps/PItracker/css/custom-theme/jquery-ui-1.10.0.custom.css",
+		"/C/Program Files/tomcat5.5.15/webapps/PItracker/js/jquery-ui-1.10.3.custom.min.js",
+		"/C/Program Files/apache-tomcat-7.0.42/webapps/CKFinderJava-2.4.1/WEB-INF/config.xml",
+		"/d/Users/admin/Desktop/IdoGame/config.js",
+		"/C/Program Files/tomcat5.5.15/conf/Catalina/localhost/CKFinderJava-2.4.1.xml",
+		"/C/projects/workspace/rc4/database/implicit20_oracle/yuiat_admin_pkg.pkb",
+		"/C/projects/nodeProject/views/form.html",
+		"/C/projects/mesibot/views/main.html",
+		"/D/Users/admin/AppData/Local/Temp/wzf2c7/jquery-ui-bootstrap-masterbs3/css/custom-theme/jquery-ui-1.10.3.custom.css",
+		"/C/projects/workspace/rc4/app/user/bgoldenberg/bgoldenberg.rules.xml",
+		"/C/projects/workspace/rc4/database/implicit20_oracle/yuiat_admin_pkg.pks",
+		"/C/projects/workspace/rc4/app/user/yba/ecep5/ecep5.expt.xml",
+		"/C/projects/JLogger/loggerServer.js",
+		"/C/Program Files/tomcat5.5.15/webapps/PItracker/test.html",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/HistoryRand.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGenerator/bootstrap/js/views/tableView.js",
+		"/D/Users/admin/AppData/Local/Temp/7zO5817.tmp/config.xml",
+		"/D/Users/admin/AppData/Local/Temp/7zOBFED.tmp/config.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/ckfinder/install.txt",
+		"/D/Users/admin/AppData/Local/Temp/wz6613/jquery-ui-bootstrap-masterbs3/css/custom-theme/jquery-ui-1.10.3.custom.css",
+		"/D/Users/admin/Downloads/piindex.jsp",
+		"/D/Users/admin/AppData/Local/Temp/06cec2c4-208f-49bd-9bf3-85ee46af8c68/srv/opt/dev2tomcat/logs/catalina.out",
+		"/C/projects/nodeProject/views/map.html",
+		"/D/Users/admin/Downloads/web.xml",
+		"/D/Users/admin/AppData/Local/Temp/cd962a2e-66cc-4527-8e9c-72ba3d1a8985/srv/opt/dev2tomcat/logs/catalina.out",
+		"/D/Users/admin/Downloads/catalina.out",
+		"/C/projects/nodeProject/package.json",
+		"/C/Program Files/tomcat5.5.15/logs/catalina.2014-03-30.log",
+		"/D/Users/admin/Downloads/jboss-web.xml",
+		"/C/projects/nodeProject/clientNode/logs/sideLoad.log",
+		"/C/projects/JLogger/views/mainLog.html",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/duprucatedCode.txt",
+		"/D/Users/admin/Downloads/pitracker.log.1",
+		"/D/Users/admin/Downloads/catalina.2014-03-27.log",
+		"/D/Users/admin/Desktop/pswd.txt",
+		"/C/Program Files/tomcat5.5.15/logs/admin.2014-03-26.log",
+		"/C/Program Files/tomcat5.5.15/logs/localhost.2014-03-26.log",
+		"/C/Program Files/tomcat5.5.15/logs/catalina.2014-03-26.log",
+		"/C/projects/workspace/rc4/app/PITracking.html",
+		"/C/Program Files/tomcat5.5.15/conf/tomcat-users.xml",
+		"/C/Program Files/tomcat5.5.15/logs/admin.2014-03-22.log",
+		"/C/Program Files/tomcat5.5.15/logs/localhost.2014-03-22.log",
+		"/C/Program Files/tomcat5.5.15/logs/catalina.2014-03-22.log",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/RandomStudiesConfigoldIII.xml",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/RandomStudiesConfigoldII.xml",
+		"/C/projects/JLogger/package.json",
+		"/C/projects/mesibot/package.json",
+		"/C/projects/nodeProject/clientNode/package.json",
+		"/C/ben.js",
+		"/C/Program Files/tomcat5.5.15/logs/admin.2014-03-11.log",
+		"/C/Program Files/tomcat5.5.15/logs/catalina.2014-03-11.log",
+		"/C/projects/workspace/rc4/.classpath",
+		"/C/Program Files/tomcat5.5.15/logs/localhost.2014-03-10.log",
+		"/C/Program Files/tomcat5.5.15/logs/catalina.2014-03-10.log",
+		"/C/Program Files/tomcat5.5.15/logs/host-manager.2014-03-10.log",
+		"/C/projects/workspace/rc4/edu/yale/its/util/log/ROOT.properties",
+		"/C/projects/workspace/rc4/edu/yale/its/util/log/IAT.properties",
+		"/C/projects/workspace/rc4/edu/yale/its/util/log/Log4JInitializer.java",
+		"/C/projects/workspace/rc4/app/user/kratliff/ufljohn/sexualitystudies/transatt1/transatt1.expt.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/PItracker/implicit.xml",
+		"/C/projects/workspace/rc4/app/user/kratliff/multitransfer/multitransfer1/multitransfer1.expt.xml",
+		"/C/projects/workspace/rc4/app/user/yba/appavd1/appavd1.expt.xml",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/RandomStudiesConfigChange.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/test85.xml",
+		"/C/projects/nodeProject/clientNode/logs/yahoo.html",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/testII1.xml",
+		"/C/projects/nodeProject/clientNode/logs/try2.html",
+		"/C/projects/workspace/rc4/app/user/yba/appavd5/appavd5.expt.xml",
+		"/C/projects/workspace/rc4/app/user/chawkins/mgpbias/mgpbias.expt.xml",
+		"/C/projects/workspace/rc4/app/user/bgoldenberg/validateFile.jsp",
+		"/C/projects/workspace/rc4/app/user/calvin/contestv2/contestv2.t1pi.set1pre.expt.xml",
+		"/C/projects/workspace/rc4/app/user/bgoldenberg/jshint.js",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/אקדא90.xml",
+		"/D/Users/admin/Downloads/test21 (1).xml",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/אקדא60.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/test555.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/beng (1).xml",
+		"/D/Users/admin/Downloads/beng.xml",
+		"/C/projects/nodeProject/clientNode/logs/try.html",
+		"/C/projects/workspace/rc4/app/user/bfrazier/coop/coop.expt.xml",
+		"/D/Users/admin/Downloads/test20 (1).xml",
+		"/C/projects/workspace/rc4/app/user/calvin/superbowl/USOnly.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/asd.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/dgdf.xml",
+		"/D/Users/admin/Downloads/ben2 (1).xml",
+		"/D/Users/admin/Downloads/dfsd.xml",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/RandomStudiesConfigNew.xml"
+	],
+	"find":
+	{
+		"height": 45.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"C:\\projects\\workspace\\rc2\\database",
+			"C:\\projects\\implicit\\database,C:\\projects\\implicit\\org",
+			"C:\\projects\\implicit\\database",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"openValidation",
+			".test",
+			"setUserFileTable",
+			"setFileTable",
+			"setUserFileTable",
+			"setFileTable",
+			"createRaws",
+			"setFileTable",
+			"getFiles",
+			"table",
+			"fileRaw",
+			"findFolder",
+			"createRows",
+			"findFolder",
+			"setFileTable",
+			"getFiles",
+			"update",
+			"fileTableModel",
+			"studyButt",
+			"Home",
+			"dropdownLI",
+			"update",
+			"size",
+			"take",
+			"openStudyValidation",
+			"Studyvalidate",
+			"openStudyValidation",
+			"Studyvalidate",
+			"openStudyValidation",
+			"window",
+			"openStudyValidation",
+			"StudyValidate",
+			"></",
+			"result",
+			"fileta",
+			"table",
+			"openValidation",
+			"validateFile",
+			"findFolder",
+			"changeFolderState",
+			"spaces",
+			"validateFile",
+			"setFileTable",
+			"key",
+			"getFiles",
+			"EndRound",
+			"handleStartClick",
+			"assetsLoaded",
+			"console",
+			"personal",
+			"home",
+			"li",
+			"dashboard",
+			"on",
+			"scoring",
+			"currentCycle",
+			"addI",
+			"sound",
+			"500",
+			"600",
+			"400",
+			"600",
+			"stop",
+			".on",
+			"on",
+			"titleIIbitmap",
+			"Tween",
+			"tween",
+			"){\n",
+			"number3",
+			"JMP.SOUNDS",
+			"stage",
+			"Container",
+			"backgrond",
+			"enter",
+			"logger",
+			"info",
+			"debug",
+			"log",
+			"mikeAtSchool",
+			"takeCommasFromStudyID",
+			"zero",
+			"checkb",
+			"zero",
+			"checked",
+			"download",
+			"collapse",
+			"download",
+			"&nbsp&nbsp",
+			"&",
+			"downloadDialog",
+			"downlo",
+			"open",
+			"csvName",
+			"downloadDialog",
+			"dialog2",
+			"getFile",
+			"Started but Did not Complete",
+			"Started but Did not Complete Study",
+			"clear",
+			"did not co",
+			"collapse",
+			"sm",
+			"small",
+			".butt",
+			"ui-button-info",
+			"collapse",
+			"7114944",
+			"download",
+			"socket",
+			"map",
+			"ybalab.cntgmem9.0001",
+			"Did not complete study",
+			"did not start study",
+			"Exclude Study",
+			"addRow",
+			"addC",
+			"addRow",
+			"15",
+			"addDropTwo",
+			"addtableRaw",
+			"none",
+			"addDropTwo",
+			"addDropOne",
+			"addTableRaw",
+			"dropdown-1",
+			"history",
+			"curl"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"",
+			"piplayer"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "js/api.js",
+					"settings":
+					{
+						"buffer_size": 3991,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3261,
+								3269
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2701.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"settings":
+					{
+						"buffer_size": 3351,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1885,
+								2026
+							]
+						],
+						"settings":
+						{
+							"auto_name": "<%@ page import=\"java.io.*, java.util.*\" %>",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 756.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "js/app.js",
+					"settings":
+					{
+						"buffer_size": 12921,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								561,
+								561
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 333.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "js/validate.js",
+					"settings":
+					{
+						"buffer_size": 3323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								53,
+								53
+							]
+						],
+						"settings":
+						{
+							"auto_name": "<script type=\"text/javascript\">",
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "dashboard2.html",
+					"settings":
+					{
+						"buffer_size": 14980,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								14972,
+								14972
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 10095.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "js/rightMenu.js",
+					"settings":
+					{
+						"buffer_size": 2154,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								250,
+								250
+							]
+						],
+						"settings":
+						{
+							"auto_name": "(function ($, window) {",
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 38.0
+	},
+	"input":
+	{
+		"height": 50.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 66.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"e",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/eiat.js"
+			],
+			[
+				"prel",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/utils/preloader.js"
+			],
+			[
+				"html",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/utils/html.js"
+			],
+			[
+				"eia",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/eiat.js"
+			],
+			[
+				"eiat",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/eiat.js"
+			],
+			[
+				"prelo",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/utils/preloader.js"
+			],
+			[
+				"api",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/app/API.js"
+			],
+			[
+				"pars",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/app/task/parser.js"
+			],
+			[
+				"",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/app/API.js"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 208.0,
+	"status_bar_visible": true
+}
