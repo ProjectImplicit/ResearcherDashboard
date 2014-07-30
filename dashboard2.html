@@ -132,6 +132,9 @@ footer {
                     <li><a href="#" class="" id="deploymenu"><i class="glyphicon glyphicon-book"></i> Deploy</a>
 
                     </li>
+                    <li><a href="#" class="" id="trackmenu"><i class="glyphicon glyphicon-book"></i> Track Study</a>
+
+                    </li>
                     <li><a href="#" class="" id="rdemenu"><i class="glyphicon glyphicon-briefcase"></i> RDE</a>
 
                     </li>
@@ -337,27 +340,29 @@ footer {
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-
-<script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<!--
+<script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
 <!--<script type='text/javascript' src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 -->
-<script type="text/javascript">
-    $(document).ready(function() {
+
+<script data-main="js/app" src="js/require.js"></script>
+<script>
+    // $(document).ready(function() {
 
         
-        $.getScript("//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js").done( function( ) {
-            $.getScript("js/rightMenu.js").done( function( ) {
-                $.getScript("js/app.js").done( function( ) {
-                    $.getScript("js/api.js").done( function( ) {
-                        $.getScript("js/jshint.js").done( function( ) {
+    //     $.getScript("//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js").done( function( ) {
+    //         $.getScript("js/rightMenu.js").done( function( ) {
+    //             $.getScript("js/app.js").done( function( ) {
+    //                 $.getScript("js/api.js").done( function( ) {
+    //                     $.getScript("js/jshint.js").done( function( ) {
                         
-                        });
-                    });
-                });
-            });    
-        });
+    //                     });
+    //                 });
+    //             });
+    //         });    
+    //     });
     
-    });    
+    // });    
 </script>
         
         <script>
