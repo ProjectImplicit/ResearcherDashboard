@@ -4,18 +4,22 @@
         'jQuery': '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min',
         'bootstrap': '//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min',
         'jshint': 'jshint',
-        'rightMenu':'rightMenu'
+        'rightMenu':'rightMenu',
+        'csvToTable':'jquery.csvToTable',
+        'tablesorter':'tablesorter/jquery.tablesorter'
     },
     shim: {
         'jQuery': {
             exports: '$'
         },
         'bootstrap' : ['jQuery'],
-        'rightMenu' : ['jQuery']
+        'rightMenu' : ['jQuery'],
+        'csvToTable': ['jQuery'],
+        'tablesorter':['jQuery']
         
     }
 });
-require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','rightMenu'],
+require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','rightMenu','csvToTable','tablesorter'],
  function (domReady,API,$,Tracker,Settings) {
  
     // do something with the loaded modules
@@ -46,7 +50,7 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
       $(document).on("click",'#fileSys', function(){
 
         fileTableModel.user=true;
-        api.getFiles(key,'all',setUserFileTable);
+        api.getFiles(model.key,'all',setUserFileTable);
 
       });
       $(document).on("click",'.testStudy',function(){
@@ -56,7 +60,7 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
          var fname = takespaces($(span).text());
-         api.getUserName(takespaces(key),function(data){
+         api.getUserName(takespaces(model.key),function(data){
          var user = data;
          window.open("https://dw2.psyc.virginia.edu/implicit/Launch?study=/user/"+user+"/"+model.study+"/"+fname+"&refresh=true");
 
@@ -73,7 +77,7 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
          var fname = $(span).text();
-         api.Studyvalidate(key,model.study,takespaces(fname),openStudyValidation);
+         api.Studyvalidate(model.key,model.study,takespaces(fname),openStudyValidation);
 
       });
       $(document).on("click",'.validate',function(){
@@ -83,7 +87,7 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
          var fname = $(span).text();
-         api.validateFile(key,model.study,takespaces(fname),openValidation);
+         api.validateFile(model.key,model.study,takespaces(fname),openValidation);
 
       });
       $(document).on("click",'.folder',function(){
@@ -103,8 +107,8 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         var button = $(this);
         var anchor = $(button).parent().parent().find('a');
         model.study = $(anchor).text();
-        console.log(key);
-        api.getFiles(key,model.study,setFileTable);
+        console.log(model.key);
+        api.getFiles(model.key,model.study,setFileTable);
 
 
       });
@@ -229,8 +233,7 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         }
         debugger;
         $.each(filesObj, function(k, v) {
-          debugger;
-          console.log(k + ' is ' + v);
+          
           var extension = k.split(".");
           if (extension.length>1){
 
@@ -271,6 +274,39 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         });
       }
 
+      function getData(study,dbString,curl,db,current,baseURL){
+            var data = {};
+            var currentdate = new Date(); 
+            var datetime =  (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
+            var untildatetime =  (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
+            data.db = db;
+            data.testDB= dbString;
+            data.current = current;
+            data.study = study;
+            data.task = '';
+            data.since = datetime;
+            data.until = untildatetime;
+            data.endTask='';
+            data.filter = '';
+            data.studyc = 'true';
+            data.taskc = '';
+            data.datac = '';
+            data.timec = '';
+            data.dayc = '';
+            data.weekc = '';
+            data.monthc = '';
+            data.yearc = '';
+            data.method = '3';
+            data.curl=curl;
+            data.hurl='';
+            data.cpath='';
+            data.hpath='';
+            data.tasksM='3';
+            data.threads = 'yes';
+            data.threadsNum = '1';
+            data.baseURL = baseURL;
+            return data;
+      }
       function addExptRaw(file,level){
         fileTableModel.row = fileTableModel.row+1;
 
@@ -343,21 +379,21 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         id++;
         var html='';
         html+='<tr>'+
-                  '<td><a href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</a>'+
-                  '</td>'+
-                  '<td class="">Runing</td>'+
-                  '<td class="">15%</td>'+
-                  '<td class="">'+
-                      '<button type="button" class="btn btn-primary btn-xs" data-toggle="modal"'+
-                      'data-target="#myStats">Statistics</button>'+
-                  '</td>'+
-                  '<td class="">'+
-                      '<button type="button" class="btn btn-primary btn-xs test" >Test</button>'+
-                  '</td>'+
-                 '<td class="">'+
-                      '<button type="button" class="btn btn-primary btn-xs" id="1deploy">Deploy</button>'+
-                  '</td>'+
-              '</tr>';
+              '<td><a href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</a>'+
+              '</td>'+
+              '<td class="">Runing</td>'+
+              '<td class="">15%</td>'+
+              '<td class="">'+
+                  '<button type="button" class="btn btn-primary btn-xs" data-toggle="modal"'+
+                  'data-target="#myStats">Statistics</button>'+
+              '</td>'+
+              '<td class="">'+
+                  '<button type="button" class="btn btn-primary btn-xs test" >Test</button>'+
+              '</td>'+
+             '<td class="">'+
+                  '<button type="button" class="btn btn-primary btn-xs" id="1deploy">Deploy</button>'+
+              '</td>'+
+          '</tr>';
         return html;
       }
       
@@ -395,16 +431,46 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
 
       function setTrackerTable(data){
         console.log(data);
-
+          $('#CSVTable').CSVToTable(data,{
+          tableClass:'tablesorter'
+            }).bind("loadComplete",function() { 
+          $('#CSVTable').find('#cvsT').addClass('tablesorter');
+          $('#CSVTable').find('table').tablesorter();
+        });
       }
+
+      function appendTracker(studyExpt,since,until){
+        var track = new Tracker(model);
+        $('#result').append(track.getTracker(studyExpt,since,until));
+        $('#result').append('<div id="CSVTable"></div>');
+        var settings = new Settings();
+        console.log('settings:'+settings.dbString);
+        var data = getData(studyExpt,"test","research/library/randomStudiesConfig/RandomStudiesConfig.xml","Research",'Any',
+          'http://app-dev-01.implicit.harvard.edu/implicit');
+        track.getTable(data,setTrackerTable);
+        track.setListeners();
+      }
+
       $('#trackmenu').click(function(){
         debugger;
         $("#result").empty();
-        var track = new Tracker();
-        $('#result').append(track.getTracker());
-        $('#result').append(track.getTable(getExptid(model.study),"test","research/library/randomStudiesConfig/RandomStudiesConfig.xml","Research",'Any',
-          'http://app-dev-01.implicit.harvard.edu/implicit',setTrackerTable));
+        var currentdate = new Date(); 
+        var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
+        var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
         
+        var studyExpt;
+        if (model.study!=undefined){
+          studyExpt = getExptid(model.study);
+          appendTracker(studyExpt,since,until);
+        }else{
+          api.getUserName(takespaces(model.key),function(data){
+            appendTracker(data,since,until);
+           
+          });
+        }
+        
+
+               
       });
 
       

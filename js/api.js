@@ -87,11 +87,13 @@ define([], function () {
         
         this.getUserName = function (key,callback){
             var url = "/implicit/dashboard/getname/"+key;
+            var res;
             $.ajax({
                 type: "GET",
                 url: url,
+               
                                 
-            }).done(callback);
+            }).done(callback)
 
         }
         this.Studyvalidate = function (user,study,filename,callback){
@@ -125,11 +127,10 @@ define([], function () {
 
         }
 
-        this.getTracker = function (studyexpt,dbString,cpath,db,current,baseURL,callback){
+        this.getTracker = function (data,callback){
             
             var url = '/implicit/PITracking';
-            var data = this.getData(studyexpt,dbString,cpath,db,current,baseURL);
-            
+                        
             $.ajax({
                 type: "POST",
                 url: url,
@@ -139,39 +140,7 @@ define([], function () {
             });
 
         }
-        this.getData = function (study,dbString,curl,db,current,baseURL){
-            var data = {};
-            var currentdate = new Date(); 
-            var datetime =  (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
-            var untildatetime =  (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
-            data.db = db;
-            data.testDB= dbString;
-            data.current = current;
-            data.study = study;
-            data.task = '';
-            data.since = datetime;
-            data.until = untildatetime;
-            data.endTask='';
-            data.filter = '';
-            data.studyc = 'true';
-            data.taskc = '';
-            data.datac = '';
-            data.timec = '';
-            data.dayc = '';
-            data.weekc = '';
-            data.monthc = '';
-            data.yearc = '';
-            data.method = '3';
-            data.curl=curl;
-            data.hurl='';
-            data.cpath='';
-            data.hpath='';
-            data.tasksM='3';
-            data.threads = 'yes';
-            data.threadsNum = '1';
-            data.baseURL = baseURL;
-            return data;
-        }
+        
         
         this.errorconsole = function (data){
             //$('#console').text(data);
