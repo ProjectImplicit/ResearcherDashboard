@@ -96,8 +96,7 @@ label{
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown"> <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#">
-            <i class="glyphicon glyphicon-user"></i> bgoldenberg <span class="caret"></span></a>
+                <li class="dropdown"> <a id="userName" class="dropdown-toggle" role="button" data-toggle="dropdown" href="#"></a>
 
                     <ul
                     id="g-account-menu" class="dropdown-menu" role="menu">
@@ -123,40 +122,41 @@ label{
             <!-- left --> <a href="#" class=""><strong><i class="glyphicon glyphicon-briefcase"></i> Toolbox</strong></a>
 
             <hr class="">
-                <div class="dropdown" style="display: inline; margin-left:30px;">
+            <a href="#" class="" ><strong>Studies</strong></a>
+            <div class="dropdown" style="display: inline; margin-left:10px;">
+                
+                  <button id="studyButt" class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                    Studies
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">
                     
-                      <button id="studyButt" class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                        Studies
-                        <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">
-                        
-                      </ul>
-                </div>
-                <ul class="nav nav-pills nav-stacked">
-                    <li><a href="#" class="" id="homemenu"><i class="glyphicon glyphicon-flash"></i> Home</a>
-                    <li><a id="fileSys" href="#" class="" id="homemenu"><i class="glyphicon glyphicon-flash"></i> File System</a>    
+                  </ul>
+            </div>
+            <ul class="nav nav-pills nav-stacked">
+                <li><a href="#" class="" id="homemenu"><i class="glyphicon glyphicon-flash"></i> Home</a>
+                <li><a id="fileSys" href="#" class="" id="homemenu"><i class="glyphicon glyphicon-flash"></i> File System</a>    
 
-                    </li>
-                    <li class=""></li>
-                    <li><a href="#" class="" id="testmenu"><i class="glyphicon glyphicon-list-alt"></i> Test Study</a>
+                </li>
+                <li class=""></li>
+                <li><a href="#" class="" id="testmenu"><i class="glyphicon glyphicon-list-alt"></i> Test Study</a>
 
-                    </li>
-                    <li><a href="#" class="" id="deploymenu"><i class="glyphicon glyphicon-book"></i> Deploy</a>
+                </li>
+                <li><a href="#" class="" id="deploymenu"><i class="glyphicon glyphicon-book"></i> Deploy</a>
 
-                    </li>
-                    <li><a href="#" class="" id="trackmenu"><i class="glyphicon glyphicon-book"></i> Track Study</a>
+                </li>
+                <li><a href="#" class="" id="trackmenu"><i class="glyphicon glyphicon-book"></i> Track Study</a>
 
-                    </li>
-                    <li><a href="#" class="" id="rdemenu"><i class="glyphicon glyphicon-briefcase"></i> RDE</a>
+                </li>
+                <li><a href="#" class="" id="rdemenu"><i class="glyphicon glyphicon-briefcase"></i> RDE</a>
 
-                    </li>
-                    <li class=""></li>
-                    <li><a href="#" class=""><i class="glyphicon glyphicon-plus"></i> Advanced..</a>
+                </li>
+                <li class=""></li>
+                <li><a href="#" class=""><i class="glyphicon glyphicon-plus"></i> Advanced..</a>
 
-                    </li>
-                </ul>
-                <hr class="">
+                </li>
+            </ul>
+            <hr class="">
         </div>
         <!-- /span-3 -->
         <div class="col-md-9" id="dashboardArea">

@@ -17,7 +17,7 @@ define([], function () {
     var api = function () {
 
         
-        this.init = function(model,callback){
+        this.init = function(model,callback,UserCallBack){
             
             var apiParam= this.urlParam('api');
                  
@@ -69,6 +69,7 @@ define([], function () {
             }else{
                 var key = this.urlParam('key');
                 model.key=key;
+                this.getUserName(model.key,UserCallBack)
                 console.log("calling getfiles api");
                 $.ajax({
                     type: "POST",

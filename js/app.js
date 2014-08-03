@@ -27,13 +27,15 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
       
       var model={};
       var api = new API();
-      api.init(model,success);
+      api.init(model,success,SetUser);
       var id=0;
       var fileTableModel ={};
       fileTableModel.user=false;
       var fileObj;
       
-      
+      //Init
+
+      $('#userName').text(api.ge)
 
       $(document).on("click",'#validateOK', function(){
 
@@ -45,7 +47,8 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         console.log($(this).text());
         model.study = $(this).text();
         $('.studyButt').text(model.study);
-
+        //var activeApp = model.active;
+        //activeApp.studyChanged(model.study);
       });
       $(document).on("click",'#fileSys', function(){
 
@@ -66,9 +69,6 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
 
 
          });
-         
-         
-
       });
       $(document).on("click",'.Svalidate',function(){
          console.log($(this));
@@ -124,6 +124,10 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
 
       }
 
+      function SetUser(data){
+        $('#userName').html('<i class="glyphicon glyphicon-user"></i><span class="caret"></span>'+data);
+        
+      }
       function success (data){
         console.log(data);
         var obj = jQuery.parseJSON( data );
@@ -274,39 +278,41 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         });
       }
 
-      function getData(study,dbString,curl,db,current,baseURL){
-            var data = {};
-            var currentdate = new Date(); 
-            var datetime =  (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
-            var untildatetime =  (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
-            data.db = db;
-            data.testDB= dbString;
-            data.current = current;
-            data.study = study;
-            data.task = '';
-            data.since = datetime;
-            data.until = untildatetime;
-            data.endTask='';
-            data.filter = '';
-            data.studyc = 'true';
-            data.taskc = '';
-            data.datac = '';
-            data.timec = '';
-            data.dayc = '';
-            data.weekc = '';
-            data.monthc = '';
-            data.yearc = '';
-            data.method = '3';
-            data.curl=curl;
-            data.hurl='';
-            data.cpath='';
-            data.hpath='';
-            data.tasksM='3';
-            data.threads = 'yes';
-            data.threadsNum = '1';
-            data.baseURL = baseURL;
-            return data;
+      //function getData(study,dbString,curl,db,current,baseURL){
+      function getData(study){
+
+        debugger;
+        var settings = new Settings();
+        var data = {};
+        data.db = model.tracker.db;
+        data.testDB= settings.getDbString();
+        data.current = model.tracker.list;
+        data.study = study;
+        data.task = '';
+        data.since = model.tracker.since;
+        data.until = model.tracker.until;
+        data.endTask='';
+        data.filter = '';
+        data.studyc = 'true';
+        data.taskc = '';
+        data.datac = '';
+        data.timec = '';
+        data.dayc = '';
+        data.weekc = '';
+        data.monthc = '';
+        data.yearc = '';
+        data.method = '3';
+        data.curl=settings.getCurl();
+        data.hurl='';
+        data.cpath='';
+        data.hpath='';
+        data.tasksM='3';
+        data.threads = 'yes';
+        data.threadsNum = '1';
+        data.baseURL = settings.getBaseURL();
+        return data;
       }
+
       function addExptRaw(file,level){
         fileTableModel.row = fileTableModel.row+1;
 
@@ -370,8 +376,8 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
 
       }
       function update(value){
-          $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value+'</a></li>');
-              $('#studyTable > tbody').append(makerow(value));
+        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value+'</a></li>');
+            $('#studyTable > tbody').append(makerow(value));
 
       }
       function makerow(val){
@@ -438,15 +444,27 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
           $('#CSVTable').find('table').tablesorter();
         });
       }
-
-      function appendTracker(studyExpt,since,until){
-        var track = new Tracker(model);
+      function processSubmit(){
+        var data = getData(studyExpt);
+        track.getTable(data,setTrackerTable);
+        
+      }
+      function appendTracker(studyExpt){
+        var track = new Tracker(model,processSubmit);
+        model.tracker.db = 'Research';
+        model.tracker.list = 'Any';
+        var currentdate = new Date(); 
+        var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
+        var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
+        model.tracker.since = since;
+        model.tracker.until = until;
         $('#result').append(track.getTracker(studyExpt,since,until));
         $('#result').append('<div id="CSVTable"></div>');
-        var settings = new Settings();
-        console.log('settings:'+settings.dbString);
-        var data = getData(studyExpt,"test","research/library/randomStudiesConfig/RandomStudiesConfig.xml","Research",'Any',
-          'http://app-dev-01.implicit.harvard.edu/implicit');
+        
+        // var data = getData(studyExpt,"test","research/library/randomStudiesConfig/RandomStudiesConfig.xml","Research",'Any',
+        //   'http://app-dev-01.implicit.harvard.edu/implicit');
+        var data = getData(studyExpt);
+
         track.getTable(data,setTrackerTable);
         track.setListeners();
       }
@@ -454,17 +472,15 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
       $('#trackmenu').click(function(){
         debugger;
         $("#result").empty();
-        var currentdate = new Date(); 
-        var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
-        var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
+       
         
         var studyExpt;
         if (model.study!=undefined){
           studyExpt = getExptid(model.study);
-          appendTracker(studyExpt,since,until);
+          appendTracker(studyExpt);
         }else{
           api.getUserName(takespaces(model.key),function(data){
-            appendTracker(data,since,until);
+            appendTracker(data);
            
           });
         }
@@ -528,13 +544,11 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         
       });  
       $('#testmenu').click(function(){
-        $("#dashboardArea").empty();
-        $('#dashboardArea').append('<div>Study ID: <input type="text"></input><button type="button" class="btn btn-primary btn-xs" id="submitest" style="margin-left:10px;" onclick="submitTest()">Submit</button></div>');
+        
         
       });
       $('#deploymenu').click(function(){
-        $("#dashboardArea").empty();
-        $('#dashboardArea').append('<div>Study ID: <input type="text"></input><button type="button" class="btn btn-primary btn-xs" id="submitest" style="margin-left:10px;" onclick="submitTest()">Submit</button></div>');
+        
         
       });
   });
