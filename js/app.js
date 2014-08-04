@@ -6,7 +6,8 @@
         'jshint': 'jshint',
         'rightMenu':'rightMenu',
         'csvToTable':'jquery.csvToTable',
-        'tablesorter':'tablesorter/jquery.tablesorter'
+        'tablesorter':'tablesorter/jquery.tablesorter',
+        'datepicker':'datepicker/js/bootstrap-datepicker'
     },
     shim: {
         'jQuery': {
@@ -15,12 +16,13 @@
         'bootstrap' : ['jQuery'],
         'rightMenu' : ['jQuery'],
         'csvToTable': ['jQuery'],
-        'tablesorter':['jQuery']
+        'tablesorter':['jQuery'],
+        'datepicker': ['jQuery','bootstrap']
         
     }
 });
-require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','rightMenu','csvToTable','tablesorter'],
- function (domReady,API,$,Tracker,Settings) {
+require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','csvToTable','tablesorter'],
+ function (domReady,API,$,Tracker) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -47,8 +49,8 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         console.log($(this).text());
         model.study = $(this).text();
         $('.studyButt').text(model.study);
-        //var activeApp = model.active;
-        //activeApp.studyChanged(model.study);
+        var activeApp = model.active;
+        activeApp.studyChanged();
       });
       $(document).on("click",'#fileSys', function(){
 
@@ -278,41 +280,6 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         });
       }
 
-      //function getData(study,dbString,curl,db,current,baseURL){
-      function getData(study){
-
-        debugger;
-        var settings = new Settings();
-        var data = {};
-        data.db = model.tracker.db;
-        data.testDB= settings.getDbString();
-        data.current = model.tracker.list;
-        data.study = study;
-        data.task = '';
-        data.since = model.tracker.since;
-        data.until = model.tracker.until;
-        data.endTask='';
-        data.filter = '';
-        data.studyc = 'true';
-        data.taskc = '';
-        data.datac = '';
-        data.timec = '';
-        data.dayc = '';
-        data.weekc = '';
-        data.monthc = '';
-        data.yearc = '';
-        data.method = '3';
-        data.curl=settings.getCurl();
-        data.hurl='';
-        data.cpath='';
-        data.hpath='';
-        data.tasksM='3';
-        data.threads = 'yes';
-        data.threadsNum = '1';
-        data.baseURL = settings.getBaseURL();
-        return data;
-      }
-
       function addExptRaw(file,level){
         fileTableModel.row = fileTableModel.row+1;
 
@@ -435,22 +402,9 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         return res;    
       }
 
-      function setTrackerTable(data){
-        console.log(data);
-          $('#CSVTable').CSVToTable(data,{
-          tableClass:'tablesorter'
-            }).bind("loadComplete",function() { 
-          $('#CSVTable').find('#cvsT').addClass('tablesorter');
-          $('#CSVTable').find('table').tablesorter();
-        });
-      }
-      function processSubmit(){
-        var data = getData(studyExpt);
-        track.getTable(data,setTrackerTable);
-        
-      }
+     
       function appendTracker(studyExpt){
-        var track = new Tracker(model,processSubmit);
+        var track = new Tracker(model);
         model.tracker.db = 'Research';
         model.tracker.list = 'Any';
         var currentdate = new Date(); 
@@ -458,29 +412,22 @@ require(['domReady','api','jQuery','tracker','settings','bootstrap','jshint','ri
         var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
         model.tracker.since = since;
         model.tracker.until = until;
-        $('#result').append(track.getTracker(studyExpt,since,until));
-        $('#result').append('<div id="CSVTable"></div>');
-        
-        // var data = getData(studyExpt,"test","research/library/randomStudiesConfig/RandomStudiesConfig.xml","Research",'Any',
-        //   'http://app-dev-01.implicit.harvard.edu/implicit');
-        var data = getData(studyExpt);
-
-        track.getTable(data,setTrackerTable);
-        track.setListeners();
+        track.getTracker(studyExpt,since,until);
+        track.getTable(studyExpt,true);
+        model.active = track;
       }
 
       $('#trackmenu').click(function(){
         debugger;
         $("#result").empty();
-       
-        
         var studyExpt;
         if (model.study!=undefined){
           studyExpt = getExptid(model.study);
           appendTracker(studyExpt);
         }else{
+
           api.getUserName(takespaces(model.key),function(data){
-            appendTracker(data);
+          appendTracker(data);
            
           });
         }
