@@ -9,6 +9,7 @@
         'tablesorter':'tablesorter/jquery.tablesorter',
         'datepicker':'datepicker/js/bootstrap-datepicker'
     },
+    waitSeconds: 25,
     shim: {
         'jQuery': {
             exports: '$'
@@ -17,7 +18,8 @@
         'rightMenu' : ['jQuery'],
         'csvToTable': ['jQuery'],
         'tablesorter':['jQuery'],
-        'datepicker': ['jQuery','bootstrap']
+        'datepicker': ['jQuery','bootstrap'],
+        'jshint':['jQuery']
         
     }
 });
@@ -35,13 +37,51 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
       fileTableModel.user=false;
       var fileObj;
       
-      //Init
+      $('.navbar li').click(function(e) {
+        $('.navbar li.active').removeClass('active');
+          var $this = $(this);
+          if (!$this.hasClass('active')) {
+              $this.addClass('active');
+          }
+          e.preventDefault();
+      });
+      $(document).on("click",'#deploy', function(){
+        $('#result').html('');
+        model.activePage = 'deploy';
 
-      $('#userName').text(api.ge)
+      });  
+      $(document).on("click",'#trackmenu', function(){
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'trackmenu';
+        var studyExpt;
+        if (model.study!=undefined){
+          studyExpt = getExptid(model.study);
+          appendTracker(studyExpt);
+        }else{
+          api.getUserName(takespaces(model.key),function(data){
+          appendTracker(data);
+           
+          });
+        }
+      });    
+      $(document).on("click",'#rde', function(){
+        $('#result').html('');
+        model.activePage = 'rde';
 
-      $(document).on("click",'#validateOK', function(){
+      });  
+      $(document).on("click",'#home', function(){
+        $('#result').html('');
+        model.activePage = 'home';
+        $('#studyTable').show();
 
-       // $('#validateTable > tbody').remove();
+      });  
+      $(document).on("click",'#test', function(){
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'test';
+        api.getFiles(model.key,model.study,setFileTable);
+
 
       });  
       $(document).on("click",'.tableVal', function(){
@@ -50,12 +90,14 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
         model.study = $(this).text();
         $('.studyButt').text(model.study);
         var activeApp = model.active;
-        activeApp.studyChanged();
+        if (activeApp!=null &&activeApp!=undefined) activeApp.studyChanged();
+        
       });
       $(document).on("click",'#fileSys', function(){
 
         fileTableModel.user=true;
         api.getFiles(model.key,'all',setUserFileTable);
+        $('#studyTable').hide();
 
       });
       $(document).on("click",'.testStudy',function(){
@@ -150,6 +192,10 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
       function openStudyValidation(data){
         debugger;
         var errors = data.split("<br/>");
+        console.log(errors);
+        var len = errors[0].length;
+        errors[0]=errors[0].slice(4,len);
+        $('#validateTable > tbody').empty();
         if (errors.length===0){
           $('#validateTable > tbody').append('<tr><td>No Errors Found</td></tr>');
         }
@@ -167,6 +213,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
         var cont =globals+'\n'+configuration+'\n'+data;
         JSHINT(cont);
         console.log(JSHINT.errors);
+         $('#validateTable > tbody').empty();
         for (var i=0;i<JSHINT.errors.length;i++){
 
               //console.log(JSHINT.errors[i]);
@@ -184,12 +231,11 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
               //var error = JSON.stringify(obj, null, 2);
               $('#validateTable > tbody').append('<tr><td>'+error+'</td></tr>');
               
-       }
-       if (JSHINT.errors.length===0){
-        $('#validateTable > tbody').append('<tr><td>No Errors Found</td></tr>');
-
-       }
-       $('#validateModal').modal('show');
+        }
+        if (JSHINT.errors.length===0){
+         $('#validateTable > tbody').append('<tr><td>No Errors Found</td></tr>');
+        }
+        $('#validateModal').modal('show');
       }
 
       function changeFolderState(name){
@@ -242,27 +288,19 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
           
           var extension = k.split(".");
           if (extension.length>1){
-
             if (extension[1]==='jsp' && user===false){
               addJspRaw(k,fileTableModel.level);
-
             }else{
               if (extension[1]==='expt' && user===false){
               addExptRaw(k,fileTableModel.level);
-
               }else{
                 if (extension[1]==='js' && user===false){
                   addJSRaw(k,fileTableModel.level);
-
                 }else{
-
                    addFileRaw(k,fileTableModel.level);
-
                 }
               }
-
             }
-            
           }else{
             if (k!='state'){
               addFolderRaw(k,fileTableModel.level);
@@ -344,7 +382,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
       }
       function update(value){
         $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value+'</a></li>');
-            $('#studyTable > tbody').append(makerow(value));
+        $('#studyTable > tbody').append(makerow(value));
 
       }
       function makerow(val){
@@ -417,87 +455,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
         model.active = track;
       }
 
-      $('#trackmenu').click(function(){
-        debugger;
-        $("#result").empty();
-        var studyExpt;
-        if (model.study!=undefined){
-          studyExpt = getExptid(model.study);
-          appendTracker(studyExpt);
-        }else{
-
-          api.getUserName(takespaces(model.key),function(data){
-          appendTracker(data);
-           
-          });
-        }
-        
-
-               
-      });
-
-      
-      $(document).on("click",'#submitest',function(){
-        $("#result").empty();
-        $('#result').append('<div><iframe src="https://dw2.psyc.virginia.edu/implicit/showfiles.jsp?user=yba&study=popuptest" width="750" height="450"></iframe></div>');
-        
-      });
-      $(document).on("click",'#submitest2',function(){
-         $("#dashboardArea").empty();
-        $('#dashboardArea').append('<div><iframe src="https://dw2.psyc.virginia.edu/implicit/user/bgoldenberg/ruleGenerator/deploy.html#" width="750" height="450"></iframe></div>');
-        
-      });
-
-      $('#1test').click(function(){
-        //$("#testModelBody").empty();
-        //$('#testModelBody').append('');
-        //window.open("https://dw2.psyc.virginia.edu/implicit/showfiles.jsp?user=yba&study=popuptest");
-        $('#testModal').modal('show');
-        
-      });  
-      $('#1deploy').click(function(){
-        //$("#dashboardArea").empty();
-        //$('#dashboardArea').append('');
-        //window.open("https://dw2.psyc.virginia.edu/implicit/user/bgoldenberg/ruleGenerator/deploy.html");
-        
-        $('#deployModal').modal('show');
-        
-        
-      });  
-      $('#2test').click(function(){
-        $('#testModal').modal('show');
-        //window.open("https://dw2.psyc.virginia.edu/implicit/showfiles.jsp?user=yba&study=popuptest");
-        
-      });  
-      $('#2deploy').click(function(){
-        $('#deployModal').modal('show');
-        //window.open("https://dw2.psyc.virginia.edu/implicit/user/bgoldenberg/ruleGenerator/deploy.html");
-        
-      });  
-      $('#3test').click(function(){
-       $('#testModal').modal('show');
-       //window.open("https://dw2.psyc.virginia.edu/implicit/showfiles.jsp?user=yba&study=popuptest");
-        
-        
-      });  
-      $('#3deploy').click(function(){
-        $('#deployModal').modal('show');
-       //window.open("https://dw2.psyc.virginia.edu/implicit/user/bgoldenberg/ruleGenerator/deploy.html");
-        
-      });  
-      $('#homemenu').click(function(){
-        $("#dashboardArea").empty();
-        //$('#dashboardArea').append(personal);
-        
-      });  
-      $('#testmenu').click(function(){
-        
-        
-      });
-      $('#deploymenu').click(function(){
-        
-        
-      });
+     
   });
         
 });

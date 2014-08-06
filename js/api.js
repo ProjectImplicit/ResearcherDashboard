@@ -102,8 +102,11 @@ define([], function () {
             $.ajax({
                 type: "GET",
                 url: url,
-                success: callback
+                dataType: "html"
+                //success: callback
                 
+            }).done(callback).fail(function( jqXHR, textStatus ) {
+                alert( "Request failed: " + textStatus );
             });
 
         }
