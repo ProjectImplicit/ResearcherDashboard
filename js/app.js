@@ -7,7 +7,8 @@
         'rightMenu':'rightMenu',
         'csvToTable':'jquery.csvToTable',
         'tablesorter':'tablesorter/jquery.tablesorter',
-        'datepicker':'datepicker/js/bootstrap-datepicker'
+        'datepicker':'datepicker/js/bootstrap-datepicker',
+        'chart': 'chart'
     },
     waitSeconds: 25,
     shim: {
@@ -23,8 +24,8 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','csvToTable','tablesorter'],
- function (domReady,API,$,Tracker) {
+require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','csvToTable','tablesorter','chart'],
+ function (domReady,API,$,Tracker,Chart) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -151,21 +152,52 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
         var button = $(this);
         var anchor = $(button).parent().parent().find('a');
         model.study = $(anchor).text();
+        $('.studyButt').text(model.study);
         console.log(model.key);
         api.getFiles(model.key,model.study,setFileTable);
 
 
       });
+      $(document).on("click",'.statistics',function(){
 
+        var ctx = document.getElementById("myChart").getContext("2d");
+        var data = getChartData();
+        var myChart = new Chart(ctx);
+        var myBarChart = myChart.Bar(data);
+        $('#myStats').modal('show');
+
+      });
+
+      function getChartData(){
+          var data = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fillColor: "rgba(220,220,220,0.5)",
+                    strokeColor: "rgba(220,220,220,0.8)",
+                    highlightFill: "rgba(220,220,220,0.75)",
+                    highlightStroke: "rgba(220,220,220,1)",
+                    data: [65, 59, 80, 81, 56, 55, 40]
+                },
+                {
+                    label: "My Second dataset",
+                    fillColor: "rgba(151,187,205,0.5)",
+                    strokeColor: "rgba(151,187,205,0.8)",
+                    highlightFill: "rgba(151,187,205,0.75)",
+                    highlightStroke: "rgba(151,187,205,1)",
+                    data: [28, 48, 40, 19, 86, 27, 90]
+                }
+            ]
+          };
+          return data;
+      }
       function parseline(str,a,b,c,d){
         var res = str.replace('{a}',a);
         res = res.replace('{b}',b);
         res = res.replace('{c}',c);
         res = res.replace('{d}',d);
-
         return res;
-
-
       }
 
       function SetUser(data){
@@ -395,7 +427,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
               '<td class="">Runing</td>'+
               '<td class="">15%</td>'+
               '<td class="">'+
-                  '<button type="button" class="btn btn-primary btn-xs" data-toggle="modal"'+
+                  '<button type="button" class="btn btn-primary btn-xs statistics" data-toggle="modal"'+
                   'data-target="#myStats">Statistics</button>'+
               '</td>'+
               '<td class="">'+
@@ -445,12 +477,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
         var track = new Tracker(model);
         model.tracker.db = 'Research';
         model.tracker.list = 'Any';
-        var currentdate = new Date(); 
-        var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
-        var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
-        model.tracker.since = since;
-        model.tracker.until = until;
-        track.getTracker(studyExpt,since,until);
+        track.getTracker(studyExpt);
         track.getTable(studyExpt,true);
         model.active = track;
       }
