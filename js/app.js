@@ -4,11 +4,14 @@
         'jQuery': '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min',
         'bootstrap': '//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min',
         'jshint': 'jshint',
-        'rightMenu':'rightMenu',
         'csvToTable':'jquery.csvToTable',
         'tablesorter':'tablesorter/jquery.tablesorter',
         'datepicker':'datepicker/js/bootstrap-datepicker',
-        'chart': 'chart'
+        'chart': 'chart',
+        //'jui':'//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui',
+        'context':'Contextmaster/context'
+        
+
     },
     waitSeconds: 25,
     shim: {
@@ -16,15 +19,17 @@
             exports: '$'
         },
         'bootstrap' : ['jQuery'],
-        'rightMenu' : ['jQuery'],
         'csvToTable': ['jQuery'],
         'tablesorter':['jQuery'],
         'datepicker': ['jQuery','bootstrap'],
-        'jshint':['jQuery']
+        'jshint':['jQuery'],
+        'context':['jQuery']
+        
         
     }
 });
-require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','csvToTable','tablesorter','chart'],
+require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
+  'tablesorter','chart','context'],
  function (domReady,API,$,Tracker,Chart) {
  
     // do something with the loaded modules
@@ -37,6 +42,14 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
       var fileTableModel ={};
       fileTableModel.user=false;
       var fileObj;
+      context.init({preventDoubleContext: false});
+  
+      context.attach('.folder', [
+        {header: 'Options'},
+        {text: 'Upload File', action: uploadFile},
+        {text: 'create New Folder', action: newFolder}
+        
+      ]);
       
       $('.navbar li').click(function(e) {
         $('.navbar li.active').removeClass('active');
@@ -167,7 +180,19 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
         $('#myStats').modal('show');
 
       });
+      $("input[name='fileName']" ).change(function () {
+          alert($(this).val());
+          $('#upload').click();
+      });
 
+      function uploadFile(e){
+              
+        $("input[name='fileName']" ).click();
+        
+      }
+      function newFolder(){
+        alert('new folder');
+      }
       function getChartData(){
           var data = {
             labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -315,7 +340,6 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
           $('#result').html('');
           createTable();
         }
-        debugger;
         $.each(filesObj, function(k, v) {
           
           var extension = k.split(".");
@@ -386,7 +410,6 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','rightMenu','c
         console.log(data);
         fileObj = jQuery.parseJSON( data );
         createTable();
-        debugger;
         createRaws(fileObj,false,fileTableModel.user);
         
 
