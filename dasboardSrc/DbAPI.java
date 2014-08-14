@@ -54,21 +54,7 @@ public class DbAPI  {
 	}
 	private void createStudyInMemory(String name,String study_expt,String folder,String user_id){
 		
-//		HashMap record = new HashMap();
-//		record.put("id",String.valueOf(++this.styudiesID));
-//		record.put("name", name);
-//		record.put("studyID", study_expt);
-//		record.put("studyFolder", folder);
-//		this.Studies.put(this.styudiesID, record);
-//		HashMap record2 = new HashMap();
-//		record.put("id",String.valueOf(++this.UserStudiesID));
-//		record.put("user_id", user_id);
-//		record.put("user_id", String.valueOf(this.styudiesID));
-//		
-//		
-		
-		
-		
+
 		
 		
 	}

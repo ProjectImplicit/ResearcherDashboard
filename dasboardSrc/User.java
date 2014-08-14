@@ -59,8 +59,10 @@ public class User {
 		for (int index=0;index<this.Studies.size();index++){
 			Study study = (Study) this.Studies.get(index);
 			String name = study.getName();
+			String exptID = study.getstudyEXPTID();
 			HashMap record = new HashMap();
-			record.put(String.valueOf(index), name);
+			record.put("name."+String.valueOf(index), name);
+			record.put("exptID."+String.valueOf(index), exptID);
 			studiesMap.put(String.valueOf(index), record);
 			
 		}

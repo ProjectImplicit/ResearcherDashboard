@@ -1,5 +1,19 @@
 package org.implicit.dasboard;
 
+/**
+ * 
+ * 
+ * Class that represent a study in the DashBoard. 
+ * 
+ * Date created : 01-Feb-2014
+ * 
+ * @version $Revision: 10716 $
+ * 
+ * @author Ben G 
+ * 
+ * 
+ * 
+ */
 public class Study {
 	
 	String studyEXPTID;

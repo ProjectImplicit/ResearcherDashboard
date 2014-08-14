@@ -15,11 +15,50 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.simple.JSONValue;
+import java.util.List;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+ 
+
+
+/**
+ * 
+ *  
+ * 
+ * Main servlet controller. 
+ * 
+ * The Servlet recieves requests from the client and
+ * 
+ * return responce in the form of a JSON object.
+ * 
+ * Date created : 29-Jul-2014
+ * 
+ * @version $Revision: 10728 $
+ * 
+ * @author Ben G 
+ * 
+ * 
+ * 
+ */
+
+
 
 public class Dashboard extends HttpServlet{
 	
 	
-		
+	
+	/**
+	 * 
+	 * Handel Get request redirectde it to doPost.
+	 * 
+	 * 	 
+	 * @param 
+	 * 			request and response sevlet objects.
+	 *            
+	 * 
+	 * @return void
+	 * 
+	 */
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException { 
 		try {
 			System.out.println("starting do get");
@@ -29,11 +68,29 @@ public class Dashboard extends HttpServlet{
 		}
 	} 
 	
+	/**
+	 * 
+	 * Handel POST and redirectde GET request.
+	 * 
+	 * Returns the Data requested as a JSON object.
+	 * 
+	 * 	 
+	 * @param 
+	 * 			request and response sevlet objects.
+	 *            
+	 * 
+	 * @return JSON object
+	 * 
+	 */
+	
 	public void doPost(HttpServletRequest request,HttpServletResponse response)
 			throws IOException, ServletException{
 		
 		PrintWriter out = response.getWriter();
-		
+		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+		if (isMultipart){
+			ManageFiles(request,response);
+		}
 		String res = null;
 		DbAPI api = DbAPI.getInstance(false);
 		try{
@@ -57,43 +114,25 @@ public class Dashboard extends HttpServlet{
 							res="OK";
 						}else{
 							res = "NOT FOUND";
-							
 						}
-						
 					}
 					if(cmd.equals("getstudies")){
 						mng.buildUser(user);
 						HashMap studyNames = user.getNames();
-						out.print(listOfStudiesString(studyNames));
+						String names = JSONValue.toJSONString(studyNames);
+						out.print(names);
 						out.flush();
-					}
-				}else{
+					}   
+				}else{ 
+					 System.out.println("5 is: "+arr[5]);
 					if (arr[5].equals("test")){
-						String ukey = (String)arr[6];
-						String study = (String) arr[8];
-						User user = new User();
-						user.setKey(ukey);
-						mng.setUserfromDB(user);
-						HashMap filesPresent = new HashMap();
-						filesPresent = mng.listFiles(user, study);
-						String jsonText = JSONValue.toJSONString(filesPresent);
-						out.print(jsonText);
-						out.flush();
-					
-					}
+						processTest(arr,key,mng,out);
+					}				   
 					if (arr[5].equals("validate")){
-						String ukey = (String)arr[6];
-						String study = (String) arr[8];
-						String fileName = (String) arr[9];
-						User user = new User();
-						user.setKey(ukey);
-						mng.setUserfromDB(user);
-						String fileString = mng.getFile(user,study,fileName);
-						out.print(fileString);
-						out.flush();
-						
+						processValidate(arr,key,mng,out);
 					}
 					if (arr[5].equals("studyvalidate")){
+						System.out.println("starting study validate");
 						String ukey = (String)arr[6];
 						String study = (String) arr[8];
 						String fileName = (String) arr[9];
@@ -101,6 +140,7 @@ public class Dashboard extends HttpServlet{
 						user.setKey(ukey);
 						mng.setUserfromDB(user);
 						String errors = mng.studyValidator(user,study,fileName);
+						System.out.println("string is:"+errors);
 						out.print(errors);
 						out.flush();
 						
@@ -134,6 +174,58 @@ public class Dashboard extends HttpServlet{
 		}
 	}
 	
+	private void ManageFiles(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException{
+		FileUploadManager fileMng = new FileUploadManager();
+		fileMng.UploadFile(request, response);
+		
+		
+		
+	}
+	private void processValidate(String[] arr,String key,Manager mng,PrintWriter out){
+		
+		System.out.println("starting process validate");
+		String ukey = (String)arr[6];
+		String study = (String) arr[8];
+		String fileName = (String) arr[9];
+		User user = new User();
+		user.setKey(ukey);
+		mng.setUserfromDB(user);
+		String fileString = mng.getFile(user,study,fileName);
+		System.out.println("string is:"+fileString);
+		out.print(fileString);
+		out.flush();
+	}
+	private void processTest(String[] arr,String key,Manager mng,PrintWriter out){
+		
+		String ukey = (String)arr[6];
+		String study = (String) arr[8];
+		System.out.println("user and key: "+ukey+"/"+study);
+		User user = new User();
+		user.setKey(ukey);
+		mng.setUserfromDB(user);
+		HashMap filesPresent = new HashMap();
+		filesPresent = mng.listFiles(user, study);
+		System.out.println(String.valueOf(filesPresent.size()));
+		String jsonText = JSONValue.toJSONString(filesPresent);
+		System.out.println("printing out"+jsonText);
+		out.print(jsonText);
+		out.flush();
+	}
+	
+	/**
+	 * 
+	 * Process a set of API that query the Database.
+	 * 
+	 * Returns the Data requested as a JSON object.
+	 * 
+	 * 	 
+	 * @param 
+	 * 			request and response sevlet objects.
+	 *            
+	 * 
+	 * @return JSON object
+	 * 
+	 */
 	private String processAPICalls(HttpServletRequest req,DbAPI api){
 		
 		HashMap resHash=null;
@@ -155,8 +247,8 @@ public class Dashboard extends HttpServlet{
 			col = req.getParameter("col");
 			val = req.getParameter("value");
 			resHash = api.find(table, col, val);
-			res = createJson(resHash);
-			
+			res = JSONValue.toJSONString(resHash);
+						
 		}
 		if (cmd.equals("create")){
 			table = req.getParameter("table");
@@ -185,60 +277,7 @@ public class Dashboard extends HttpServlet{
 		return res;
 		
 	}
-	private String listOfStudiesString (HashMap o){
-		
-		String res=new String();
-		Iterator it = o.entrySet().iterator();
-		while (it.hasNext()) {
-			 Map.Entry pairs = (Map.Entry)it.next();
-	         String pid = (String) pairs.getKey();
-	         HashMap record = (HashMap) pairs.getValue();
-	         Iterator itII = record.entrySet().iterator();
-	         while (itII.hasNext()) {
-	        	 pairs = (Map.Entry)itII.next();
-	        	 String name = (String) pairs.getValue();
-	        	 res += name;
-	        	 if (it.hasNext()) res+="/";
-	         }
-		}
-		return res;
-	}
 	
-	public String createJson(HashMap o){
-		
-		String res = "";
-		String eol = System.getProperty("line.separator"); 
-		Iterator it = o.entrySet().iterator();
-		while (it.hasNext()) {
-			 Map.Entry pairs = (Map.Entry)it.next();
-	         String pid = (String) pairs.getKey();
-	         HashMap record = (HashMap) pairs.getValue();
-	         res += record.toString()+eol;
-	         
-		}
-		
-//		String res =" data: { "+"/n";
-//		
-//		 Iterator it = o.entrySet().iterator();
-//			//go through user records
-//		 while (it.hasNext()) {
-//		 
-//			 Map.Entry pairs = (Map.Entry)it.next();
-//	         String pid = (String) pairs.getKey();
-//	         HashMap record = (HashMap) pairs.getValue();
-//	         res += "{ "+"/n";
-//	         Iterator itII = record.entrySet().iterator();
-//	         while (itII.hasNext()) {
-//	        	 Map.Entry pairsII = (Map.Entry)itII.next();
-//	        	 String key = (String) pairsII.getKey();
-//	        	 String value = (String) pairsII.getValue();
-//	        	 res += "    "+key+": "+value+"/n";
-//	         }
-//	         res += "} "+"/n";
-//		 }
-		return res;
-		
-	}
-
-
+	
+	
 }

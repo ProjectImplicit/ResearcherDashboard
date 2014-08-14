@@ -32,6 +32,9 @@ public class Manager {
 			
 		}
 	}
+	public String getFolderBase(){
+		return folderBase;
+	}
 	public void buildUser(User user){
 		
 		setUserfromDB(user);
@@ -265,16 +268,17 @@ public class Manager {
 			
 			String folderName=user.getFolderName();
 			if (study.equals("all")){
-				directory = new File(folderBase+"\\"+folderName);
+				directory = new File(folderBase+"//"+folderName);
+				System.out.println("directory"+directory);
 			}else{
-				directory = new File(folderBase+"\\"+folderName+"\\"+study);
+				directory = new File(folderBase+"//"+folderName+"//"+study);
 			}
 			
 			File[] fList = directory.listFiles();
 			walkFiles(fList,fileMap);
 		
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			System.out.println("error:"+e.getMessage());
 			
 		}
 		
@@ -334,6 +338,7 @@ public class Manager {
 		
 		
 	}
+	
 	
 	
 
