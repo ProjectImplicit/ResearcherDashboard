@@ -42,7 +42,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       var fileTableModel ={};
       fileTableModel.user=false;
       var fileObj;
-      context.init({preventDoubleContext: false});
+      context.init({preventDoubleContext: false},model);
   
       context.attach('.folder', [
         {header: 'Options'},
@@ -193,44 +193,31 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
           data.append(key, value);
         });
         data.append('UserKey',model.key);
-        data.append('folder',$("input[name='folderName']").val());
+        data.append('folder',takespaces(model.uploadFolder));
         data.append('cmd','UploadFile');
-        //data.UserKey = model.key;
-        //data.folder =$("input[name='folderName']").val();
-        //data.cmd = 'UploadFile';
+        api.uploadFile(data,uploadSuccess,uploadError);
+       
+      }
+      function uploadSuccess(data, textStatus, jqXHR){
 
-        $.ajax({
-          url: '/implicit/dashboard',
-          type: 'POST',
-          data: data,
-          cache: false,
-          dataType: 'json',
-          processData: false, // Don't process the files
-          contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-          success: function(data, textStatus, jqXHR)
-          {
-            if(typeof data.error === 'undefined')
-            {
-              // Success so call function to process the form
-              alert('success');
-              //submitForm(event, data);
-            }
-            else
-            {
-              // Handle errors here
-              console.log('ERRORS: ' + data.error);
-            }
-          },
-          error: function(jqXHR, textStatus, errorThrown)
-          {
-            // Handle errors here
-            console.log('ERRORS: ' + textStatus);
-            // STOP LOADING SPINNER
-          }
-        });
+        if(typeof data.error === 'undefined')
+        {
+          alert('success');
+          
+        }else{
+          console.log('ERRORS: ' + data.error);
+        }
+
+      }
+      function uploadError(jqXHR, textStatus, errorThrown){
+        console.log('ERRORS: ' + textStatus);
+
+      }
+      function newFolder(e){
+
       }
       function uploadFile(e){
-              
+        console.log('upload folder: '+model.uploadFolder);
         $("input[name='fileName']" ).click();
         
       }
