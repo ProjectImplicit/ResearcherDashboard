@@ -120,6 +120,16 @@ define([], function () {
             });
 
         }
+        this.createFolder = function (key,uploadFolder,folderCreate,success){
+            var url = "/implicit/dashboard/create/folder/"+key+"/"+uploadFolder+"/"+folderCreate;
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: success
+                
+            });
+
+        }
         this.uploadFile = function (data,success,error){
           $.ajax({
               url: '/implicit/dashboard',

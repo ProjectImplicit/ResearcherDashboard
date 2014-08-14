@@ -47,7 +47,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       context.attach('.folder', [
         {header: 'Options'},
         {text: 'Upload File', action: uploadFile},
-        {text: 'create New Folder', action: newFolder}
+        {text: 'Create New Folder', action: newFolder}
         
       ]);
       $(document).find('input[type=file]').on('change', prepareUpload);
@@ -60,6 +60,12 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
           }
           e.preventDefault();
       });
+      $(document).on("click",'#createFolderOK', function(){
+        model.folderCreate = $('#folderName').val();
+        api.createFolder(model.key,takespaces(model.uploadFolder),takespaces(model.folderCreate),folderCreated);
+
+      });
+      
       $(document).on("click",'#deploy', function(){
         $('#result').html('');
         model.activePage = 'deploy';
@@ -185,6 +191,9 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
           $('#upload').click();
       });
 
+      function folderCreated(){
+        alert('folder created');
+      }
       function prepareUpload(event){
         model.files = event.target.files;
         var data =new FormData();
@@ -214,16 +223,15 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
 
       }
       function newFolder(e){
-
+        console.log('upload folder: '+model.uploadFolder);
+        $('#createFolderModal').modal('show');
       }
       function uploadFile(e){
         console.log('upload folder: '+model.uploadFolder);
         $("input[name='fileName']" ).click();
         
       }
-      function newFolder(){
-        alert('new folder');
-      }
+      
       function getChartData(){
           var data = {
             labels: ["January", "February", "March", "April", "May", "June", "July"],
