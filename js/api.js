@@ -130,6 +130,22 @@ define([], function () {
             });
 
         }
+        this.downloadFile = function (downloadFile,key,downLoadSuccess){
+            //var url = "/implicit/dashboard/download/file/"+key+"/"+downloadFile;
+            var data ={};
+            data.key = key;
+            data.downloadFile = downloadFile;
+            data.cmd='download';
+
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
+                success: downLoadSuccess
+                
+            });
+
+        }
         this.uploadFile = function (data,success,error){
           $.ajax({
               url: '/implicit/dashboard',

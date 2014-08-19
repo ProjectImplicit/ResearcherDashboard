@@ -50,6 +50,13 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         {text: 'Create New Folder', action: newFolder}
         
       ]);
+      context.attach('.file', [
+        {header: 'Options'},
+        {text: 'Download File', action: downloadFile}
+        
+        
+      ]);
+
       $(document).find('input[type=file]').on('change', prepareUpload);
 
       $('.navbar li').click(function(e) {
@@ -60,9 +67,10 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
           }
           e.preventDefault();
       });
+
       $(document).on("click",'#createFolderOK', function(){
-        model.folderCreate = $('#folderName').val();
-        api.createFolder(model.key,takespaces(model.uploadFolder),takespaces(model.folderCreate),folderCreated);
+        var fullpath = getPath(model.elementID);
+        api.createFolder(model.key,takespaces(fullpath),takespaces(model.folderCreate),folderCreated);
 
       });
       
@@ -123,7 +131,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       });
       $(document).on("click",'.testStudy',function(){
          console.log($(this));
-         debugger;
+         //debugger;
          var button = $(this);
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
@@ -137,7 +145,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       });
       $(document).on("click",'.Svalidate',function(){
          console.log($(this));
-         debugger;
+         //debugger;
          var button = $(this);
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
@@ -147,7 +155,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       });
       $(document).on("click",'.validate',function(){
          console.log($(this));
-         debugger;
+         //debugger;
          var button = $(this);
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
@@ -157,7 +165,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       });
       $(document).on("click",'.folder',function(){
         console.log($(this));
-        debugger;
+        //debugger;
         var td = $(this);
         var tr = $(td).parent();
         var folderName = $(tr).text();
@@ -195,17 +203,57 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         alert('folder created');
       }
       function prepareUpload(event){
-        model.files = event.target.files;
+        
         var data =new FormData();
-        $.each(model.files, function(key, value)
+        var pathA = new Array();
+        var fullpath = getPath(model.fileSystem,model.elementID,pathA);
+        $.each(event.target.files, function(key, value)
         {
           data.append(key, value);
         });
         data.append('UserKey',model.key);
-        data.append('folder',takespaces(model.uploadFolder));
+        data.append('folder',takespaces(fullpath));
         data.append('cmd','UploadFile');
         api.uploadFile(data,uploadSuccess,uploadError);
        
+      }
+      function getPath(fileSystem,elementID,pathA,info){
+        
+          $.each(fileSystem, function(k, v) {
+               if (info.found) return false; 
+               var extension = k.split(".");
+               if (extension.length>1){
+                 if (v.id===elementID){
+                  if (!info.found) pathA.push(k);
+                  info.found=true;
+                  return false;
+                 }
+               }else{
+                 if (k!='state' && k!='id'){
+                   if (!info.found) pathA.push(k);
+                   getPath(v,elementID,pathA,info);
+                   if (!info.found) pathA.pop();
+                 }
+               }
+             
+          });
+        
+       
+      }
+      function downloadFile(e){
+        var pathA = new Array();
+        var path='';
+        var info = {};
+        info.found = false;
+        getPath(model.fileSystem,model.elementID,pathA,info);
+        for (var i=0;i<pathA.length;i++){
+          path+=pathA[i]+'/';
+        }
+        api.downloadFile(path,model.key,downLoadSuccess);
+
+      }
+      function downLoadSuccess(){
+        alert('download syccesfull');
       }
       function uploadSuccess(data, textStatus, jqXHR){
 
@@ -223,11 +271,11 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
 
       }
       function newFolder(e){
-        console.log('upload folder: '+model.uploadFolder);
+        console.log('upload folder: '+model.elementID);
         $('#createFolderModal').modal('show');
       }
       function uploadFile(e){
-        console.log('upload folder: '+model.uploadFolder);
+        console.log('upload folder: '+model.elementID);
         $("input[name='fileName']" ).click();
         
       }
@@ -286,7 +334,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
             
       }
       function openStudyValidation(data){
-        debugger;
+        //debugger;
         var errors = data.split("<br/>");
         console.log(errors);
         var len = errors[0].length;
@@ -350,15 +398,20 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
 
       function takespaces(name){ return name.replace(/\s+/g, '');}
 
+      /* Returns the folder object according to name
+
+
+      */
+
       function findFolder(ObjTree,name){
         var res;
-        debugger;
+        //debugger;
         $.each(ObjTree, function(k, v) {
           if (k===name){
             res= v;
             return false;
           }
-          if (k.indexOf(".")===-1 && k!='state'){
+          if (k.indexOf(".")===-1 && k!='state' && k!='id'){
             res = findFolder(v,name);
             if (res!=undefined){
               return false;
@@ -374,6 +427,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       function createRaws(filesObj,recursive,user){
 
         fileTableModel.level=fileTableModel.level+1;
+       
         if (recursive===false){
 
           $('#result').html('');
@@ -383,26 +437,27 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
           
           var extension = k.split(".");
           if (extension.length>1){
+            
             if (extension[1]==='jsp' && user===false){
-              addJspRaw(k,fileTableModel.level);
+              addJspRaw(k,fileTableModel.level,v);
             }else{
               if (extension[1]==='expt' && user===false){
-              addExptRaw(k,fileTableModel.level);
+              addExptRaw(k,fileTableModel.level,v);
               }else{
                 if (extension[1]==='js' && user===false){
-                  addJSRaw(k,fileTableModel.level);
+                  addJSRaw(k,fileTableModel.level,v);
                 }else{
-                   addFileRaw(k,fileTableModel.level);
+                   addFileRaw(k,fileTableModel.level,v);
                 }
               }
             }
           }else{
-            if (k!='state'){
-              addFolderRaw(k,fileTableModel.level);
+            if (k!='state' && k!='id'){
+              addFolderRaw(k,fileTableModel.level,v);
               $.each(v, function(k2, v2) {
                 if (k2==='state'){
                   if (v2==='open'){
-                    createRaws(v,true,user);
+                    createRaws(v,true,user,v);
                     fileTableModel.level=fileTableModel.level-1;
                   }
                 }
@@ -413,26 +468,26 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         });
       }
 
-      function addExptRaw(file,level){
+      function addExptRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
 
-        $('#fileTabale > tbody').append('<tr><td><i class="fa fa-file-text" ></i><span class="fileNameSpan" style="margin-left:'+level*50+'px"> '+file+
+        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'"><i class="fa fa-file-text" ></i><span class="fileNameSpan" style="margin-left:'+level*50+'px"> '+file+
           '</span></td><td><button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button><button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button><button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button></td></tr>');
       }
-      function addJspRaw(file,level){
+      function addJspRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
-        $('#fileTabale > tbody').append('<tr><td><i class="fa fa-file-text" ></i><span style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
+        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'"><i class="fa fa-file-text" ></i><span style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
       }
-      function addFileRaw(file,level){
+      function addFileRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
-        $('#fileTabale > tbody').append('<tr><td ><i class="fa fa-file-text" ></i><span class="fileRaw" style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
+        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'"><i class="fa fa-file-text" ></i><span class="fileRaw" style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
       }
       
-      function addFolderRaw(file,level){
+      function addFolderRaw(file,level,v){
 
         fileTableModel.row = fileTableModel.row+1;
         var raw = fileTableModel.row;
-        $('#fileTabale > tbody').append('<tr><td class="folder"><i class="fa fa-folder" ></i><span style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
+        $('#fileTabale > tbody').append('<tr><td class="folder" id="'+v.id+'"><i class="fa fa-folder" ></i><span style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
 
       }
 
@@ -449,15 +504,36 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         console.log(data);
         fileObj = jQuery.parseJSON( data );
         createTable();
+        var index ={};
+        index.index=0;
+        setIds(fileObj,index);
+        model.fileSystem = fileObj;
         createRaws(fileObj,false,fileTableModel.user);
         
+
+      }
+      function setIds(filesObj,index){
+
+        $.each(filesObj, function(k, v) {
+          index.index++;
+          var extension = k.split(".");
+          if (extension.length>1){
+            v.id='file'+index.index;
+          }else{
+            if (k!='state' && k!='id'){
+              v.id="folder"+index.index;
+              setIds(v,index);
+              
+            }
+          }
+        });
 
       }
       function setFileTable(data){
         console.log(data);
         fileObj = jQuery.parseJSON( data );
         createTable();
-        debugger;
+        //debugger;
         createRaws(fileObj,false,false);
         
 
@@ -471,7 +547,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       function createTable(){
         fileTableModel.row =0;
         fileTableModel.level =0;
-        $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody></tbody></table>');
+        $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
 
       }
       function update(value){
