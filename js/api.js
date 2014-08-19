@@ -132,6 +132,7 @@ define([], function () {
         }
         this.downloadFile = function (downloadFile,key,downLoadSuccess){
             //var url = "/implicit/dashboard/download/file/"+key+"/"+downloadFile;
+            //var url = '/implicit/user/bgoldenberg/test.xml';
             var data ={};
             data.key = key;
             data.downloadFile = downloadFile;
@@ -139,6 +140,7 @@ define([], function () {
 
             $.ajax({
                 url: '/implicit/dashboard',
+                //url:url,
                 type: "POST",
                 data: data,
                 success: downLoadSuccess

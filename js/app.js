@@ -249,11 +249,17 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
-        api.downloadFile(path,model.key,downLoadSuccess);
+        //api.downloadFile(path,model.key,downLoadSuccess);
+        window.location.href = '/implicit/dashboard/download/?path='+path+'&key='+model.key;
+        //$('#fileDownload').attr('href','/implicit/dashboard/download/?path='+path+'&key='+model.key);
+        //var anchor = $('#fileDownload');
+        //$('#fileDownload').click();
+
 
       }
-      function downLoadSuccess(){
+      function downLoadSuccess(data){
         alert('download syccesfull');
+        
       }
       function uploadSuccess(data, textStatus, jqXHR){
 
