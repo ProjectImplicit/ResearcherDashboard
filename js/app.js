@@ -74,6 +74,16 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
 
       });
       
+      $(document).on('click','#newStudy', function(){
+        $('#NewStudyModal').modal('show');
+
+      });
+      $(document).on('click','#newStudyOK',function(){
+
+        var studyName = $('#studyName').val();
+        api.newStudy(takespaces(studyName),model.key);
+
+      });
       $(document).on("click",'#deploy', function(){
         $('#result').html('');
         model.activePage = 'deploy';

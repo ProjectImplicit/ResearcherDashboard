@@ -191,7 +191,16 @@ define([], function () {
             });
 
         }
+        this.newStudy = function (studyName,key,success){
+            var url = '/implicit/dashboard/createstudy/'+key+'/file/'+studyName;
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: success
+                
+            });
 
+        }
         this.getTracker = function (data,callback){
             
             var url = '/implicit/PITracking';
