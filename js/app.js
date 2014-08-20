@@ -195,9 +195,9 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         $('#myStats').modal('show');
 
       });
-      $("input[name='fileName']" ).change(function () {
-          $('#upload').click();
-      });
+      // $("input[name='fileName']" ).change(function () {
+      //     $('#upload').click();
+      // });
 
       function folderCreated(){
         alert('folder created');
@@ -206,16 +206,32 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         
         var data =new FormData();
         var pathA = new Array();
-        var fullpath = getPath(model.fileSystem,model.elementID,pathA);
+        var info={};
+        info.found=false;
+        var path='';
+        getPath(model.fileSystem,model.elementID,pathA,info);
+        for (var i=0;i<pathA.length;i++){
+          path+=pathA[i]+'/';
+        }
         $.each(event.target.files, function(key, value)
         {
           data.append(key, value);
         });
         data.append('UserKey',model.key);
-        data.append('folder',takespaces(fullpath));
+        data.append('folder',takespaces(path));
         data.append('cmd','UploadFile');
         api.uploadFile(data,uploadSuccess,uploadError);
        
+      }
+      function folderID(fileSystem){
+        var res;
+        $.each(fileSystem, function(k, v) {
+          if (k==='id'){
+            res=v;
+            return false;
+          }
+        });
+        return res;
       }
       function getPath(fileSystem,elementID,pathA,info){
         
@@ -231,8 +247,15 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
                }else{
                  if (k!='state' && k!='id'){
                    if (!info.found) pathA.push(k);
-                   getPath(v,elementID,pathA,info);
-                   if (!info.found) pathA.pop();
+                   if (folderID(v)===elementID){
+                    info.found=true;
+                    return false;
+                   }else{
+                    getPath(v,elementID,pathA,info);
+                    if (!info.found) pathA.pop();
+
+                   }
+                   
                  }
                }
              
