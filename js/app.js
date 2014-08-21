@@ -23,14 +23,15 @@
         'tablesorter':['jQuery'],
         'datepicker': ['jQuery','bootstrap'],
         'jshint':['jQuery'],
-        'context':['jQuery']
+        'context':['jQuery'],
+        'chart':['jQuery']
         
         
     }
 });
-require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
-  'tablesorter','chart','context'],
- function (domReady,API,$,Tracker,Chart) {
+require(['domReady','api','jQuery','tracker','chart','bootstrap','jshint','csvToTable',
+  'tablesorter','context'],
+ function (domReady,API,$,Tracker,ChartFX) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -47,13 +48,16 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       context.attach('.folder', [
         {header: 'Options'},
         {text: 'Upload File', action: uploadFile},
-        {text: 'Create New Folder', action: newFolder}
+        {text: 'Create New Folder', action: newFolder},
+        {text: 'Delete Folder', action: deleteFolder}
         
       ]);
       context.attach('.file', [
         {header: 'Options'},
-        {text: 'Download File', action: downloadFile}
-        
+        {text: 'View File', action: viewFile},
+        {text: 'Download File', action: downloadFile},
+        {text: 'Delete File', action: deleteFile}
+      
         
       ]);
 
@@ -81,7 +85,7 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       $(document).on('click','#newStudyOK',function(){
 
         var studyName = $('#studyName').val();
-        api.newStudy(takespaces(studyName),model.key);
+        api.newStudy(takespaces(studyName),model.key,newStudySuccess);
 
       });
       $(document).on("click",'#deploy', function(){
@@ -198,9 +202,13 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       });
       $(document).on("click",'.statistics',function(){
 
+        var button = $(this);
+        var anchor = $(button).parent().parent().find('a');
+        var study = $(anchor).text();
+
         var ctx = document.getElementById("myChart").getContext("2d");
-        var data = getChartData();
-        var myChart = new Chart(ctx);
+        var data = getChartData(study);
+        var myChart = new ChartFX(ctx);
         var myBarChart = myChart.Bar(data);
         $('#myStats').modal('show');
 
@@ -208,7 +216,22 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
       // $("input[name='fileName']" ).change(function () {
       //     $('#upload').click();
       // });
+///////////////////////////fUNCTIONS////////////////////////////////////
 
+      function deleteFolder(){
+        var pathA = new Array();
+        var path='';
+        var info = {};
+        info.found = false;
+        getPath(model.fileSystem,model.elementID,pathA,info);
+        for (var i=0;i<pathA.length;i++){
+          path+=pathA[i]+'/';
+        }
+        api.deleteFolder(path,model.key,success);
+      }
+      function newStudySuccess(){
+        alert('study was created');
+      }
       function folderCreated(){
         alert('folder created');
       }
@@ -273,6 +296,28 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         
        
       }
+      function deleteFile(e){
+        var pathA = new Array();
+        var path='';
+        var info = {};
+        info.found = false;
+        getPath(model.fileSystem,model.elementID,pathA,info);
+        for (var i=0;i<pathA.length;i++){
+          path+=pathA[i]+'/';
+        }
+        api.deleteFile(path,model.key,success);
+      }
+      function viewFile(e){
+        var pathA = new Array();
+        var path='';
+        var info = {};
+        info.found = false;
+        getPath(model.fileSystem,model.elementID,pathA,info);
+        for (var i=0;i<pathA.length;i++){
+          path+=pathA[i]+'/';
+        }
+        window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key);
+      }
       function downloadFile(e){
         var pathA = new Array();
         var path='';
@@ -319,7 +364,28 @@ require(['domReady','api','jQuery','tracker','bootstrap','jshint','csvToTable',
         
       }
       
-      function getChartData(){
+      function getChartData(study){
+        // var data = {};
+        // var currentdate = new Date(); 
+        // var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
+        // var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear(); 
+        // data.db = 'Research';
+        // data.testDB= "test";
+        // data.current = 'Any';
+        // data.study = study;
+        // data.task = '';
+        // data.since = $('#sinceI').val();
+        // data.until = $('#untilI').val();
+        // data.refresh ='no';
+        // api.getTracker(data,function(){
+
+
+
+
+
+
+        // });
+
           var data = {
             labels: ["January", "February", "March", "April", "May", "June", "July"],
             datasets: [

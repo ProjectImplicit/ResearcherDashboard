@@ -131,8 +131,7 @@ define([], function () {
 
         }
         this.downloadFile = function (downloadFile,key,downLoadSuccess){
-            //var url = "/implicit/dashboard/download/file/"+key+"/"+downloadFile;
-            //var url = '/implicit/user/bgoldenberg/test.xml';
+            
             var data ={};
             data.key = key;
             data.downloadFile = downloadFile;
@@ -196,6 +195,36 @@ define([], function () {
             $.ajax({
                 type: "GET",
                 url: url,
+                success: success
+                
+            });
+
+        }
+        this.deleteFolder = function (path,key,success){
+            var data ={};
+            data.key = key;
+            data.path = path;
+            data.cmd='delete';
+
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
+                success: success
+                
+            });
+
+        }
+        this.deleteFile = function (path,key,success){
+            var data ={};
+            data.key = key;
+            data.path = path;
+            data.cmd='delete';
+
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
                 success: success
                 
             });
