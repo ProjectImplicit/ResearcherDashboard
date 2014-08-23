@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
+        <meta charset="utf-8">
+        <title>Bootply.com - Bootstrap 3 Control Panel</title>
+        <title></title>
+        <meta name="generator" content="Bootply" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="shortcut icon" href="/bootstrap/img/favicon.ico">
+        <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
+        <link rel="stylesheet" href="js/tablesorter/themes/blue/style.css" type="text/css" id="" media="print, projection, screen" />
+        <link rel="stylesheet" href="js/datepicker/css/datepicker.css" type="text/css" />
+        <link rel="stylesheet" href="js/Contextmaster/context.standalone.css" type="text/css" />
+              
+        <!-- CSS code from Bootply.com editor -->
+        
+<style type="text/css">
+.navbar-static-top {
+        margin-bottom:20px;
+}
+
+i {
+  font-size:18px;
+}
+  
+footer {
+  margin-top:20px;
+  padding-top:20px;
+  padding-bottom:20px;
+  background-color:#efefef;
+}
+
+.nav>li .count {
+  position: absolute;
+  bottom: 12px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: normal;
+  background: rgba(51,200,51,0.55);
+  color: rgba(255,255,255,0.9);
+  line-height: 1em;
+  padding: 2px 4px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+}
+
+
+.chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
+.test{
+
+}
+.file {}
+.folder{}
+.validate{}
+input[type="text"]{
+    margin-left:10px;
+    width:120px;
+}
+label{
+   margin-left:10px; 
+}
+#sinceUntil{
+    margin-top:10px;
+
+}
+
+</style>
+
+</head>
+    
+    <!-- HTML code from Bootply.com editor -->
+    
+<body  >
+        
+        <!-- Header -->
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Implicit Control Panel</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#" id="home"> Home</a></li>
+        <li><a href="#" id="fileSys"> File System</a></li>
+        <li><a href="#" id="test"> Test Study</a></li>
+        <li><a href="#" id="deploy"> Deploy</a></li>
+        <li><a href="#" id="trackmenu"> Track Study</a></li>
+        <li><a href="#" id="rde"> RDE</a></li><!--
+        <li class="dropdown">
+              <button class="btn btn-default dropdown-toggle btn-sm studyButt navbar-btn" type="button" id="dropdownMenu1" data-toggle="dropdown"> Studies<span class="caret"></span></button>
+                  <ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">
+                    
+                  </ul>
+        </li>-->
+      </ul>
+          
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown"> <a id="userName" class="dropdown-toggle" role="button" data-toggle="dropdown" href="#"><i class="glyphicon glyphicon-user"></i><span class="caret"></span> bgoldenberg</a>
+
+        <ul id="g-account-menu" class="dropdown-menu" role="menu">
+                <li><a href="#" class="">My Profile</a></li>
+                <li><a href="#" class=""><i class="glyphicon glyphicon-lock"></i> Logout</a></li>
+        </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+        <!-- /span-3 -->
+        <div class="col-md-12" id="dashboardArea">
+            <!-- column 2 -->
+            <a href="#" class="" ><strong><i class="glyphicon glyphicon-list-alt"></i> My Studies</strong></a>
+             <div class="dropdown" style="display: inline">
+                  <button class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                    Studies
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">
+                    
+                  </ul>
+            </div><button type="button" class="btn btn-primary btn-xs" id="newStudy" >New Study</button>
+           <div id="result" style="max-height:auto;width:auto;overflow-y:auto;" ></div>
+        </div>
+        <!--/col-span-9-->
+    </div>
+    <!--/row-->
+    <!-- /upper section -->
+    <!-- lower section -->
+    <div class="row">
+    </br>
+        <div class="col-md-12" >
+            <hr class="col-md-12" >
+        </div>
+        <div class="col-md-12">
+            <table id="studyTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="">Study</th>
+                        <th class="">Status</th>
+                        <th class="">CR</th>
+                        <th class="">Statistics</th>
+                        <th class="">Test</th>
+                        <th class="">Deploy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                </tbody>
+            </table>
+            
+            <!--<div class="panel panel-default"></div>-->
+            
+            <div class="alert alert-info" style="display: none;">
+                <button type="button" class="close" data-dismiss="alert">×</button>Please remember to <a href="#" class="">Logout</a> for classified
+                security.</div>
+        </div>
+        <!--/panel-->
+    </div>
+    <!--/col-->
+</div>
+<!--/row-->
+
+<!-- /.modal -->
+<!--
+<script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
+<!--<script type='text/javascript' src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+-->
+
+<script data-main="js/app" src="js/require.js"></script>
+  
+      
+      <!--<form action="/fileuploadmanager" method="post" enctype="multipart/form-data" id="formFile">-->
+        <input type="file" name="fileName" style="visibility: hidden">
+        <a href="" id="fileDownload" style="visibility: hidden"></a>
+        <!--<input type="text" name="folderName" style="display:none">
+        <input type="text" name="userKey" style="display:none">
+        <input type="submit" value="Upload" id="upload" style="display:none">
+      </form>-->
+  </body>
+
+
+
+    <div class="modal fade" id="deployModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                 <h4 class="modal-title">Study Details</h4>
+
+            </div>
+            <div class="modal-body">
+                <p class="" id ="testModelBody">
+                   
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="testModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                 <h4 class="modal-title">Study Details</h4>
+
+            </div>
+            <div class="modal-body">
+                <p class="" id ="testModelBody">
+                   
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                 <h4 class="modal-title">Study Details</h4>
+
+            </div>
+            <div class="modal-body">
+                <p class="">Study Name:
+                    <label class=""></label>
+                    <br class="">Owner :
+                    <label class=""></label>
+                    <br class="">
+                    <button class="btn btn-primary" style="margin-left:30%">Run/Pause</button>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<div class="modal fade" id="createFolderModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                 <h4 class="modal-title">Create Folder</h4>
+
+            </div>
+            <div class="modal-body">
+                Folder Name: <input type="text" id="folderName">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="createFolderOK">Ok</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="myStats">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                 <h4 class="modal-title">Study Details</h4>
+
+            </div>
+            <div class="modal-body">
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="NewStudyModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                 <h4 class="modal-title">New Study</h4>
+
+            </div>
+            <div class="modal-body">
+                Enter Study Name: <input type="text" id="studyName">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="newStudyOK" data-dismiss="modal">Ok</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="validateModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                 <h4 class="modal-title">Java Script Validation</h4>
+
+            </div>
+            <div class="modal-body">
+                <table id="validateTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="">Error</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                </tbody>
+            </table>
+            </div>
+            <div class="modal-footer">
+                
+                <button id="validateOK" type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+</html>
