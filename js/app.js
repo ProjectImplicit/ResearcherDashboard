@@ -9,7 +9,8 @@
         'datepicker':'datepicker/js/bootstrap-datepicker',
         'chart': 'chart',
         //'jui':'//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui',
-        'context':'Contextmaster/context'
+        'context':'Contextmaster/context',
+        'knobmin':'knobmin'
         
 
     },
@@ -24,14 +25,15 @@
         'datepicker': ['jQuery','bootstrap'],
         'jshint':['jQuery'],
         'context':['jQuery'],
-        'chart':['jQuery']
+        'chart':['jQuery'],
+        'knobmin':['jQuery']
         
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX) {
+ function (domReady,API,$,Tracker,ChartFX,Settings) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -205,12 +207,8 @@ require(['domReady','api','jQuery','tracker','chart','bootstrap','jshint','csvTo
         var button = $(this);
         var anchor = $(button).parent().parent().find('a');
         var study = $(anchor).text();
-
-        var ctx = document.getElementById("myChart").getContext("2d");
-        var data = getChartData(study);
-        var myChart = new ChartFX(ctx);
-        var myBarChart = myChart.Bar(data);
-        $('#myStats').modal('show');
+        setChartData(study);
+        
 
       });
       // $("input[name='fileName']" ).change(function () {
@@ -364,50 +362,103 @@ require(['domReady','api','jQuery','tracker','chart','bootstrap','jshint','csvTo
         
       }
       
-      function getChartData(study){
-        // var data = {};
-        // var currentdate = new Date(); 
-        // var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
-        // var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear(); 
-        // data.db = 'Research';
-        // data.testDB= "test";
-        // data.current = 'Any';
-        // data.study = study;
-        // data.task = '';
-        // data.since = $('#sinceI').val();
-        // data.until = $('#untilI').val();
-        // data.refresh ='no';
-        // api.getTracker(data,function(){
+      function setChartData(study){
+         var data = {};
+         var studyExpt = getExptid(study);
+         var ctx = document.getElementById("myChart").getContext("2d");
+         var settings = new Settings();
+         var currentdate = new Date();
+         var since = new Date();
+         since.setDate(since.getDate()-7);
+
+         var sinceTxt = (since.getMonth()+1)+"/"+since.getDate()+"/"+since.getFullYear();
+         var untilTxt = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear(); 
+         data.db = 'Research';
+         data.testDB= "test";
+         data.current = 'Any';
+         data.study = studyExpt;
+         //data.study = 'cebersole.ml3full';
+         data.task = '';
+         data.since = sinceTxt;
+         data.until = untilTxt;
+         data.refresh ='no';
+         data.endTask='';
+         data.filter = '';
+         data.endTask='';
+         data.studyc ='true';
+         data.taskc = 'false';
+         data.datac = 'false';
+         data.timec = 'true';
+         data.dayc = 'true';
+         data.weekc = 'false';
+         data.monthc = 'false';
+         data.yearc = 'false';
+         data.method = '3';
+         data.curl= settings.getCurl();
+         data.hurl= settings.getHurl();
+         data.cpath='';
+         data.hpath='';
+         data.tasksM='3';
+         data.threads = 'yes';
+         data.threadsNum = '1';
+         data.baseURL = settings.getBaseURL();
+
+         api.getTracker(data,function(result){
+
+          console.log(result);
+          var resultRaws = result.replace( /\n/g, " " ).split( " " );
+           // var datatry = {
+           //   labels: ["January", "February", "March", "April", "May", "June", "July"],
+           //   datasets: [
+           //       {
+           //           label: "My First dataset",
+           //           fillColor: "rgba(220,220,220,0.5)",
+           //           strokeColor: "rgba(220,220,220,0.8)",
+           //           highlightFill: "rgba(220,220,220,0.75)",
+           //           highlightStroke: "rgba(220,220,220,1)",
+           //           data: [65, 59, 80, 81, 56, 55, 40]
+           //       }//,
+           //       // {
+           //       //     label: "My Second dataset",
+           //       //     fillColor: "rgba(151,187,205,0.5)",
+           //       //     strokeColor: "rgba(151,187,205,0.8)",
+           //       //     highlightFill: "rgba(151,187,205,0.75)",
+           //       //     highlightStroke: "rgba(151,187,205,1)",
+           //       //     data: [28, 48, 40, 19, 86, 27, 90]
+           //       // }
+           //   ]
+           // };
+          
+          var datactx = {};
+          var labels =[];
+          var datasets = [{
+            label: "CR%",
+            fillColor: "rgba(220,220,220,0.5)",
+            strokeColor: "rgba(220,220,220,0.8)",
+            highlightFill: "rgba(220,220,220,0.75)",
+            highlightStroke: "rgba(220,220,220,1)",
+            data: []
+          }];
+
+          for (var i=1;i<resultRaws.length-2;i++){
+            var raws = resultRaws[i].split(",");
+            labels[i-1]=raws[1];
+            var cr = raws[4];
+            cr = cr.substring(0,cr.length-2);
+            datasets[0].data[i-1] = cr;
+            
+          }
+
+          datactx.labels = labels;
+          datactx.datasets = datasets;
+          var myChart = new ChartFX(ctx);
+          var myBarChart = myChart.Bar(datactx);
+          $('#myStats').modal('show');
 
 
+         });
 
-
-
-
-        // });
-
-          var data = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            datasets: [
-                {
-                    label: "My First dataset",
-                    fillColor: "rgba(220,220,220,0.5)",
-                    strokeColor: "rgba(220,220,220,0.8)",
-                    highlightFill: "rgba(220,220,220,0.75)",
-                    highlightStroke: "rgba(220,220,220,1)",
-                    data: [65, 59, 80, 81, 56, 55, 40]
-                },
-                {
-                    label: "My Second dataset",
-                    fillColor: "rgba(151,187,205,0.5)",
-                    strokeColor: "rgba(151,187,205,0.8)",
-                    highlightFill: "rgba(151,187,205,0.75)",
-                    highlightStroke: "rgba(151,187,205,1)",
-                    data: [28, 48, 40, 19, 86, 27, 90]
-                }
-            ]
-          };
-          return data;
+          
       }
       function parseline(str,a,b,c,d){
         var res = str.replace('{a}',a);
@@ -576,23 +627,23 @@ require(['domReady','api','jQuery','tracker','chart','bootstrap','jshint','csvTo
       function addExptRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
 
-        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'"><i class="fa fa-file-text" ></i><span class="fileNameSpan" style="margin-left:'+level*50+'px"> '+file+
+        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'" ><span class="fileNameSpan" style="margin-left:'+level*50+'px" ><i class="fa fa-file-text" ></i> '+file+
           '</span></td><td><button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button><button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button><button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button></td></tr>');
       }
       function addJspRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
-        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'"><i class="fa fa-file-text" ></i><span style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
+        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'" ><span style="margin-left:'+level*50+'px"><i class="fa fa-file-text" ></i> '+file+'</span></td><td></td></tr>');
       }
       function addFileRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
-        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'"><i class="fa fa-file-text" ></i><span class="fileRaw" style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
+        $('#fileTabale > tbody').append('<tr><td class="file" id="'+v.id+'" ><span class="fileRaw" style="margin-left:'+level*50+'px"><i class="fa fa-file-text"  ></i> '+file+'</span></td><td></td></tr>');
       }
       
       function addFolderRaw(file,level,v){
 
         fileTableModel.row = fileTableModel.row+1;
         var raw = fileTableModel.row;
-        $('#fileTabale > tbody').append('<tr><td class="folder" id="'+v.id+'"><i class="fa fa-folder" ></i><span style="margin-left:'+level*50+'px"> '+file+'</span></td><td></td></tr>');
+        $('#fileTabale > tbody').append('<tr><td class="folder" id="'+v.id+'" ><span  style="margin-left:'+level*50+'px"><i class="fa fa-folder" ></i> '+file+'</span></td><td></td></tr>');
 
       }
 
@@ -670,8 +721,7 @@ require(['domReady','api','jQuery','tracker','chart','bootstrap','jshint','csvTo
               '<td class="">Runing</td>'+
               '<td class="">15%</td>'+
               '<td class="">'+
-                  '<button type="button" class="btn btn-primary btn-xs statistics" data-toggle="modal"'+
-                  'data-target="#myStats">Statistics</button>'+
+                  '<button type="button" class="btn btn-primary btn-xs statistics">Statistics</button>'+
               '</td>'+
               '<td class="">'+
                   '<button type="button" class="btn btn-primary btn-xs test" >Test</button>'+
@@ -717,7 +767,7 @@ require(['domReady','api','jQuery','tracker','chart','bootstrap','jshint','csvTo
 
      
       function appendTracker(studyExpt){
-        var track = new Tracker(model,'design2');
+        var track = new Tracker(model,'design1');
         model.tracker.db = 'Research';
         model.tracker.list = 'Any';
         track.getTracker(studyExpt);

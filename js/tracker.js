@@ -2,7 +2,7 @@
 
 
 
-define(['api','settings','datepicker'], function (API,Settings) {
+define(['api','settings','datepicker','knobmin'], function (API,Settings) {
 
 
 	
@@ -102,26 +102,30 @@ define(['api','settings','datepicker'], function (API,Settings) {
 				'<input id="taskC" type="checkbox" name="sports" value="soccer" style="margin-left:13px;" /> Task'+
 				'<input id="dataC" type="checkbox" name="sports" value="soccer" style="margin-left:13px;" /> Data Group'+
 				'<input id="timeC" type="checkbox" name="sports" value="soccer" style="margin-left:13px;" /> Time'+
-				'<div id="timeTable" style="display:inline-block;border:1px solid;padding:10px;margin-left:10px;width:150px;>'+
-					'<input id="dayC" type="checkbox" name="sports" value="soccer"  /> D'+
-					'<input id="weekC" type="checkbox" name="sports" value="soccer" style="margin-left:10px;" /> W'+
-					'<input id="monthC" type="checkbox" name="sports" value="soccer" style="margin-left:10px;" /> M'+
-					'<input id="yearC" type="checkbox" name="sports" value="soccer" style="margin-left:10px;" /> Y'+
+				'<div id="timeTable" style="display:inline-block;border:1px solid;padding:10px;margin-left:10px;width:170px;">'+
+					'<input id="dayC" type="checkbox" style="margin-left:10px;" /> D'+
+					'<input id="weekC" type="checkbox" style="margin-left:10px;" /> W'+
+					'<input id="monthC" type="checkbox" style="margin-left:10px;" /> M'+
+					'<input id="yearC" type="checkbox" style="margin-left:10px;" /> Y'+
 				'</div>'+
 			'</div>';
 			return html;
 	    }
 
-	    this.getTable = function(studyExpt,listeners){
-	    	debugger;
+	    this.getTable = function(studyExpt){
+	    	
 	    	var data = this.getData();
 	    	console.log(data);
 	    	var api = new API();
+	    	$('#knob').modal('show');
+	    	$(".dial").knob({'min':-50,
+                 			'max':50});
 	    	api.getTracker(data,this.setTrackerTable);
 	    	//if (listeners) this.setListeners();
 	    }
 	    this.setTrackerTable = function(data){
 	        console.log(data);
+	        $('#knob').modal('hide');
 		    $('#CSVTable').CSVToTable(data,{
 		    	tableClass:'tablesorter'
 		        }).bind("loadComplete",function() { 
@@ -131,7 +135,6 @@ define(['api','settings','datepicker'], function (API,Settings) {
       	} 
       	this.getData = function (){
 
-	        debugger;
 	        var settings = new Settings();
 	        var data = {};
 	        data.db = model.tracker.db;
