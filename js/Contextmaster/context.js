@@ -92,7 +92,15 @@ var context = context || (function () {
 
 	function getid(target){
 		var parent = $(target).parent();
+		var element = $(parent).get(0).tagName;
 		var id = $(parent).attr('id');
+		if (element==='TR'){
+			id = $(parent).find('td').attr('id');
+		}
+		if (element==='SPAN'){
+			id = $(parent).parent().attr('id');
+		}
+		
 		return id;
 		
 

@@ -71,7 +71,13 @@ define([], function () {
                 model.key=key;
                 this.getUserName(model.key,UserCallBack)
                 console.log("calling getfiles api");
-                $.ajax({
+                this.getStudies(key,callback);
+                
+            }
+        }
+
+        this.getStudies = function (key,callback){
+            $.ajax({
                     type: "POST",
                     url: '/implicit/dashboard',
                     data: {
@@ -82,10 +88,8 @@ define([], function () {
                     success: callback,
                     
                 });
-            }
-        }
 
-        
+        }
         this.getUserName = function (key,callback){
             var url = "/implicit/dashboard/getname/"+key;
             var res;
@@ -121,9 +125,16 @@ define([], function () {
 
         }
         this.createFolder = function (key,uploadFolder,folderCreate,success){
-            var url = "/implicit/dashboard/create/folder/"+key+"/"+uploadFolder+"/"+folderCreate;
+            //var url = "/implicit/dashboard/create/folder/"+key+"/"+uploadFolder+"/"+folderCreate;
+            var url = '/implicit/dashboard';
+            data={};
+            data.cmd="create";
+            data.key=key;
+            data.uploadFolder= uploadFolder;
+            data.folderCreate=folderCreate;
             $.ajax({
-                type: "GET",
+                type: "POST",
+                data:data,
                 url: url,
                 success: success
                 
@@ -147,19 +158,19 @@ define([], function () {
             });
 
         }
-        this.uploadFile = function (data,success,error){
+        this.uploadFile = function (data,callback){
           $.ajax({
               url: '/implicit/dashboard',
               type: 'POST',
               data: data,
               cache: false,
               dataType: 'json',
-              processData: false, // Don't process the files
-              contentType: false, // Set content type to false as jQuery will tell the server its a query string request
-              success:success,
-              error:error
+              processData: false, 
+              contentType: false 
+            
               
-            });
+              
+            }).done(callback);
         }
         this.getFiles = function (user,study,successFunc){
             var url = "/implicit/dashboard/test/"+user+"/files/"+study;
