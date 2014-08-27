@@ -117,15 +117,15 @@ define(['api','settings','datepicker','knobmin'], function (API,Settings) {
 	    	var data = this.getData();
 	    	console.log(data);
 	    	var api = new API();
-	    	$('#knob').modal('show');
-	    	$(".dial").knob({'min':-50,
-                 			'max':50});
+	    	//$('#knob').modal('show');
+	    	//$(".dial").knob({'min':-50,
+              //   			'max':50});
 	    	api.getTracker(data,this.setTrackerTable);
 	    	//if (listeners) this.setListeners();
 	    }
 	    this.setTrackerTable = function(data){
 	        console.log(data);
-	        $('#knob').modal('hide');
+	        //$('#knob').modal('hide');
 		    $('#CSVTable').CSVToTable(data,{
 		    	tableClass:'tablesorter'
 		        }).bind("loadComplete",function() { 

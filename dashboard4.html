@@ -79,6 +79,9 @@ label{
     margin-top:10px;
 
 }
+.modal-wide .modal-dialog {
+  width: 10%; /* or whatever you wish */
+}
 
 </style>
 
@@ -141,7 +144,7 @@ label{
                   <ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">
                     
                   </ul>
-            </div><button type="button" class="btn btn-primary btn-xs" id="newStudy" >New Study</button>
+            </div><button type="button" class="btn btn-primary btn-xs" id="newStudy" style="margin-left:10px;">New Study</button>
            <div id="result" style="max-height:auto;width:auto;overflow-y:auto;" ></div>
         </div>
         <!--/col-span-9-->
@@ -154,13 +157,12 @@ label{
         <div class="col-md-12" >
             <hr class="col-md-12" >
         </div>
-        <div class="col-md-12">
+        <div class="col-md-8">
             <table id="studyTable" class="table table-striped">
                 <thead>
                     <tr>
                         <th class="">Study</th>
                         <th class="">Status</th>
-                        <th class="">CR</th>
                         <th class="">Statistics</th>
                         <th class="">Test</th>
                         <th class="">Deploy</th>
@@ -376,6 +378,19 @@ label{
             
             <div class="modal-body">
                <input type="text" value="75" class="dial">
+            </div>
+            
+        </div>
+    </div>
+    
+</div>
+<div class="modal fade modal-wide" id="uploadedModal" style="background-color:transparent;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+            <div class="modal-body" style="width:50px;">
+                <img src="img/loading.gif" alt="Refreshing File System...">
+               
             </div>
             
         </div>

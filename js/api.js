@@ -124,6 +124,15 @@ define([], function () {
             });
 
         }
+        this.getExpt = function(key,study,callback){
+            var url = "/implicit/dashboard/getexpt/"+key+"/"+study;
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: callback
+                
+            });
+        }
         this.createFolder = function (key,uploadFolder,folderCreate,success){
             //var url = "/implicit/dashboard/create/folder/"+key+"/"+uploadFolder+"/"+folderCreate;
             var url = '/implicit/dashboard';
@@ -170,7 +179,8 @@ define([], function () {
             
               
               
-            }).done(callback);
+            }).done(callback).fail(callback);
+
         }
         this.getFiles = function (user,study,successFunc){
             var url = "/implicit/dashboard/test/"+user+"/files/"+study;
@@ -187,7 +197,7 @@ define([], function () {
             $.ajax({
                 type: "GET",
                 url: url,
-                success: success
+                success: success(studyName)
                 
             });
 

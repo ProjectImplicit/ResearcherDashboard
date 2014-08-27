@@ -110,8 +110,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
       $(document).on("click",'#deploy', function(){
         $('#result').html('');
         model.activePage = 'deploy';
+        model.active='';
 
       });  
+      $(document).on("click",'#rde', function(){
+        $('#result').html('');
+        model.activePage = 'rde';
+        model.active='';
+
+      });  
+      
       $(document).on("click",'#trackmenu', function(){
         $('#result').html('');
         $('#studyTable').hide();
@@ -119,7 +127,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         var studyExpt;
         if (model.study!=undefined){
           studyExpt = getExptid(model.study);
-          appendTracker(studyExpt);
+          if (studyExpt==='not_set'){
+            api.getExpt(model.key,model.study,function(data){
+              studyExpt = data;
+              appendTracker(studyExpt);
+            })
+          }else{
+            appendTracker(studyExpt);
+          }
+          
         }else{
           api.getUserName(takespaces(model.key),function(data){
           appendTracker(data);
@@ -142,25 +158,32 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         $('#result').html('');
         $('#studyTable').hide();
         model.activePage = 'test';
+        model.active='';
         var study = model.study;
         api.getFiles(model.key,study,setFileTable);
 
 
-      });  
+      });
+
       $(document).on("click",'.tableVal', function(){
 
         console.log($(this).text());
         model.study = $(this).text();
-        $('.studyButt').text(model.study);
+        $('.studyButt').html(model.study+'<span class="caret"></span>');
         var activeApp = model.active;
-        if (activeApp!=null &&activeApp!=undefined) activeApp.studyChanged();
-        
+        if (model.activePage === 'test'){
+          $('#test').click()
+        }else{
+          if (activeApp!=null &&activeApp!=undefined &&activeApp!='') activeApp.studyChanged();
+        }
       });
       $(document).on("click",'#fileSys', function(){
-
+        $('#uploadedModal').modal('show');
         fileTableModel.user=true;
+        model.active='';
         api.getFiles(model.key,'all',setUserFileTable);
         $('#studyTable').hide();
+        //$('#uploadedModal').modal('hide');
 
       });
       $(document).on("click",'.testStudy',function(){
@@ -205,7 +228,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         var td = $(this);
         var tr = $(td).parent();
         var folderName = $(tr).text();
-        changeFolderState(folderName);
+        var id = $(td).attr("id");
+        changeFolderState(takespaces(folderName),id);
         createRaws(fileObj,false,fileTableModel.user);
       });
 
@@ -251,16 +275,25 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         api.deleteFolder(path,model.key,deleteSuccess);
       }
       function deleteSuccess(){
-        alert('folder deleted');
+        //alert('folder deleted');
         $('#fileSys').click();
       }
 
 
-      function newStudySuccess(){
-        alert('study was created');
+      function newStudySuccess(studyname){
+        //alert('study was created');
+        var studies = model.studyNames;
+        var index=0;
+        $.each(studies, function(key, value) {
+            index++;
+        });
+        studies[index] = {name:studyname,exptID:'not_set'};
+        //studies.push({name:studyname,exptID:'not_set'});
+        update(studyname);
+
       }
       function folderCreated(){
-        alert('folder created');
+        //alert('folder created');
         $('#fileSys').click();
       }
       function prepareUpload(){
@@ -293,6 +326,34 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
           }
         });
         return res;
+      }
+      function findElement(fileSystem,elementID,info){
+        
+        $.each(fileSystem, function(k, v) {
+               if (info.found) return false; 
+               var extension = k.split(".");
+               if (extension.length>1){
+                 if (v.id===elementID){
+                  info.folder = k;
+                  info.found=true;
+                  return false;
+                 }
+               }else{
+                 if (k!='state' && k!='id'){
+                   if (folderID(v)===elementID){
+                    info.found=true;
+                    info.folder = v;
+                    return false;
+                   }else{
+                    findElement(v,elementID,info);
+                    
+                   }
+                   
+                 }
+               }
+             
+          });
+        
       }
       function getPath(fileSystem,elementID,pathA,info){
         
@@ -364,19 +425,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
 
       }
       function deleteFilesuccess(data){
-        alert('file was deleted');
+        //alert('file was deleted');
         $('#fileSys').click();
       }
       function downLoadSuccess(data){
-        alert('download syccesfull');
+        //alert('download syccesfull');
         
       }
       function updateStudies(){
         api.getStudies(model.key,setStudies);
       }
       function uploadSuccess(data){
-        alert(data);
+        //alert('File Uploaded');
+        //$('#uploadedModal').modal('show');
         $('#fileSys').click();
+        //$('#uploadedModal').modal('hide');
         //updateStudies();
         
       }
@@ -505,6 +568,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         
       }
       function setStudies (data){
+        
         console.log(data);
         var obj = jQuery.parseJSON( data );
         model.studyNames=obj;
@@ -570,9 +634,13 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         $('#validateModal').modal('show');
       }
 
-      function changeFolderState(name){
-        var folder = findFolder(fileObj,takespaces(name));
-        if (folder.state!==null){
+      function changeFolderState(name,id){
+        var info = {};
+        info.found = false;
+        var element;
+        findElement(fileObj,id,info);
+        var folder = info.folder;
+        if (folder.state!=null){
           if (folder.state==='open'){
             folder.state = 'close';
           }else{
@@ -591,7 +659,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
 
       */
 
-      function findFolder(ObjTree,name){
+      function findFolder(ObjTree,name,id){
         var res;
         //debugger;
         $.each(ObjTree, function(k, v) {
@@ -689,7 +757,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
       }
 
       function setUserFileTable(data){
-        console.log(data);
+        //console.log(data);
+        $('#uploadedModal').modal('hide');
         fileObj = jQuery.parseJSON( data );
         createTable();
         var index ={};
@@ -697,6 +766,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         setIds(fileObj,index);
         model.fileSystem = fileObj;
         createRaws(fileObj,false,fileTableModel.user);
+        
         
 
       }
@@ -751,7 +821,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
               '<td><a href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</a>'+
               '</td>'+
               '<td class="">Runing</td>'+
-              '<td class="">15%</td>'+
               '<td class="">'+
                   '<button type="button" class="btn btn-primary btn-xs statistics">Statistics</button>'+
               '</td>'+
