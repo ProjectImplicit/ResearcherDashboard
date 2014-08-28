@@ -788,11 +788,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
 
       }
       function setFileTable(data){
-        console.log(data);
+        //console.log(data);
+
         fileObj = jQuery.parseJSON( data );
         createTable();
+        var index ={};
+        index.index=0;
+        setIds(fileObj,index);
         //debugger;
-        createRaws(fileObj,false,false);
+        fileTableModel.user = false;
+        createRaws(fileObj,false,fileTableModel.user);
         
 
       }
