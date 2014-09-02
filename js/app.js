@@ -31,9 +31,9 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','fileSys','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings) {
+ function (domReady,API,$,Tracker,ChartFX,Settings,Filesys) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -47,27 +47,33 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
       var fileObj;
       context.init({preventDoubleContext: false},model);
   
-      context.attach('.folder', [
-        {header: 'Options'},
-        {text: 'Upload File', action: uploadFile},
-        {text: 'Create New Folder', action: newFolder},
-        {text: 'Delete Folder', action: deleteFolder}
+      // context.attach('.folder', [
+      //   {header: 'Options'},
+      //   {text: 'Upload File', action: uploadFile},
+      //   {text: 'Create New Folder', action: newFolder},
+      //   {text: 'Delete Folder', action: deleteFolder}
         
-      ]);
-      context.attach('.file', [
-        {header: 'Options'},
-        {text: 'View File', action: viewFile},
-        {text: 'Download File', action: downloadFile},
-        {text: 'Delete File', action: deleteFile}
+      // ]);
+      // context.attach('.file', [
+      //   {header: 'Options'},
+      //   {text: 'View File', action: viewFile},
+      //   {text: 'Download File', action: downloadFile},
+      //   {text: 'Delete File', action: deleteFile}
       
         
-      ]);
+      // ]);
 
       //$(document).find('input[type=file]').on('change', prepareUpload);
+      $(document).find('input[type=file]').on('click',function(){
+        this.value = null;
+
+      })
+      
       $(document).find('input[type=file]').bind("change", function () {
             var file = this.files[0];
             if (file) {
                 // if file selected, do something
+                
                 prepareUpload();
             } else {
                 // if user clicks 'Cancel', do something
@@ -96,6 +102,70 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
 
       });
       
+      
+
+
+      $(document).on('click','#uploadFile', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder');
+        var id = $(td).attr("id");
+        model.elementID = id;
+        uploadFile();
+
+      });
+      $(document).on('click','#newFolder', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder');
+        var id = $(td).attr("id");
+        model.elementID = id;
+        newFolder();
+
+      });
+      $(document).on('click','#deleteFolder', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder');
+        var id = $(td).attr("id");
+        model.elementID = id;
+        deleteFolder();
+
+      });
+
+      $(document).on('click','#viewFile', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.file');
+        var id = $(td).attr("id");
+        model.elementID = id;
+        viewFile();
+
+      });
+      $(document).on('click','#downloadFile', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.file');
+        var id = $(td).attr("id");
+        model.elementID = id;
+        downloadFile();
+
+      });
+      $(document).on('click','#deleteFile', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.file');
+        var id = $(td).attr("id");
+        model.elementID = id;
+        $('#deleteModal').modal('show');
+        
+
+      });
+
+      $(document).on('click','#deleteOK', function(){
+        deleteFile();
+
+      });
       $(document).on('click','#newStudy', function(){
         $('#NewStudyModal').modal('show');
 
@@ -104,7 +174,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
 
         var studyName = $('#studyName').val();
         api.newStudy(takespaces(studyName),model.key,newStudySuccess);
-        api.getStudies(model.key,setStudies);
+        //api.getStudies(model.key,setStudies);
 
       });
       $(document).on("click",'#deploy', function(){
@@ -177,13 +247,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
           if (activeApp!=null &&activeApp!=undefined &&activeApp!='') activeApp.studyChanged();
         }
       });
+
+
       $(document).on("click",'#fileSys', function(){
         $('#uploadedModal').modal('show');
+        $('#result').html('');
         fileTableModel.user=true;
         model.active='';
+        model.activePage = 'file';
+        var study = model.study;
+        //var fs = new Filesys(model,fileTableModel);
+        //fs.setFileSysTable('all');
+
         api.getFiles(model.key,'all',setUserFileTable);
         $('#studyTable').hide();
-        //$('#uploadedModal').modal('hide');
+        
 
       });
       $(document).on("click",'.testStudy',function(){
@@ -230,7 +308,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         var folderName = $(tr).text();
         var id = $(td).attr("id");
         changeFolderState(takespaces(folderName),id);
-        createRaws(fileObj,false,fileTableModel.user);
+        //createRaws(fileObj,false,fileTableModel.user);
+        createRawsWButt(fileObj,false);
       });
 
       $(document).on("click",'.test',function(){
@@ -289,7 +368,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         });
         studies[index] = {name:studyname,exptID:'not_set'};
         //studies.push({name:studyname,exptID:'not_set'});
-        update(studyname);
+        setStudies(studies);
+        
 
       }
       function folderCreated(){
@@ -416,13 +496,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
-        //api.downloadFile(path,model.key,downLoadSuccess);
         window.location.href = '/implicit/dashboard/download/?path='+path+'&key='+model.key;
-        //$('#fileDownload').attr('href','/implicit/dashboard/download/?path='+path+'&key='+model.key);
-        //var anchor = $('#fileDownload');
-        //$('#fileDownload').click();
-
-
+        
       }
       function deleteFilesuccess(data){
         //alert('file was deleted');
@@ -569,8 +644,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
       }
       function setStudies (data){
         
-        console.log(data);
-        var obj = jQuery.parseJSON( data );
+       console.log(data);
+       $('.dropdownLI').html('');
+        $('#studyTable > tbody').html('');
+        var obj;
+        if(typeof data =='object'){
+          obj = data;
+        }else{
+          obj = $.parseJSON( data );
+        }
         model.studyNames=obj;
         model.selectedName='';
         $.each(obj, function(key, value) {
@@ -713,7 +795,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
               $.each(v, function(k2, v2) {
                 if (k2==='state'){
                   if (v2==='open'){
-                    createRaws(v,true,user,v);
+                    createRaws(v,true,user);
                     fileTableModel.level=fileTableModel.level-1;
                   }
                 }
@@ -765,10 +847,81 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         index.index=0;
         setIds(fileObj,index);
         model.fileSystem = fileObj;
-        createRaws(fileObj,false,fileTableModel.user);
+        //createRaws(fileObj,false,fileTableModel.user);
+        createRawsWButt(fileObj,false);
         
         
 
+      }
+
+      function addFolderRawB (file,level,v){
+          
+          $('#fileTabale > tbody').append(
+            '<tr>'+
+              '<td class="folder" id="'+v.id+'" >'+
+                '<span  style="margin-left:'+level*50+'px"><i class="fa fa-folder" ></i> '+file+'</span>'+
+              '</td>'+
+              '<td>'+
+                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
+              '</td>'+  
+              '<td>'+  
+                  '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
+              '</td>'+    
+              '<td>'+    
+                  '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
+              '</td>'+
+            '</tr>'
+          );
+      }
+
+      function addFileRawB (file,level,v){
+
+          
+          $('#fileTabale > tbody').append(
+            '<tr>'+
+             '<td class="file" id="'+v.id+'" >'+
+               '<span class="fileRaw" style="margin-left:'+level*50+'px">'+
+                  '<i class="fa fa-file-text"  ></i> '+file+
+                '</span>'+
+              '</td>'+
+              '<td>'+
+                '<button type="button" id="viewFile" class="btn btn-primary btn-xs">View File</button>'+
+              '</td>'+
+              '<td>'+
+                '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
+              '</td>'+  
+              '<td>'+
+                '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
+              '</td>'+
+            '</tr>');
+     }
+      
+      function createRawsWButt(filesObj,recursive){
+
+          fileTableModel.level=fileTableModel.level+1;
+          if (recursive===false){
+            $('#result').html('');
+            createTable();
+          }
+          $.each(filesObj, function(k, v) {
+            var extension = k.split(".");
+            if (extension.length>1){
+            addFileRawB(k,fileTableModel.level,v);
+            }else{
+              if (k!='state' && k!='id'){
+                addFolderRawB(k,fileTableModel.level,v);
+                $.each(v, function(k2, v2) {
+                  if (k2==='state'){
+                    if (v2==='open'){
+                      createRawsWButt(v,true);
+                      fileTableModel.level=fileTableModel.level-1;
+                    }
+                  }
+                });
+              }
+              
+            }
+          });
       }
       function setIds(filesObj,index){
 
@@ -823,7 +976,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','bootstrap','jsh
         id++;
         var html='';
         html+='<tr>'+
-              '<td><a href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</a>'+
+              '<td><span href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</span>'+
               '</td>'+
               '<td class="">Runing</td>'+
               '<td class="">'+
