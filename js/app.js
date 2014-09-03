@@ -177,18 +177,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
         //api.getStudies(model.key,setStudies);
 
       });
+
+      /**
+      * Desc: main listener for the 
+      * 'deploy' top menu navigetaion bar.
+      *
+      *
+      */
+
       $(document).on("click",'#deploy', function(){
         $('#result').html('');
         model.activePage = 'deploy';
         model.active='';
 
       });  
-      $(document).on("click",'#rde', function(){
-        $('#result').html('');
-        model.activePage = 'rde';
-        model.active='';
-
-      });  
+      
       
       $(document).on("click",'#trackmenu', function(){
         $('#result').html('');
@@ -212,19 +215,43 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
            
           });
         }
-      });    
+      });
+
+      /**
+      * Desc: main listener for the 
+      * 'rde' top menu navigetaion bar.
+      *
+      *
+      */
+
       $(document).on("click",'#rde', function(){
         $('#result').html('');
         model.activePage = 'rde';
+        model.active='';
 
-      });  
+      });
+
+      /**
+      * Desc: main listener for the 
+      * 'home' top menu navigetaion bar.
+      *
+      */  
+
       $(document).on("click",'#home', function(){
         $('#result').html('');
         model.activePage = 'home';
         $('#studyTable').show();
 
-      });  
+      }); 
+
+      /**
+      * Desc: main listener for the 
+      * 'test' top menu navigetaion bar.
+      *
+      */ 
+
       $(document).on("click",'#test', function(){
+        $('#uploadedModal').modal('show');
         $('#result').html('');
         $('#studyTable').hide();
         model.activePage = 'test';
@@ -248,22 +275,27 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
         }
       });
 
+      /**
+      * Desc: main listener for the 
+      * 'file system' top menu navigetaion bar.
+      *
+      */  
 
-      $(document).on("click",'#fileSys', function(){
-        $('#uploadedModal').modal('show');
-        $('#result').html('');
-        fileTableModel.user=true;
-        model.active='';
-        model.activePage = 'file';
-        var study = model.study;
-        //var fs = new Filesys(model,fileTableModel);
-        //fs.setFileSysTable('all');
+      // $(document).on("click",'#fileSys', function(){
+      //   $('#uploadedModal').modal('show');
+      //   $('#result').html('');
+      //   fileTableModel.user=true;
+      //   model.active='';
+      //   model.activePage = 'file';
+      //   var study = model.study;
+      //   //var fs = new Filesys(model,fileTableModel);
+      //   //fs.setFileSysTable('all');
 
-        api.getFiles(model.key,'all',setUserFileTable);
-        $('#studyTable').hide();
+      //   api.getFiles(model.key,'all',setUserFileTable);
+      //   $('#studyTable').hide();
         
 
-      });
+      // });
       $(document).on("click",'.testStudy',function(){
          console.log($(this));
          //debugger;
@@ -300,6 +332,14 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
          api.validateFile(model.key,model.study,takespaces(fname),openValidation);
 
       });
+      
+      /**
+      * Desc: Listener for pressing a folder
+      * in the file system
+      * 
+      *
+      */
+
       $(document).on("click",'.folder',function(){
         console.log($(this));
         //debugger;
@@ -308,8 +348,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
         var folderName = $(tr).text();
         var id = $(td).attr("id");
         changeFolderState(takespaces(folderName),id);
-        //createRaws(fileObj,false,fileTableModel.user);
-        createRawsWButt(fileObj,false);
+        createRaws(fileObj,false,fileTableModel.user);
+        //createRawsWButt(fileObj,false);
       });
 
       $(document).on("click",'.test',function(){
@@ -435,6 +475,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
           });
         
       }
+      /**
+      * Desc: using file or folder id
+      * get the path of thar file/folder
+      * return an array of path elements.
+      *
+      */
       function getPath(fileSystem,elementID,pathA,info){
         
           $.each(fileSystem, function(k, v) {
@@ -716,23 +762,57 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
         $('#validateModal').modal('show');
       }
 
-      function changeFolderState(name,id){
-        var info = {};
-        info.found = false;
-        var element;
-        findElement(fileObj,id,info);
-        var folder = info.folder;
-        if (folder.state!=null){
-          if (folder.state==='open'){
-            folder.state = 'close';
-          }else{
-            folder.state = 'open';
+      /**
+      * Desc: changes the folder from open
+      * to close state or vise versa when
+      * it is being clicked.
+      */
 
-          }
-        }else{
-          folder.state='open';
+      function changeFolderState(name,id){
+        var obj = model.openStruct;
+        for (var key in obj) {
+           if (obj.hasOwnProperty(key)) {
+              if (key===id){
+                if(obj[key]==='open'){
+                  obj[key]='close';
+                }else{
+                  obj[key]='open';
+                }
+              }
+           }
         }
+        // $.each(obj,function(k,v){
+        //   if (k===id){
+        //     if (v==='open'){
+        //       v='close' ;
+        //     }else{
+        //       v='open';
+        //     } 
+        //   }
+
+        // });
+       
       }
+
+
+
+      // function changeFolderState(name,id){
+      //   var info = {};
+      //   info.found = false;
+      //   var element;
+      //   findElement(fileObj,id,info);
+      //   var folder = info.folder;
+      //   if (folder.state!=null){
+      //     if (folder.state==='open'){
+      //       folder.state = 'close';
+      //     }else{
+      //       folder.state = 'open';
+
+      //     }
+      //   }else{
+      //     folder.state='open';
+      //   }
+      // }
 
       function takespaces(name){ return name.replace(/\s+/g, '');}
 
@@ -792,14 +872,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
           }else{
             if (k!='state' && k!='id'){
               addFolderRaw(k,fileTableModel.level,v);
-              $.each(v, function(k2, v2) {
-                if (k2==='state'){
-                  if (v2==='open'){
-                    createRaws(v,true,user);
-                    fileTableModel.level=fileTableModel.level-1;
-                  }
-                }
-              });
+              if (FolderState(v)==='open'){
+                createRaws(v,true,user);
+                fileTableModel.level=fileTableModel.level-1;
+              }
             }
             
           }
@@ -825,7 +901,22 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
 
         fileTableModel.row = fileTableModel.row+1;
         var raw = fileTableModel.row;
-        $('#fileTabale > tbody').append('<tr><td class="folder" id="'+v.id+'" ><span  style="margin-left:'+level*50+'px"><i class="fa fa-folder" ></i> '+file+'</span></td><td></td></tr>');
+        $('#fileTabale > tbody').append('<tr>'+
+            '<td class="folder" id="'+v.id+'" >'+
+              '<span  style="margin-left:'+level*50+'px">'+
+                '<i class="fa fa-folder" ></i> '+file+
+              '</span>'+
+            '</td>'+
+            '<td>'+
+                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
+            '</td>'+  
+            '<td>'+  
+                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
+            '</td>'+    
+            '<td>'+    
+                '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
+            '</td>'+
+          '</tr>');
 
       }
 
@@ -838,21 +929,44 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
 
       }
 
-      function setUserFileTable(data){
-        //console.log(data);
-        $('#uploadedModal').modal('hide');
-        fileObj = jQuery.parseJSON( data );
-        createTable();
-        var index ={};
-        index.index=0;
-        setIds(fileObj,index);
-        model.fileSystem = fileObj;
-        //createRaws(fileObj,false,fileTableModel.user);
-        createRawsWButt(fileObj,false);
+      function setOpenStruct(fileObj){
+      
+         $.each(fileObj, function(k, v) {
+            var extension = k.split(".");
+            if (extension.length>1){
+            }else{
+              if (k!='state' && k!='id'){
+                var obj = model.openStruct;
+                $.each(v, function(k2, v2) {
+                  if (k2==='id'){
+                    obj[v2] = 'close';
+                  }
+                });
+                setOpenStruct(v);
+                
+              }
+              
+            }
+          });
+         
+      }
+      // function setUserFileTable(data){
+      //   //console.log(data);
+      //   $('#uploadedModal').modal('hide');
+      //   fileObj = jQuery.parseJSON( data );
+      //   createTable();
+      //   var index ={};
+      //   index.index=0;
+      //   setIds(fileObj,index);
+      //   model.openStruct={};
+      //   model.fileSystem = fileObj;
+      //   setOpenStruct(fileObj,model.openStruct);
+      //   //createRaws(fileObj,false,fileTableModel.user);
+      //   createRawsWButt(fileObj,false);
         
         
 
-      }
+      // }
 
       function addFolderRawB (file,level,v){
           
@@ -940,21 +1054,52 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
         });
 
       }
+      /**
+      * Desc: callback function that sets 
+      * the table of 
+      *
+      */
       function setFileTable(data){
         //console.log(data);
-
+        $('#uploadedModal').modal('hide');
         fileObj = jQuery.parseJSON( data );
         createTable();
         var index ={};
         index.index=0;
         setIds(fileObj,index);
-        //debugger;
+        model.openStruct={};
+        model.fileSystem = fileObj;
+        setOpenStruct(fileObj,model.openStruct);
         fileTableModel.user = false;
         createRaws(fileObj,false,fileTableModel.user);
         
 
       }
 
+      /**
+      * Desc: returns the satet of the folder
+      * input: folder key/value object
+      *
+      */
+      function FolderState(folder){
+        var id;
+        var state;
+        $.each(folder,function(k,v){
+          if (k==='id'){
+            id=v;
+          }
+          
+
+        });
+        var obj = model.openStruct;
+        $.each(obj,function(k,v){
+          if (k===id){
+            state= v;
+          }
+
+        });
+        return state;
+      }
       function addJSRaw(file,level){
         fileTableModel.row = fileTableModel.row+1;
         $('#fileTabale > tbody').append('<tr><td><i class="fa fa-file-text" ></i><span class="fileNameSpan" style="margin-left:'+level*50+'px"> '+file+'</span></td><td><button type="button" class="btn btn-primary btn-xs validate">Check js syntax</button></td></tr>');
