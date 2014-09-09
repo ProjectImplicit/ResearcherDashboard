@@ -731,15 +731,42 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
       }
 
       function SetUser(data){
+        model.user = data;
         $('#userName').html('<i class="glyphicon glyphicon-user"></i><span class="caret"></span>'+data);
         
       }
+      // function getExptOfStudy(studyName){
+      //   var exptRes=[];
+      //   var studyObj = model.studyNames;
+      //   $.each(studyObj, function(key, value) {
+      //       $.each(value, function(key2, value2) {
+      //           if (key2.indexOf('name')!=-1){
+      //             var studyName = value2;
+      //             if (studyName.indexOf("(")!=-1){
+      //               var names = studyName.split("(");
+      //               var name = names[0];                   
+      //               if (name===studyName){
+      //                 exptRes.push(names[1]);
+      //               }
+
+      //             }else{
+
+                    
+      //             }
+                  
+      //           }
+                 
+      //        });    
+      //   });
+
+      // }
       function setStudies (data){
         
        console.log(data);
        $('.dropdownLI').html('');
         $('#studyTable > tbody').html('');
         var obj;
+        var studies=[];
         if(typeof data =='object'){
           obj = data;
         }else{
@@ -752,11 +779,24 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
              $.each(value, function(key2, value2) {
                 if (key2.indexOf('name')!=-1){
                   var studyName = value2;
-                  update(studyName);   
+                  if (studyName.indexOf("(")!=-1){
+                    var names = studyName.split("(");
+                    var name = names[0];                   
+                    if (!($.inArray(name, studies))){
+                      studies.push(name);
+                    }
+
+                  }else{
+                    studies.push(studyName);
+                  }
+                  //update(studyName);   
                 }
                  
              });    
         });
+        for (var i=0;i<studies.length;i++){
+          update(studies[i]);
+        }
             
       }
       function openStudyValidation(data){
@@ -1205,9 +1245,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
         $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
 
       }
-      function update(value){
-        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value+'</a></li>');
-        $('#studyTable > tbody').append(makerow(value));
+      function update(name){
+        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+name+'</a></li>');
+        $('#studyTable > tbody').append(makerow(name));
 
       }
       function makerow(val){
