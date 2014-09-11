@@ -1,5 +1,7 @@
 package org.implicit.dasboard;
 
+import java.util.ArrayList;
+
 /**
  * 
  * 
@@ -14,19 +16,26 @@ package org.implicit.dasboard;
  * 
  * 
  */
+
+
 public class Study {
 	
-	String studyEXPTID;
+	ArrayList<EXPT> studyEXPTID;
 	String studyName;
 	String folder;
 	String status;
 	String date;
 	
 	
-	public Study(){}
+	public Study(){
+		studyEXPTID = new ArrayList<EXPT>();
+	}
 	
-	public void setstudyEXPTID(String o){
-		this.studyEXPTID= o;
+	public void setstudyEXPTID(ArrayList o){
+		studyEXPTID=o;
+	}
+	public void addstudyEXPTID(EXPT o){
+		studyEXPTID.add(o);
 	}
 	public void setfolder(String o){
 		this.folder= o;
@@ -40,7 +49,10 @@ public class Study {
 	public String getName(){ 
 		return this.studyName;
 	}
-	public String getstudyEXPTID(){ 
+	public String getFolderName(){
+		return this.folder;
+	}
+	public ArrayList getstudyEXPTID(){ 
 		return this.studyEXPTID;
 	}
 	

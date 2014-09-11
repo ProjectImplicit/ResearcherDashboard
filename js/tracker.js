@@ -2,7 +2,7 @@
 
 
 
-define(['api','settings','datepicker','knobmin'], function (API,Settings) {
+define(['api','settings','datepicker'], function (API,Settings) {
 
 
 	

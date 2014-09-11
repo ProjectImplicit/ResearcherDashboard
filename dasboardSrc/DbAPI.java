@@ -42,44 +42,87 @@ public class DbAPI  {
 		}
 		return singleton;
 	}
-	public void createStudy(String name,String expt,String folder,String uid ){
-		if (this.method.equals("memory")){
-			
-			//createStudyInMemory(name,id,folder,user_id);
-			
-		}
-		if(this.method.equals("oracle") || this.method.equals("cloude")){
-			createStudyInOracle(name,expt,folder,uid);
-		}
-	}
-	private void createStudyInMemory(String name,String study_expt,String folder,String user_id){
-		
-
-		
-		
-	}
-	 
-	private void createStudyInOracle(String name,String exptid,String folder,String userID) {
+	
+	
+	public void insertIntoExptTable(int studyID,String exptFileName,String exptID){
 		Connection connection = null;
 		DashBoardConnect.getInstance(false);
 		
 		try{
 			connection = DashBoardConnect.getConnection(db);
 			connection.setAutoCommit(true);
-			String query = "BEGIN INSERT INTO Studies (StudyID,name, study_exptid,folder_name) VALUES (study_sequence.nextval,?, ?,?) returning StudyID into ?; END;";
+			String exptQuery ="INSERT INTO EXPT (EID,STUDYID,EXPT_FILE_NAME,EXPT_ID) VALUES (EXPT_SEQUENCE.nextval,?,?,?)";
+			PreparedStatement ecs = connection.prepareStatement(exptQuery);
+			ecs.setInt(1, studyID);
+			ecs.setString(2, exptFileName);
+			ecs.setString(3, exptID);
+			ecs.execute();
+			
+		}catch(Exception e){
+			System.out.println("Error in api.updateTable "+e.getMessage()+ e.getStackTrace());
+		}
+		finally{
+			if (connection!=null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	public void updateTable(String table,String col,String val,String whereCol,String whereVal ){
+		Connection connection = null;
+		DashBoardConnect.getInstance(false);
+		
+		try{
+			connection = DashBoardConnect.getConnection(db);
+			connection.setAutoCommit(true);
+			String query = "UPDATE "+table+" SET "+col+"='"+val+"' where "+whereCol+" ='"+whereVal+"'";
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.executeUpdate();
+			
+		}catch(Exception e){
+			System.out.println("Error in api.updateTable "+e.getMessage()+ e.getStackTrace());
+		}
+		finally{
+			if (connection!=null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		
+	}
+	 
+	protected Integer createStudy(String name,String exptid,String exptFileName,String datagroup,String folder,String userID) {
+		Connection connection = null;
+		DashBoardConnect.getInstance(false);
+		Integer study_id = null;
+		try{
+			connection = DashBoardConnect.getConnection(db);
+			connection.setAutoCommit(true);
+			
+			
+			String query = "BEGIN INSERT INTO Studies (StudyID,name, study_exptid,study_schema,folder_name) VALUES (study_sequence.nextval,?,?, ?,?) returning StudyID into ?; END;";
 			CallableStatement cs = connection.prepareCall(query);
 			cs.setString(1, name);
-			cs.setString(2, exptid);
-			cs.setString(3, folder);
-			cs.registerOutParameter(4, OracleTypes.NUMBER);
+			cs.setInt(2,0);
+			cs.setString(3, datagroup);
+			cs.setString(4, folder);
+			cs.registerOutParameter(5, OracleTypes.NUMBER);
 			cs.execute();
-			Integer study_id = cs.getInt(4);
-//			String insertSQL = "INSERT INTO Studies (studyname, study_exptid,study_folder) VALUES (?, ?,?)";
-//			PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
-//			preparedStatement.setString(1, name);
-//			preparedStatement.setString(2, exptid);
-//			preparedStatement.setString(3, folder);
-//			preparedStatement.executeUpdate();
+			study_id = cs.getInt(5);
+			
+			String exptQuery ="INSERT INTO EXPT (EID,STUDYID,EXPT_FILE_NAME,EXPT_ID) VALUES (EXPT_SEQUENCE.nextval,?,?,?)";
+			PreparedStatement ecs = connection.prepareStatement(exptQuery);
+			ecs.setInt(1, study_id);
+			ecs.setString(2, exptFileName);
+			ecs.setString(3, exptid);
+			ecs.execute();
+			
 			
 			String insertSQL = "INSERT INTO UsersStudies  (UserStudyID,UserID, StudyID) VALUES (userstudy_sequence.nextval,?, ?)";
 			PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
@@ -99,6 +142,7 @@ public class DbAPI  {
 				System.out.println("Error in createtudy at DbAPI");
 			}
 		}
+		return study_id;
 	}
 	public void createUser(String name,String OSFKey,String folder){
 		
@@ -157,9 +201,8 @@ public class DbAPI  {
 	public String setMethod(String m){ 
 	
 		this.method=m;
-		if (m.equals("cloude")){
-			this.db="cloude";
-		}
+		db=m;
+		
 		return "set "+m+" has origin";
 		
 	}
@@ -167,41 +210,10 @@ public class DbAPI  {
 	public HashMap findInMemory(String table,String column, String value){
 		
 		HashMap res= new HashMap();
-//		if (table.equals("Users")){
-//			
-//			 Iterator studyIT = Users.entrySet().iterator();
-//				//go through user records
-//				 while (studyIT.hasNext()) {
-//					 
-//					 Map.Entry pairs = (Map.Entry)studyIT.next();
-//			         String pid = String.valueOf(pairs.getKey());
-//			         HashMap userRecord = (HashMap)pairs.getValue();
-//			         if (column==null || column.equals("") ){
-//			        	 res.put(pid, userRecord.clone());
-//			        	 
-//			         }else{
-//			        	 String col = 	(String) userRecord.get(column);
-//			        	 if (col.equals(value)){
-//			        		 res.put(pid, userRecord.clone());
-//			        	 }
-//			        	 
-//			         }
-//					 
-//				 }
-//				    	
-//			
-//		}
-//		if (table.endsWith("Studies")){
-//			
-//		}
-//		if(table.equals("UserStudies")){
-//			
-//		}
-//		
-//		
-//		
+
+		
 		return res;
-//		
+		
 		
 	}
 	public HashMap finfInOracle(String table,String column,String value){
@@ -231,6 +243,7 @@ public class DbAPI  {
 					record.put("OSFKey", (String)rs.getString(4));
 					record.put("userFolder", (String)rs.getString(5));
 	         		record.put("id", id);
+	         		record.put("email", (String)rs.getString(8));
 					res.put(id, record);
 					
 				}
@@ -252,6 +265,14 @@ public class DbAPI  {
 					res.put(id, record);
 
 					
+				}
+				if (table.equals("EXPT")){
+					record.put("EID", (String)rs.getString(1));
+					record.put("EXPT_FILE_NAME", (String)rs.getString(2)); 
+					record.put("EXPT_ID", (String)rs.getString(3));
+					res.put(id, record);
+					
+										
 				}
 				
 			}

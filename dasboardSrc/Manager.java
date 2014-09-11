@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,13 +18,15 @@ import static java.nio.file.FileVisitResult.*;
 public class Manager {
 	
 	String folderBase; 
-	DbAPI api = new DbAPI();
+	DbAPI api = DbAPI.getInstance(false);
 	
 	//1. get study ids from db
 	//2. go over the folder of that user and get study folders 
 	public Manager(){
+		//api.setMethod("cloude");
+		api.setMethod("oracle");
 		if (System.getProperty("os.name").startsWith("Windows")) {
-			folderBase="C:\\projects\\workspace\\rc4\\app\\user\\";
+			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
 			System.out.println("Using folder:"+folderBase);
 			
 		}else{
@@ -41,9 +44,6 @@ public class Manager {
 		setStudyIdFromDB(user);
 		setStudyIdfromFileSystem(user);
 		
-		
-		
-		
 	};
 	public boolean AuthUser(User u){
 		String key = u.getKey();
@@ -59,7 +59,7 @@ public class Manager {
 	public void setUserfromDB(User user){
 		
 		String key = user.getKey();
-		api.setMethod("cloude");
+		//api.setMethod("cloude");
 		HashMap userHash = api.find("Users","OSFKey", key);
 		if (userHash.size()>1) return;
 		Map.Entry pairs = (Entry) userHash.entrySet().iterator().next();
@@ -67,18 +67,21 @@ public class Manager {
 		String id = (String) userRecord.get("id");
 		String folder =(String) userRecord.get("userFolder");		
 	    String name = (String) userRecord.get("userName");
+	    String email = (String) userRecord.get("email");
 	    user.setFolderName(folder);
 	    user.setUserName(name);
 	    user.setID(id);
+	    user.setEmail(email);
 		
 	}
 	
 	public String studyValidator(User user,String study,String filename){
 		
-		String studyKey = "/user//"+user.getFolderName()+"//"+study+"//"+filename;
+		study = takeOutBraclets(study);
+		String studyKey = File.separator+"user"+File.separator+user.getFolderName()+File.separator+study+File.separator+filename;
 		String type = "";
-		ArrayList errors=new ArrayList();
-		ArrayList warnings=new ArrayList();
+		List errors=new ArrayList();
+		List warnings=new ArrayList();
 		if(!(type==null)&&type.equals("xml")){
 		StudyValidator.ValidateXml(StudyValidator.studyRealPath+studyKey, errors, warnings, "XML File",true);
 		}
@@ -118,7 +121,8 @@ public class Manager {
 		
 		
 		String folderName=user.getFolderName();
-		File file = new File(folderBase+"//"+folderName+"//"+study+"//"+filename);
+		study = takeOutBraclets(study);
+		File file = new File(folderBase+File.separator+folderName+File.separator+study+File.separator+filename);
 		BufferedReader br =null;
 		StringBuilder sb =  null;
 		boolean exit=false;
@@ -163,12 +167,27 @@ public class Manager {
 	        pairs = (Entry) dbObject.entrySet().iterator().next();
 	        HashMap studiesRecord = (HashMap) pairs.getValue();
   	        
-        	String expt = (String) studiesRecord.get("study_exptid");
+        	Integer expt = Integer.parseInt((String) studiesRecord.get("study_exptid"));
 	        String name = (String) studiesRecord.get("name");
 	        String folder = (String) studiesRecord.get("folder_name");
 			String status = (String) studiesRecord.get("status");
+			HashMap expObj = api.find("EXPT", "STUDYID", studyID);
+			Iterator exptIT = expObj.entrySet().iterator();
+			ArrayList exptArray = new ArrayList<EXPT>();
+			while (exptIT.hasNext()){
+				Map.Entry EXPTpairs = (Map.Entry)exptIT.next();
+				String exptpid = (String) EXPTpairs.getKey();
+		        HashMap exptuserRecord  = (HashMap)EXPTpairs.getValue();
+		        String exptFileName = (String) exptuserRecord.get("EXPT_FILE_NAME");
+		        String exptID = (String) exptuserRecord.get("EXPT_ID");
+		        EXPT ex = new EXPT(exptID,exptFileName);
+		        exptArray.add(ex);
+				
+			}
+			
+			
 			Study study = new Study();
-			if (expt!=null) {study.setstudyEXPTID(expt);}
+			if (expt!=null) {study.setstudyEXPTID(exptArray);}
 			if (name!=null){study.setStudyName(name);}
 			if (folder!=null){study.setfolder(folder);}
 			if (status!=null){study.setstatus(status);}
@@ -180,28 +199,103 @@ public class Manager {
 		}
 	}
 	
-	
-	public Study getStudy(String id){
+	protected String takeOutBraclets(String name){
 		
-		Study study = new Study();
-		HashMap studys = api.find("Studies", "id",id);
-	    Iterator studyIT = studys.entrySet().iterator();
-	    Map.Entry pairs = (Map.Entry)studyIT.next();
-	    HashMap studyRecord = (HashMap) pairs.getValue();
-	    study.setStudyName((String)studyRecord.get("studyName"));
-	    study.setstudyEXPTID((String)studyRecord.get("exptID"));
-	    
+		if (name.contains("(")){
+			String[] names = name.split("\\(");
+			return names[0];
+		}else{
+			return name;
+		}
 		
 		
-		return study;
 	}
-	public Study createStudy(String exptid,String studyName){
+	public String trim(String name){
+		String trimmed = new String(name);
+		trimmed = trimmed.substring(0,trimmed.length()-1);
+		return trimmed;
+		
+	}
+	public boolean isStudy(String name){
+		//name =trim(name);
+		HashMap studys = api.find("Studies", "name",name);
+		if (studys.size() > 0) return true;
+		return false;
+		
+	}
+//	public Study getStudy(String id){
+//		
+//		Study study = new Study();
+//		HashMap studys = api.find("Studies", "id",id);
+//	    Iterator studyIT = studys.entrySet().iterator();
+//	    Map.Entry pairs = (Map.Entry)studyIT.next();
+//	    HashMap studyRecord = (HashMap) pairs.getValue();
+//	    study.setStudyName((String)studyRecord.get("studyName"));
+//	    
+//	    study.setstudyEXPTID((String)studyRecord.get("exptID"));
+//	    
+//		
+//		
+//		return study;
+//	}
+	public Study createStudy(String exptid,String expFileName,String studyName){
 		Study study = new Study();
-		study.setstudyEXPTID(exptid);
+		EXPT ex = new EXPT(exptid,expFileName);
+		study.addstudyEXPTID(ex);
 		study.setStudyName(studyName);
 		
 		return study;
 		
+	}
+	public void updateStudy(String exptid,String exptFileName,String datagroup,String studyName,boolean existEXPT,boolean updateSchema){
+		HashMap study = api.find("Studies", "name", studyName);
+		Map.Entry pairs = (Entry) study.entrySet().iterator().next();
+		HashMap studyRecord = (HashMap) pairs.getValue();
+		String id = (String) studyRecord.get("id");
+		if (!existEXPT){
+			api.insertIntoExptTable(Integer.parseInt(id), exptFileName, exptid);
+			
+		}else{
+			api.updateTable("EXPT", "EXPT_ID", exptid, "STUDYID", id);
+		}
+		if (updateSchema) api.updateTable("studies", "study_schema", datagroup, "name", studyName);
+
+	}
+	public String getSchema(File file){
+		BufferedReader br =null;
+		String exptID = null;
+		boolean exit=false;
+		try{
+			br = new BufferedReader( new FileReader(file.getPath()) );
+			StringBuilder sb = new StringBuilder();
+	        String line = br.readLine();
+	        while (line != null && exit==false) {
+	        	if (line.contains("<Study")){
+	        		
+	        		String[] list = line.split("\"");
+	        		exptID = list[3];
+	        		exit=true;
+	        		
+	        	}
+	            sb.append(line);
+	            sb.append(System.lineSeparator());
+	            line = br.readLine();
+	        }
+	        //String everything = sb.toString();
+	        return exptID;
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			
+		}finally{  
+			try {
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		return null;
 	}
 	public String getExptID(File file){
 		BufferedReader br =null;
@@ -239,21 +333,21 @@ public class Manager {
 		}
 		return null;
 	}
-	public File cheackforExpt(File file){
-		
+	public ArrayList cheackforExpt(File file){
+		ArrayList files = new ArrayList<File>();
 		File[] fList = file.listFiles();
 		for (File f : fList) {
 			if (f.isFile()){
 				if (f.getName().contains("expt")){
 					//return getExptID(f);
-					return f;
+					files.add(f);
 				}
 			}
 			
 		}
 		
 		
-		return null;
+		return files;
 		
 	}
 	public void setUser(User user){
@@ -267,11 +361,15 @@ public class Manager {
 		try{
 			
 			String folderName=user.getFolderName();
+			
 			if (study.equals("all")){
-				directory = new File(folderBase+"//"+folderName);
+				directory = new File(folderBase+File.separator+folderName);
 				System.out.println("directory"+directory);
 			}else{
-				directory = new File(folderBase+"//"+folderName+"//"+study);
+				Study s = user.getStudy(study);
+				String studyFolder = s.getFolderName();
+				//directory = new File(folderBase+"//"+folderName+"//"+studyFolder);
+				directory = new File(studyFolder);
 			}
 			
 			File[] fList = directory.listFiles();
@@ -305,32 +403,75 @@ public class Manager {
 		
 	}
 	
-	
-	public void setStudyIdfromFileSystem(User user){
+	protected String getNameNoExtention(File file){
+		String name = file.getName();
+		String[] names =name.split("\\.");
+		return names[0];
+	}
+//	protected void createStudyinDB(String studyName, String exptID,String exptFileName,String datagroup, String path, String userID){
+//		api.createStudy(studyName, exptID,exptFileName,datagroup, path, userID);
+//		
+//	}
+	private void walkFileSystem(File directory,User user){
 		
 		try{
-			String folderName=user.getFolderName();
-			File directory = new File(folderBase+folderName);
 			File[] fList = directory.listFiles();
 			for (File file : fList) {
 				System.out.println(file.getName());
 				if (file.isFile()) {
 		          
-		        } else if (file.isDirectory()) {
-		        	
+		        }else{
 		        	if (!user.existStudy(file.getName())){//study doesnt exist in db
 		        		File exptFile;
-		        		if ((exptFile=cheackforExpt(file))!=null){// the folder is a study there is an expt file
-		        			String exptID=getExptID(exptFile);
-		        			api.createStudy(file.getName(), exptID, file.getName(), user.getID());
-		        			user.addStudy(createStudy(exptID,file.getName()));
+		        		ArrayList files = cheackforExpt(file);
+		        		if (files.size()>0){// the folder is a study there is an expt file
+		        			if (files.size()==1){
+		        				String exptID=getExptID((File)files.get(0));
+		        				String schema = getSchema((File)files.get(0));
+		        				String exptFileName = ((File)files.get(0)).getName();
+			        			api.createStudy(file.getName(), exptID,exptFileName,schema, file.getAbsolutePath(), user.getID());
+			        			user.addStudy(createStudy(exptID,exptFileName,file.getName()));
+		        				
+		        			}else{//there is more then one expt
+		        				String exptID=getExptID((File)files.get(0));
+		        				String schema = getSchema((File)files.get(0));
+		        				String exptFileName = ((File)files.get(0)).getName();
+		        				Integer id =api.createStudy(file.getName(), exptID,exptFileName,schema, file.getAbsolutePath(), user.getID());
+		        				user.addStudy(createStudy(exptID,exptFileName,file.getName()));
+		        				for (int i=1;i<files.size();i++){
+		        					File exptfile = (File) files.get(i);
+		        					exptID=getExptID(exptfile);
+		        					//schema = getSchema((File)files.get(0));
+		        					api.insertIntoExptTable(id, exptfile.getName(), exptID);
+		        					Study s =user.getStudy(file.getName());
+		        					EXPT e = new EXPT(exptID,exptfile.getName());
+		        					s.addstudyEXPTID(e);
+		        							        					
+		        					
+		        					
+		        				}
+		        			}
+		        			
 		        			
 		        		}
+		        	}else{//study exist in db
 		        		
 		        	}
-		        	
-		        }
-			}
+		        	walkFileSystem(file,user);
+		        }//else
+			}// for
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}
+		
+	}
+	public void setStudyIdfromFileSystem(User user){
+		
+		try{
+			String folderName=user.getFolderName();
+			File directory = new File(folderBase+folderName);
+			walkFileSystem(directory,user);
 			
 		}catch(Exception e){
 			System.out.println();

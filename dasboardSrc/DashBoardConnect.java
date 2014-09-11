@@ -35,6 +35,7 @@ public class DashBoardConnect {
 			Context initContext=null;
 			Context envContext=null;
 			DataSource cloude=null;
+			DataSource newDash=null;
 				
 			
 			
@@ -47,6 +48,7 @@ public class DashBoardConnect {
 					envContext = (Context) initContext
 							.lookup("java:/comp/env");
 					cloude = (DataSource) envContext.lookup("oracle/cloude");
+					newDash = (DataSource) envContext.lookup("new/dashboard");
 					
 				} catch (Exception e) {
 					
@@ -54,6 +56,7 @@ public class DashBoardConnect {
 				}
 					
 					singleton.dataSourceHashMap.put("cloude", cloude);
+					singleton.dataSourceHashMap.put("oracle", newDash);
 					singleton.cacheDate = new GregorianCalendar();
 		
 			}
@@ -71,10 +74,6 @@ public class DashBoardConnect {
 			
 			DataSource dataSource = (DataSource) singleton.dataSourceHashMap
 					.get(databaseId);
-			
-			// If you deploy your application to JBoss,try the following code 
-			// instead of returning normal java.sql.Conneciton 
-			//return ((WrappedConnection) dataSource.getConnection()).getUnderlyingConnection();
 			
 			return (dataSource.getConnection());
 		} catch (SQLException e) {

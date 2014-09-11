@@ -31,9 +31,9 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','fileSys','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deploy','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings,Filesys) {
+ function (domReady,API,$,Tracker,ChartFX,Settings,Filesys,Deploy) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -214,7 +214,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
       $(document).on("click",'#deploy', function(){
         $('#result').html('');
         model.activePage = 'deploy';
-        model.active='';
+        var deployObj = new Deploy(model,'design1');
+        deployObj.setHtml();
+        model.active = deployObj;
+        
+
 
       });  
       
@@ -731,8 +735,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
       }
 
       function SetUser(data){
-        model.user = data;
-        $('#userName').html('<i class="glyphicon glyphicon-user"></i><span class="caret"></span>'+data);
+        var userObj = jQuery.parseJSON( data );
+        model.user = userObj;
+        $('#userName').html('<i class="glyphicon glyphicon-user"></i><span class="caret"></span>'+userObj.name);
         
       }
       // function getExptOfStudy(studyName){
@@ -776,27 +781,28 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','boots
         model.selectedName='';
         $.each(obj, function(key, value) {
             console.log(key + "/"+value);
-             $.each(value, function(key2, value2) {
-                if (key2.indexOf('name')!=-1){
-                  var studyName = value2;
-                  if (studyName.indexOf("(")!=-1){
-                    var names = studyName.split("(");
-                    var name = names[0];                   
-                    if (!($.inArray(name, studies))){
-                      studies.push(name);
-                    }
+            update(key);
+             // $.each(value, function(key2, value2) {
+             //    if (key2.indexOf('name')!=-1){
+             //      var studyName = value2;
+             //      if (studyName.indexOf("(")!=-1){
+             //        var names = studyName.split("(");
+             //        var name = names[0];                   
+             //        if (!($.inArray(name, studies))){
+             //          studies.push(name);
+             //        }
 
-                  }else{
-                    studies.push(studyName);
-                  }
-                  //update(studyName);   
-                }
+             //      }else{
+             //        studies.push(studyName);
+             //      }
+             //      //update(studyName);   
+             //    }
                  
-             });    
+             // });    
         });
-        for (var i=0;i<studies.length;i++){
-          update(studies[i]);
-        }
+        // for (var i=0;i<studies.length;i++){
+        //   update(studies[i]);
+        // }
             
       }
       function openStudyValidation(data){
