@@ -213,6 +213,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       $(document).on("click",'#deploy', function(){
         $('#result').html('');
+        $('#studyTable').hide();
         model.activePage = 'deploy';
         var deployObj = new Deploy(model,'design1');
         deployObj.setHtml();
