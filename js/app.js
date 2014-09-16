@@ -275,6 +275,19 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       }); 
 
+
+
+      
+      $(document).on("click",'#fileSys', function(){
+        $('#uploadedModal').modal('show');
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'file';
+        model.active='';
+        var study = 'all';
+        api.getFiles(model.key,study,setStudyTable);
+
+      });
       /**
       * Desc: main listener for the 
       * 'test' top menu navigetaion bar.
@@ -434,11 +447,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function newStudySuccess(studyname){
         //alert('study was created');
         var studies = model.studyNames;
-        var index=0;
-        $.each(studies, function(key, value) {
-            index++;
-        });
-        studies[index] = {name:studyname,exptID:'not_set'};
+        
+        studies[studyname] = {name:studyname,exptID:'not_set'};
         //studies.push({name:studyname,exptID:'not_set'});
         setStudies(studies);
         
@@ -783,27 +793,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         $.each(obj, function(key, value) {
             console.log(key + "/"+value);
             update(key);
-             // $.each(value, function(key2, value2) {
-             //    if (key2.indexOf('name')!=-1){
-             //      var studyName = value2;
-             //      if (studyName.indexOf("(")!=-1){
-             //        var names = studyName.split("(");
-             //        var name = names[0];                   
-             //        if (!($.inArray(name, studies))){
-             //          studies.push(name);
-             //        }
-
-             //      }else{
-             //        studies.push(studyName);
-             //      }
-             //      //update(studyName);   
-             //    }
-                 
-             // });    
+            
         });
-        // for (var i=0;i<studies.length;i++){
-        //   update(studies[i]);
-        // }
+       
             
       }
       function openStudyValidation(data){
@@ -1268,12 +1260,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
               '<td class="">'+
                   '<button type="button" class="btn btn-primary btn-xs statistics">Statistics</button>'+
               '</td>'+
-              '<td class="">'+
+              '<!--<td class="">'+
                   '<button type="button" class="btn btn-primary btn-xs test" >Test</button>'+
               '</td>'+
              '<td class="">'+
                   '<button type="button" class="btn btn-primary btn-xs" id="1deploy">Deploy</button>'+
-              '</td>'+
+              '</td>-->'+
           '</tr>';
         return html;
       }
