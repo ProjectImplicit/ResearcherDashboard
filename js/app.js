@@ -145,9 +145,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       });
       $(document).on('click','#downloadFile', function(){
         var element =$(this);
-        var tr = $(element).parent();
-        var td = $(tr).find('.file');
-        var id = $(td).attr("id");
+        var td = $(element).parent();
+        var tr = $(td).parent();
+        var upTD = $(tr).find('.file');
+        var id = $(upTD).attr("id");
         model.elementID = id;
         downloadFile();
 
@@ -240,12 +241,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var deployObj = new Deploy(model,'design1');
         deployObj.setHtml();
         model.active = deployObj;
-        
-
-
       });  
       
-      
+      $('#deployFile').on("click",function(){
+
+      });
       $(document).on("click",'#trackmenu', function(){
         $('#result').html('');
         $('#studyTable').hide();
@@ -331,7 +331,26 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         model.active='';
         var study = model.study;
         if (study===null || study===undefined) study='all';
-        api.getFiles(model.key,study,setStudyTable);
+        //api.getFiles(model.key,study,setStudyTable);
+        api.getFiles(model.key,'all',function(data){
+          $('#uploadedModal').modal('hide');
+          fileObj = jQuery.parseJSON( data );
+          createTable();
+          var index ={};
+          index.index=0;
+          setIds(fileObj,index);
+          model.openStruct={};
+          model.fileSystem = fileObj;
+          setOpenStruct(fileObj,model.openStruct);
+          fileTableModel.user = false;
+          //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+          var info={};
+          info.study=model.study;
+          getStudyFromFileSys(fileObj,info);
+          model.studyFileSystem=info.studyObj;
+          createRaws(info.studyObj,false,fileTableModel.user);
+
+        });
 
 
       });
@@ -378,7 +397,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
          console.log(span);
          var fname = takespaces($(span).text());
          api.getUserName(takespaces(model.key),function(data){
-         var user = data;
+         var userObj = jQuery.parseJSON( data );
+         var user = userObj.name;
          var studyName = model.study;
          studyName = takeOutBraclet(studyName);
          window.open("https://dw2.psyc.virginia.edu/implicit/Launch?study=/user/"+user+"/"+studyName+"/"+fname+"&refresh=true");
@@ -422,7 +442,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var folderName = $(tr).text();
         var id = $(td).attr("id");
         changeFolderState(takespaces(folderName),id);
-        createRaws(fileObj,false,fileTableModel.user);
+        createRaws(model.studyFileSystem,false,fileTableModel.user);
         //createRawsWButt(fileObj,false);
       });
 
@@ -509,6 +529,22 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         api.uploadFile(data,fileOpSuccess);
        
       }
+
+      function getStudyFromFileSys(fileSystem,info){
+        
+        $.each(fileSystem, function(k, v) {
+          if (k.indexOf(".")===-1&& k!='id'&&k!='state'){//if folder
+            if (k===info.study){
+              info.studyObj=v;
+              return false;
+            }else{
+              getStudyFromFileSys(v,info);
+            }
+          }
+        });
+
+
+      }
       function folderID(fileSystem){
         var res;
         $.each(fileSystem, function(k, v) {
@@ -594,6 +630,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         }
         api.deleteFile(path,model.key,fileOpSuccess);
       }
+
+
       function viewFile(e){
         var pathA = new Array();
         var path='';
@@ -603,7 +641,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
-        window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key);
+        window.open('/implicit/dashboard/view/?study='+model.study+'&path='+path+'&key='+model.key);
       }
       function downloadFile(e){
         var pathA = new Array();
