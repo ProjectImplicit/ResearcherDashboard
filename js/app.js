@@ -79,8 +79,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
                 // if user clicks 'Cancel', do something
             }
         });
-      $('.navbar li').click(function(e) {
-        $('.navbar li.active').removeClass('active');
+
+      $('#sideMenu li').click(function(e) {
+        $('#sideMenu li.active').removeClass('active');
           var $this = $(this);
           if (!$this.hasClass('active')) {
               $this.addClass('active');
@@ -204,6 +205,27 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       });
 
+
+      $(document).on('click','.tableRaw', function(){
+        var tr =$(this);
+        var chosenStudy = $(tr).find('.studyRaw').text();
+        model.study= chosenStudy;
+        var menu = $('#sideMenu');
+        $('#instruct').hide();
+        $('#result').html('');
+        //$('#studyTablePanel').html('');
+        $('#studyTablePanel').hide();
+        $('#studyTable').hide();
+        menu.html('<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
+                    '<li><a href="#" id="test"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
+                    '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
+                    '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> Data </a></li>'+                    
+                    '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
+                    '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
+                  );
+        $('#test').click();
+      });
+
       /**
       * Desc: main listener for the 
       * 'deploy' top menu navigetaion bar.
@@ -271,6 +293,13 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       $(document).on("click",'#home', function(){
         $('#result').html('');
         model.activePage = 'home';
+        var menu = $('#sideMenu');
+        menu.html(
+                    '<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
+                    '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> File System</a></li>'+                    
+                    '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
+                  );
+        $('#studyTablePanel').show();
         $('#studyTable').show();
 
       }); 
@@ -936,7 +965,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           $('#result').html('');
           createTable();
         }
+        var numOfElements=0;
         $.each(filesObj, function(k, v) {
+          if (k!='state' && k!='id'){
+            numOfElements++;
+          }
           
           var extension = k.split(".");
           if (extension.length>1){
@@ -965,6 +998,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
             
           }
         });
+        if (numOfElements===0){
+          addEmptyRaw(fileTableModel.level);
+
+        }
       }
 
       function addExptRaw(file,level,v){
@@ -1051,6 +1088,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
                 '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
                 '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
                 '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
+            '</td>'+
+          '</tr>');
+
+      }
+      function addEmptyRaw(level){
+
+        fileTableModel.row = fileTableModel.row+1;
+        var raw = fileTableModel.row;
+        $('#fileTabale > tbody').append('<tr>'+
+            '<td class="" id="" >'+
+              '<span style="margin-left:'+level*50+'px;">'+
+                'Folder is Empty'+
+              '</span>'+
+            '</td>'+
+            '<td>'+
             '</td>'+
           '</tr>');
 
@@ -1253,8 +1305,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
         id++;
         var html='';
-        html+='<tr>'+
-              '<td><span href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</span>'+
+        html+='<tr class="tableRaw">'+
+              '<td class="studyRaw"><span href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</span>'+
               '</td>'+
               '<td class="">Runing</td>'+
               '<td class="">'+
@@ -1319,7 +1371,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         model.tracker.db = 'Research';
         model.tracker.list = 'Any';
         track.getTracker(studyExpt);
-        track.getTable(studyExpt,true);
+        //track.getTable(studyExpt,true);
         model.active = track;
       }
 
