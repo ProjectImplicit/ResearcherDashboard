@@ -98,8 +98,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
+        if (model.activePage === 'file') model.study='all';
         var folderToCreate = $('#folderName').val();
-        api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),folderCreated);
+        api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),model.study,folderCreated);
 
       });
       
@@ -155,7 +156,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       });
       $(document).on('click','#deleteFile', function(){
         var element =$(this);
-        var tr = $(element).parent();
+        var tr = $(element).parent().parent();
         var td = $(tr).find('.file');
         var id = $(td).attr("id");
         model.elementID = id;
@@ -163,33 +164,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         
 
       });
-      $(document).on('click','#statsFile',function(){
-        $('#result').html('');
-        $('#studyTable').hide();
-        model.activePage = 'trackmenu';
-        var studyExpt;
-        if (model.study!=undefined){
-          var exptName = $(this).parent().parent().text();
-          var study = model.study+"("+exptName+")";
-          studyExpt = getExptid(study);
-          if (studyExpt==='not_set'){
-            api.getExpt(model.key,model.study,function(data){
-              studyExpt = data;
-              appendTracker(studyExpt);
-            })
-          }else{
-            appendTracker(studyExpt);
-          }
-          
-        }else{
-          api.getUserName(takespaces(model.key),function(data){
-          appendTracker(data);
-           
-          });
-        }
-
-
-      });
+      
       $(document).on('click','#deleteOK', function(){
         deleteFile();
 
@@ -208,6 +183,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
 
       $(document).on('click','.tableRaw', function(){
+        model.activePage === 'study';
         var tr =$(this);
         var chosenStudy = $(tr).find('.studyRaw').text();
         model.study= chosenStudy;
@@ -217,14 +193,29 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         //$('#studyTablePanel').html('');
         $('#studyTablePanel').hide();
         $('#studyTable').hide();
-        menu.html('<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
+        menu.html(  '</br>'+
+                     '<strong>My Studies </strong>'+
+                     '<div class="dropdown" style="display: inline">'+
+                          '<button class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">'+
+                            'Studies '+
+                            '<span class="caret"></span>'+
+                          '</button>'+
+                          '<ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">'+
+                          '</ul>'+
+                    '</div>'+
+                    '<hr>'+
+                    '<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
                     '<li><a href="#" id="test"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
                     '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
                     '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> Data </a></li>'+                    
                     '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
                     '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
                   );
-        $('#test').click();
+        
+        $.each(model.studyNames, function(key, value) {
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+key+'</a></li>');
+        });
+        populateFileTable();
       });
 
       /**
@@ -234,6 +225,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       *
       */
 
+      $(document).on("click",'#deployButton', function(){
+        var button = $(this);
+        var span = $(button).parent().parent().find('.fileNameSpan');
+        var fname = takespaces($(span).text());
+        model.exptFile = fname;
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'deploy';
+        var deployObj = new Deploy(model,'design1');
+        model.active = deployObj;
+        deployObj.setHtml();
+        
+
+
+      });
       $(document).on("click",'#deploy', function(){
         $('#result').html('');
         $('#studyTable').hide();
@@ -245,30 +251,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       
       $('#deployFile').on("click",function(){
 
+
       });
-      $(document).on("click",'#trackmenu', function(){
-        $('#result').html('');
-        $('#studyTable').hide();
-        model.activePage = 'trackmenu';
-        var studyExpt;
-        if (model.study!=undefined){
-          studyExpt = getExptid(model.study);
-          if (studyExpt==='not_set'){
-            api.getExpt(model.key,model.study,function(data){
-              studyExpt = data;
-              appendTracker(studyExpt);
-            })
-          }else{
-            appendTracker(studyExpt);
-          }
-          
-        }else{
-          api.getUserName(takespaces(model.key),function(data){
-          appendTracker(data);
-           
-          });
-        }
-      });
+      
 
       /**
       * Desc: main listener for the 
@@ -294,11 +279,25 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         $('#result').html('');
         model.activePage = 'home';
         var menu = $('#sideMenu');
-        menu.html(
+        menu.html( '</br>'+
+                     '<strong>My Studies </strong>'+
+                     '<div class="dropdown" style="display: inline">'+
+                          '<button class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">'+
+                            'Studies '+
+                            '<span class="caret"></span>'+
+                          '</button>'+
+                          '<ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">'+
+                          '</ul>'+
+                    '</div>'+
+                    '<hr>'+
                     '<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
                     '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> File System</a></li>'+                    
                     '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
                   );
+        $.each(model.studyNames, function(key, value) {
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+key+'</a></li>');
+        });
+
         $('#studyTablePanel').show();
         $('#studyTable').show();
 
@@ -309,6 +308,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       
       $(document).on("click",'#fileSys', function(){
         $('#uploadedModal').modal('show');
+        $('#studyTablePanel').hide();
         $('#result').html('');
         $('#studyTable').hide();
         model.activePage = 'file';
@@ -348,6 +348,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           info.study=model.study;
           getStudyFromFileSys(fileObj,info);
           model.studyFileSystem=info.studyObj;
+
           createRaws(info.studyObj,false,fileTableModel.user);
 
         });
@@ -360,12 +361,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         console.log($(this).text());
         model.study = $(this).text();
         $('.studyButt').html(model.study+'<span class="caret"></span>');
-        var activeApp = model.active;
-        if (model.activePage === 'test'){
-          $('#test').click()
-        }else{
-          if (activeApp!=null &&activeApp!=undefined &&activeApp!='') activeApp.studyChanged();
-        }
+        populateFileTable();
+        
       });
 
       /**
@@ -443,6 +440,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var id = $(td).attr("id");
         changeFolderState(takespaces(folderName),id);
         createRaws(model.studyFileSystem,false,fileTableModel.user);
+                   
         //createRawsWButt(fileObj,false);
       });
 
@@ -462,6 +460,82 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
 
       });
+      $(document).on('click','#statsFile',function(){
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'trackmenu';
+        var studyExpt;
+        if (model.study!=undefined){
+          var exptName = $(this).parent().parent().text();
+          var study = model.study+"("+exptName+")";
+          studyExpt = getExptid(study);
+          if (studyExpt==='not_set'){
+            api.getExpt(model.key,model.study,function(data){
+              studyExpt = data;
+              appendTracker(studyExpt);
+            })
+          }else{
+            appendTracker(studyExpt);
+          }
+          
+        }else{
+          api.getUserName(takespaces(model.key),function(data){
+          appendTracker(data);
+           
+          });
+        }
+
+
+      });
+      $(document).on("click",'#trackmenu', function(){
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'trackmenu';
+        var studyExpt;
+        if (model.study!=undefined){
+          studyExpt = getExptid(model.study);
+          if (studyExpt==='not_set'){
+            api.getExpt(model.key,model.study,function(data){
+              studyExpt = data;
+              appendTracker(studyExpt);
+            })
+          }else{
+            appendTracker(studyExpt);
+          }
+          
+        }else{
+          api.getUserName(takespaces(model.key),function(data){
+          appendTracker(data);
+           
+          });
+        }
+      });
+      $(document).on("click",'.statisticsButton',function(){
+
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'trackmenu';
+        var studyExpt;
+        if (model.study!=undefined){
+          studyExpt = getExptid(model.study);
+          if (studyExpt==='not_set'){
+            api.getExpt(model.key,model.study,function(data){
+              studyExpt = data;
+              appendTracker(studyExpt);
+            })
+          }else{
+            appendTracker(studyExpt);
+          }
+          
+        }else{
+          api.getUserName(takespaces(model.key),function(data){
+          appendTracker(data);
+           
+          });
+        }
+
+      });
+
       $(document).on("click",'.statistics',function(){
 
         var button = $(this);
@@ -485,13 +559,43 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
-        api.deleteFolder(path,model.key,deleteSuccess);
+        if (model.activePage === 'file') model.study='all';
+        api.deleteFolder(path,model.key,model.study,deleteSuccess);
       }
       function deleteSuccess(){
         //alert('folder deleted');
         $('#fileSys').click();
       }
 
+      function populateFileTable(){
+        $('#uploadedModal').modal('show');
+        $('#result').html('');
+        $('#studyTablePanel').hide();
+        $('#studyTable').hide();
+        model.activePage = 'test';
+        model.active='';
+        api.getFiles(model.key,'all',function(data){
+          $('#uploadedModal').modal('hide');
+          fileObj = jQuery.parseJSON( data );
+          createTable();
+          var index ={};
+          index.index=0;
+          setIds(fileObj,index);
+          model.openStruct={};
+          model.fileSystem = fileObj;
+          setOpenStruct(fileObj,model.openStruct);
+          fileTableModel.user = false;
+          //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+          var info={};
+          info.study=model.study;
+          getStudyFromFileSys(fileObj,info);
+          model.studyFileSystem=info.studyObj;
+          createRaws(info.studyObj,false,fileTableModel.user);
+
+        });
+
+
+      }
 
       function newStudySuccess(studyname){
         //alert('study was created');
@@ -522,10 +626,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         {
           data.append(key, value);
         });
+        if (model.activePage === 'file') model.study='all';
         data.append('UserKey',model.key);
         data.append('folder',takespaces(path));
-        data.append('study',model.study);
+        data.append('study','all');
         data.append('cmd','UploadFile');
+        
         api.uploadFile(data,fileOpSuccess);
        
       }
@@ -628,7 +734,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
-        api.deleteFile(path,model.key,fileOpSuccess);
+        if (model.activePage === 'file') model.study='all';
+        api.deleteFile(path,model.key,'all',fileOpSuccess);
       }
 
 
@@ -636,23 +743,28 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var pathA = new Array();
         var path='';
         var info = {};
+        var study;
         info.found = false;
         getPath(model.fileSystem,model.elementID,pathA,info);
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
-        window.open('/implicit/dashboard/view/?study='+model.study+'&path='+path+'&key='+model.key);
+        if (model.activePage === 'file') model.study='all';
+        window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key+'&study=all');
+        //window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key);
       }
       function downloadFile(e){
         var pathA = new Array();
         var path='';
         var info = {};
         info.found = false;
+        var study;
         getPath(model.fileSystem,model.elementID,pathA,info);
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
-        window.location.href = '/implicit/dashboard/download/?path='+path+'&key='+model.key;
+        if (model.activePage === 'file') model.study='all';
+        window.location.href = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study=all';
         
       }
       
@@ -670,24 +782,39 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function fileOpSuccess(data){
 
         $('#uploadedModal').modal('show');
-        $('#result').html('');
-        $('#studyTable').hide();
-        model.activePage = 'test';
+        //model.activePage = 'test';
         model.active='';
         var study = model.study;
         if (study===null || study===undefined) study='all';
-        api.getFiles(model.key,study,function(data){
+        api.getFiles(model.key,'all',function(data){
 
           $('#uploadedModal').modal('hide');
+          $('#result').html('');
+          $('#studyTablePanel').hide();
+          $('#studyTable').hide();
           fileObj = jQuery.parseJSON( data );
           createTable();
           var index ={};
           index.index=0;
           setIds(fileObj,index);
           model.fileSystem = fileObj;
+          model.studyFileSystem = fileObj;
+         // model.openStruct={};
+          //setOpenStruct(fileObj,model.openStruct);
           fileTableModel.user = false;
-          $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
-          createRaws(fileObj,false,fileTableModel.user);
+          if (model.activePage!='file'){
+            var info={};
+            info.study=model.study;
+            getStudyFromFileSys(fileObj,info);
+            model.studyFileSystem=info.studyObj;
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+            createRaws(model.studyFileSystem,false,fileTableModel.user);
+          }else{
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+            createRaws(fileObj,false,fileTableModel.user);
+
+          }
+          
 
         });
         
@@ -1058,7 +1185,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
             '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
             '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
             '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
-            '<button type="button" id="deployFile" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
+            '<button type="button" id="deployButton" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
             '<button type="button" style="margin-left:20px;" id="statsFile" class="btn btn-primary btn-xs">Statistics</button>'+
             '<button type="button" style="margin-left:20px;" id="dataFile" class="btn btn-primary btn-xs ">Data</button>'+
            '</td>'+
@@ -1079,10 +1206,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           '</td>'+
         '</tr>');
       }
-      function addJSRaw(file,level){
+      function addJSRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
         $('#fileTabale > tbody').append('<tr>'+
-          '<td class="file">'+
+          '<td class="file" id="'+v.id+'">'+
             '<span class="fileNameSpan" style="margin-left:'+level*50+'px"> '+
               '<i class="fa fa-file-text" ></i> '+file+
             '</span>'+
@@ -1295,6 +1422,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         setIds(fileObj,index);
         model.openStruct={};
         model.fileSystem = fileObj;
+        model.studyFileSystem=fileObj;
         setOpenStruct(fileObj,model.openStruct);
         fileTableModel.user = false;
         $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
@@ -1343,7 +1471,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
         id++;
         var html='';
-        html+='<tr class="tableRaw">'+
+        html+='<tr class="tableRaw" style="cursor:pointer">'+
               '<td class="studyRaw"><span href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</span>'+
               '</td>'+
               '<td class="">Runing</td>'+
@@ -1381,10 +1509,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function getExptid(name){
         
         var study = findStudy(name);
-        var res;
+        var res=[];
         $.each(study, function(key, value) {
             if (key.indexOf('expt')!=-1){
-              res = value;
+              res.push(value);
               return false;
             }
                

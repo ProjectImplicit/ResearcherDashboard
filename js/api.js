@@ -133,7 +133,7 @@ define([], function () {
                 
             });
         }
-        this.createFolder = function (key,uploadFolder,folderCreate,success){
+        this.createFolder = function (key,uploadFolder,folderCreate,study,success){
             //var url = "/implicit/dashboard/create/folder/"+key+"/"+uploadFolder+"/"+folderCreate;
             var url = '/implicit/dashboard';
             data={};
@@ -141,6 +141,7 @@ define([], function () {
             data.key=key;
             data.uploadFolder= uploadFolder;
             data.folderCreate=folderCreate;
+            data.study=study;
             $.ajax({
                 type: "POST",
                 data:data,
@@ -202,10 +203,11 @@ define([], function () {
             });
 
         }
-        this.deleteFolder = function (path,key,success){
+        this.deleteFolder = function (path,key,study,success){
             var data ={};
             data.key = key;
             data.path = path;
+            data.study = study;
             data.cmd='delete';
 
             $.ajax({
@@ -217,10 +219,11 @@ define([], function () {
             });
 
         }
-        this.deleteFile = function (path,key,success){
+        this.deleteFile = function (path,key,study,success){
             var data ={};
             data.key = key;
             data.path = path;
+            data.study = study;
             data.cmd='delete';
 
             $.ajax({

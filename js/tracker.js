@@ -11,8 +11,32 @@ define(['api','settings','datepicker'], function (API,Settings) {
 
 		model.tracker={};
 		var that=this;
-	    this.getTracker = function(exptid){
+		var exptid;
+	    this.getTracker = function(expt){
 	    	console.log('from tracker:'+exptid);
+	    	if (exptid.length>1){
+	    		var exphHtml='<div> There are several expt files for this study, choose one: ';
+	    		for (var i=0;i<expt.length;i++){
+	    			exphHtml = exphHtml+'</br>';
+	    			exphHtml = exphHtml+ '<input type="checkbox" class="expt" /><label> '+expt[i]+'</label>';
+	    		}
+	    		exphHtml = exphHtml+ '</div>';
+	    		$('#chooseEXPTDiv').html(exphHtml);
+	    		$('#chooseEXPTModal').modal('show');
+	    	}else{
+	    		exptid = expt[0];
+	    	}
+	    	$('.expt').on('click',function(){
+				exptid= $(this).next('label').text();
+			});
+	    	$('#exptOK').on('click',function(){
+				this.addTracker(exptid);
+
+			});
+	    	
+	         return true;
+	    }
+	    this.addTracker = function (exptid){
 	    	var currentdate = new Date(); 
 	    	var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
         	var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
@@ -62,7 +86,6 @@ define(['api','settings','datepicker'], function (API,Settings) {
 					$('#sinceI').datepicker();
 					$('#untilI').datepicker();
 					this.setListeners();
-	         return true;
 	    }
 	    
 	    this.designHtml = function(){
