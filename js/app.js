@@ -100,7 +100,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         }
         if (model.activePage === 'file') model.study='all';
         var folderToCreate = $('#folderName').val();
-        api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),model.study,folderCreated);
+        model.tempFolder = takespaces(path)+takespaces(folderToCreate)+'/';
+        api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),'all',folderCreated);
 
       });
       
@@ -118,7 +119,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       });
       $(document).on('click','#newFolder', function(){
         var element =$(this);
-        var tr = $(element).parent();
+        var tr = $(element).parent().parent();
         var td = $(tr).find('.folder');
         var id = $(td).attr("id");
         model.elementID = id;
@@ -574,7 +575,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         })
         return id;
       }
-      
+
       function deleteFolder(){
         var pathA = new Array();
         var path='';
@@ -634,7 +635,45 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       }
       function folderCreated(){
         //alert('folder created');
-        $('#fileSys').click();
+        //$('#fileSys').click();
+        var open =model.openStruct;
+        open[model.tempFolder] = 'close';  
+        $('#uploadedModal').modal('show');
+        //model.activePage = 'test';
+        model.active='';
+        var study = model.study;
+        if (study===null || study===undefined) study='all';
+        api.getFiles(model.key,'all',function(data){
+
+          $('#uploadedModal').modal('hide');
+          $('#result').html('');
+          $('#studyTablePanel').hide();
+          $('#studyTable').hide();
+          fileObj = jQuery.parseJSON( data );
+          createTable();
+          var index ={};
+          index.index=0;
+          setIds(fileObj,index);
+          model.fileSystem = fileObj;
+          model.studyFileSystem = fileObj;
+         // model.openStruct={};
+          //setOpenStruct(fileObj,model.openStruct);
+          fileTableModel.user = false;
+          if (model.activePage!='file'){
+            var info={};
+            info.study=model.study;
+            getStudyFromFileSys(fileObj,info);
+            model.studyFileSystem=info.studyObj;
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+            createRaws(model.studyFileSystem,false,fileTableModel.user);
+          }else{
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+            createRaws(fileObj,false,fileTableModel.user);
+
+          }
+          
+
+        });
       }
       function prepareUpload(){
         
@@ -1074,9 +1113,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       function changeFolderState(name,id){
         var obj = model.openStruct;
+        var pathA = new Array();
+        var path='';
+        var info = {};
+        info.found = false;
+        getPath(model.fileSystem,id,pathA,info);
+        for (var i=0;i<pathA.length;i++){
+          path+=pathA[i]+'/';
+        }
         for (var key in obj) {
            if (obj.hasOwnProperty(key)) {
-              if (key===id){
+              if (key===path){
                 if(obj[key]==='open'){
                   obj[key]='close';
                 }else{
@@ -1309,15 +1356,24 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       function setOpenStruct(fileObj){
       
+         
          $.each(fileObj, function(k, v) {
             var extension = k.split(".");
-            if (extension.length>1){
+            if (extension.length>1){//file 
             }else{
               if (k!='state' && k!='id'){
                 var obj = model.openStruct;
                 $.each(v, function(k2, v2) {
                   if (k2==='id'){
-                    obj[v2] = 'close';
+                    var pathA = new Array();
+                    var path='';
+                    var info = {};
+                    info.found = false;
+                    getPath(model.fileSystem,v2,pathA,info);
+                    for (var i=0;i<pathA.length;i++){
+                      path+=pathA[i]+'/';
+                    }
+                    obj[path] = 'close';
                   }
                 });
                 setOpenStruct(v);
@@ -1471,9 +1527,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           
 
         });
+        var pathA = new Array();
+        var path='';
+        var info = {};
+        info.found = false;
+        getPath(model.fileSystem,id,pathA,info);
+        for (var i=0;i<pathA.length;i++){
+          path+=pathA[i]+'/';
+        }
         var obj = model.openStruct;
         $.each(obj,function(k,v){
-          if (k===id){
+          if (k===path){
             state= v;
           }
 
