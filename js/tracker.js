@@ -14,7 +14,7 @@ define(['api','settings','datepicker'], function (API,Settings) {
 		var exptid;
 	    this.getTracker = function(expt){
 	    	console.log('from tracker:'+exptid);
-	    	if (exptid.length>1){
+	    	if (expt.length>1){
 	    		var exphHtml='<div> There are several expt files for this study, choose one: ';
 	    		for (var i=0;i<expt.length;i++){
 	    			exphHtml = exphHtml+'</br>';
@@ -25,17 +25,22 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	    		$('#chooseEXPTModal').modal('show');
 	    	}else{
 	    		exptid = expt[0];
+	    		that.addTracker(exptid);
 	    	}
 	    	$('.expt').on('click',function(){
 				exptid= $(this).next('label').text();
+				exptid = that.takespaces(exptid);
 			});
 	    	$('#exptOK').on('click',function(){
-				this.addTracker(exptid);
+				that.addTracker(exptid);
 
 			});
 	    	
 	         return true;
 	    }
+	    this.takespaces = function(name){ 
+   			return name.replace(/\s+/g, '');
+   		}
 	    this.addTracker = function (exptid){
 	    	var currentdate = new Date(); 
 	    	var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();

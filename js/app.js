@@ -510,14 +510,20 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           });
         }
       });
-      $(document).on("click",'.statisticsButton',function(){
+      $(document).on("click",'#statisticsButton',function(){
 
         $('#result').html('');
         $('#studyTable').hide();
+        var button = $(this);
+        var span = $(button).parent().parent().find('.fileNameSpan');
+        var fname = takespaces($(span).text());
+        model.exptFile = fname;
         model.activePage = 'trackmenu';
-        var studyExpt;
+        var study = findStudy(model.study);
+        var exptID = getEXPTIDFromStudy(fname,study);
+        var studyExpt=[];
+        studyExpt[0]=exptID;
         if (model.study!=undefined){
-          studyExpt = getExptid(model.study);
           if (studyExpt==='not_set'){
             api.getExpt(model.key,model.study,function(data){
               studyExpt = data;
@@ -550,6 +556,25 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       // });
 ///////////////////////////fUNCTIONS////////////////////////////////////
 
+      function getEXPTIDFromStudy(EXPTFile,study){
+        var num;
+        var id;
+        $.each(study,function(k,v){
+          if (v.indexOf(EXPTFile)!=-1){
+            var numArray = k.split(".");
+            num = numArray[1];
+            return false;
+          }
+        })
+        $.each(study,function(k,v){
+          if (k.indexOf('exptID')!=-1 && k.indexOf(num)!=-1){
+            id=v;
+            
+          }
+        })
+        return id;
+      }
+      
       function deleteFolder(){
         var pathA = new Array();
         var path='';
@@ -1186,7 +1211,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
             '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
             '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
             '<button type="button" id="deployButton" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
-            '<button type="button" style="margin-left:20px;" id="statsFile" class="btn btn-primary btn-xs">Statistics</button>'+
+            '<button type="button" style="margin-left:20px;" id="statisticsButton" class="btn btn-primary btn-xs ">Statistics</button>'+
             '<button type="button" style="margin-left:20px;" id="dataFile" class="btn btn-primary btn-xs ">Data</button>'+
            '</td>'+
         '</tr>');
@@ -1511,9 +1536,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var study = findStudy(name);
         var res=[];
         $.each(study, function(key, value) {
-            if (key.indexOf('expt')!=-1){
+            if (key.indexOf('exptID')!=-1){
               res.push(value);
-              return false;
+              
             }
                
         });
