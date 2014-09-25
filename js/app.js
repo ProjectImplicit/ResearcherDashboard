@@ -46,7 +46,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       fileTableModel.user=false;
       var fileObj;
       context.init({preventDoubleContext: false},model);
-  
+      setLiseners();
       // context.attach('.folder', [
       //   {header: 'Options'},
       //   {text: 'Upload File', action: uploadFile},
@@ -70,25 +70,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       })
       
       $(document).find('input[type=file]').bind("change", function () {
-            var file = this.files[0];
-            if (file) {
-                // if file selected, do something
-                
-                prepareUpload();
-            } else {
-                // if user clicks 'Cancel', do something
-            }
-        });
-
-      $('#sideMenu li').click(function(e) {
-        $('#sideMenu li.active').removeClass('active');
-          var $this = $(this);
-          if (!$this.hasClass('active')) {
-              $this.addClass('active');
+           var file = this.files[0];
+           if (file) {
+               // if file selected, do something
+               prepareUpload();
+          } else {
+              // if user clicks 'Cancel', do something
           }
-          e.preventDefault();
       });
 
+      
       $(document).on("click",'#createFolderOK', function(){
         var pathA = new Array();
         var path='';
@@ -204,7 +195,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var tr =$(this);
         var chosenStudy = $(tr).find('.studyRaw').text();
         model.study= chosenStudy;
-        $('.studyButt').html(model.study+'<span class="caret"></span>');
         $('#instruct').hide();
         $('#result').html('');
         //$('#studyTablePanel').html('');
@@ -293,7 +283,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         $.each(model.studyNames, function(key, value) {
             $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+key+'</a></li>');
         });
-
+        setLiseners();
         $('#studyTablePanel').show();
         $('#studyTable').show();
 
@@ -545,6 +535,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       // });
 ///////////////////////////fUNCTIONS////////////////////////////////////
 
+      function setLiseners(){
+        $('#sideMenu li').click(function(e) {
+        $('#sideMenu li.active').removeClass('active');
+          var $this = $(this);
+          if (!$this.hasClass('active')) {
+              $this.addClass('active');
+          }
+          e.preventDefault();
+        });
+      }
       function setSideMenu(){
         var menu = $('#sideMenu');
         menu.html(  '</br>'+
@@ -569,6 +569,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         $.each(model.studyNames, function(key, value) {
             $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+key+'</a></li>');
         });
+        $('.studyButt').html(model.study+'<span class="caret"></span>');
+        setLiseners();
       }
 
       function getEXPTIDFromStudy(EXPTFile,study){
@@ -1581,10 +1583,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
               '<td class="studyRaw"><span href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</span>'+
               '</td>'+
               '<td class="">Runing</td>'+
-              '<td class="">'+
+              '<!--<td class="">'+
                   '<button type="button" class="btn btn-primary btn-xs statistics">Statistics</button>'+
               '</td>'+
-              '<!--<td class="">'+
+              '<td class="">'+
                   '<button type="button" class="btn btn-primary btn-xs test" >Test</button>'+
               '</td>'+
              '<td class="">'+
