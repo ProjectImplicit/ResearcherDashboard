@@ -9,11 +9,14 @@ define(['api','settings','datepicker'], function (API,Settings) {
 
 	var tracker = function (model,design) {
 
-		model.tracker={};
-		var that=this;
-		var exptid;
+		
+		//alert('init tracker');
 	    this.getTracker = function(expt){
+	    	
 	    	console.log('from tracker:'+exptid);
+	    	var that=this;
+			var exptid;
+			var trackNum=0;
 	    	if (expt.length>1){
 	    		var exphHtml='<div> There are several expt files for this study, choose one: ';
 	    		for (var i=0;i<expt.length;i++){
@@ -32,11 +35,16 @@ define(['api','settings','datepicker'], function (API,Settings) {
 				exptid = that.takespaces(exptid);
 			});
 	    	$('#exptOK').on('click',function(){
-				that.addTracker(exptid);
+	    		if (trackNum===0){
+	    			trackNum++;
+	    			that.addTracker(exptid);
+
+	    		}
+				
 
 			});
 	    	
-	         return true;
+	         
 	    }
 	    this.takespaces = function(name){ 
    			return name.replace(/\s+/g, '');

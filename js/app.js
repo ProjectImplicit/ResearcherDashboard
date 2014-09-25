@@ -1641,12 +1641,24 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
          }
       }
       function appendTracker(studyExpt){
-        var track = new Tracker(model,'design1');
-        model.tracker.db = 'Research';
-        model.tracker.list = 'Any';
-        track.getTracker(studyExpt);
-        //track.getTable(studyExpt,true);
-        model.active = track;
+        var track;
+        if (model.activeTracker===undefined){
+          track = new Tracker(model,'design1');
+          model.tracker={};
+          model.tracker.db = 'Research';
+          model.tracker.list = 'Any';
+          model.activeTracker =track;
+          model.active = track;
+        }else{
+          //track = model.activeTracker;
+        }
+        
+        //Tracker(model,'design1');
+        
+        //Tracker.getTracker(studyExpt);
+        model.activeTracker.getTracker(studyExpt);
+        ////track.getTable(studyExpt,true);
+        
       }
 
      
