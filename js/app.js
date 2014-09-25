@@ -128,11 +128,13 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       });
       $(document).on('click','#deleteFolder', function(){
         var element =$(this);
-        var tr = $(element).parent();
+        var tr = $(element).parent().parent();
         var td = $(tr).find('.folder');
         var id = $(td).attr("id");
         model.elementID = id;
-        deleteFolder();
+        model.deleteAction='folder';
+        $('#deleteModal').modal('show');
+        
 
       });
 
@@ -167,7 +169,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       });
       
       $(document).on('click','#deleteOK', function(){
-        deleteFile();
+        if (model.deleteAction==='folder'){
+          deleteFolder();
+        }else{
+          deleteFile();
+        }
+        
 
       });
       $(document).on('click','#newStudy', function(){
@@ -182,40 +189,28 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       });
 
+      $(document).on("click",'.tableVal', function(){
+
+        console.log($(this).text());
+        model.study = $(this).text();
+        $('.studyButt').html(model.study+'<span class="caret"></span>');
+        setSideMenu();
+        populateFileTable();
+        
+      });
 
       $(document).on('click','.tableRaw', function(){
         model.activePage === 'study';
         var tr =$(this);
         var chosenStudy = $(tr).find('.studyRaw').text();
         model.study= chosenStudy;
-        var menu = $('#sideMenu');
+        $('.studyButt').html(model.study+'<span class="caret"></span>');
         $('#instruct').hide();
         $('#result').html('');
         //$('#studyTablePanel').html('');
         $('#studyTablePanel').hide();
         $('#studyTable').hide();
-        menu.html(  '</br>'+
-                     '<strong>My Studies </strong>'+
-                     '<div class="dropdown" style="display: inline">'+
-                          '<button class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">'+
-                            'Studies '+
-                            '<span class="caret"></span>'+
-                          '</button>'+
-                          '<ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">'+
-                          '</ul>'+
-                    '</div>'+
-                    '<hr>'+
-                    '<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
-                    '<li><a href="#" id="test"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
-                    '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
-                    '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> Data </a></li>'+                    
-                    '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
-                    '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
-                  );
-        
-        $.each(model.studyNames, function(key, value) {
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+key+'</a></li>');
-        });
+        setSideMenu();
         populateFileTable();
       });
 
@@ -357,14 +352,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       });
 
-      $(document).on("click",'.tableVal', function(){
-
-        console.log($(this).text());
-        model.study = $(this).text();
-        $('.studyButt').html(model.study+'<span class="caret"></span>');
-        populateFileTable();
-        
-      });
+      
 
       /**
       * Desc: main listener for the 
@@ -557,6 +545,32 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       // });
 ///////////////////////////fUNCTIONS////////////////////////////////////
 
+      function setSideMenu(){
+        var menu = $('#sideMenu');
+        menu.html(  '</br>'+
+                     '<strong>My Studies </strong>'+
+                     '<div class="dropdown" style="display: inline">'+
+                          '<button class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">'+
+                            'Studies '+
+                            '<span class="caret"></span>'+
+                          '</button>'+
+                          '<ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">'+
+                          '</ul>'+
+                    '</div>'+
+                    '<hr>'+
+                    '<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
+                    '<li><a href="#" id="test"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
+                    '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
+                    '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> Data </a></li>'+                    
+                    '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
+                    '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
+                  );
+        
+        $.each(model.studyNames, function(key, value) {
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+key+'</a></li>');
+        });
+      }
+
       function getEXPTIDFromStudy(EXPTFile,study){
         var num;
         var id;
@@ -586,7 +600,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           path+=pathA[i]+'/';
         }
         if (model.activePage === 'file') model.study='all';
-        api.deleteFolder(path,model.key,model.study,deleteSuccess);
+        api.deleteFolder(path,model.key,'all',fileOpSuccess);
       }
       function deleteSuccess(){
         //alert('folder deleted');
@@ -1053,7 +1067,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
             update(key);
             
         });
-       
+        if (model.activePage === 'file'){
+           $('#fileSys').click();
+
+        }
             
       }
       function openStudyValidation(data){
