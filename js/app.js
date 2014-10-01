@@ -83,20 +83,85 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       $(document).on("click",'#createFolderOK', function(){
         var pathA = new Array();
         var path='';
+        var study;
         var info = {};
         info.found = false;
-        getPath(model.fileSystem,model.elementID,pathA,info);
-        for (var i=0;i<pathA.length;i++){
-          path+=pathA[i]+'/';
+        if (model.elementID==='0'){
+          path="/";
+          study=model.study;
+          model.tempFolder = getStudyPath(model.studsy)+takespaces(folderToCreate)+'/';
+        }else{
+          getPath(model.fileSystem,model.elementID,pathA,info);
+          for (var i=0;i<pathA.length;i++){
+            path+=pathA[i]+'/';
+          }
+          study='all';
+          model.tempFolder = takespaces(path)+takespaces(folderToCreate)+'/';
         }
+       
         if (model.activePage === 'file') model.study='all';
         var folderToCreate = $('#folderName').val();
-        model.tempFolder = takespaces(path)+takespaces(folderToCreate)+'/';
-        api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),'all',folderCreated);
+        
+        api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),study,folderCreated);
 
       });
       
-      
+      function getStudyPath(study){
+        var study = findStudy(study);
+        var folder = study.folder;
+        var splitArray = folder.split('/');
+        for(var i=0;i<splitArray.length;i++){
+          
+        }
+      }
+      function prepareUpload(){
+        
+        var data =new FormData();
+        var pathA = new Array();
+        var study;
+        var info={};
+        info.found=false;
+        var path='';
+        if (model.elementID==='0'){
+          path="/";
+          study=model.study;
+        }else{
+          getPath(model.fileSystem,model.elementID,pathA,info);
+          for (var i=0;i<pathA.length;i++){
+            path+=pathA[i]+'/';
+          }
+          study='all';
+        }
+        
+        $.each(event.target.files, function(key, value)
+        {
+          data.append(key, value);
+        });
+        if (model.activePage === 'file') model.study='all';
+        data.append('UserKey',model.key);
+        data.append('folder',takespaces(path));
+        data.append('study',study);
+        data.append('cmd','UploadFile');
+        
+        api.uploadFile(data,fileOpSuccess);
+       
+      }
+
+      function getStudyFromFileSys(fileSystem,info){
+        
+        $.each(fileSystem, function(k, v) {
+          if (k.indexOf(".")===-1&& k!='id'&&k!='state'){//if folder
+            if (k===info.study){
+              info.studyObj=v;
+              return false;
+            }else{
+              getStudyFromFileSys(v,info);
+            }
+          }
+        });
+
+
+      }
 
 
       $(document).on('click','#uploadFile', function(){
@@ -537,7 +602,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       function setLiseners(){
         $('#sideMenu li').click(function(e) {
-        $('#sideMenu li.active').removeClass('active');
+          //alert('inside hover');
+          $('#sideMenu li.active').removeClass('active');
           var $this = $(this);
           if (!$this.hasClass('active')) {
               $this.addClass('active');
@@ -545,6 +611,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           e.preventDefault();
         });
       }
+
       function setSideMenu(){
         var menu = $('#sideMenu');
         menu.html(  '</br>'+
@@ -691,46 +758,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
         });
       }
-      function prepareUpload(){
-        
-        var data =new FormData();
-        var pathA = new Array();
-        var info={};
-        info.found=false;
-        var path='';
-        getPath(model.fileSystem,model.elementID,pathA,info);
-        for (var i=0;i<pathA.length;i++){
-          path+=pathA[i]+'/';
-        }
-        $.each(event.target.files, function(key, value)
-        {
-          data.append(key, value);
-        });
-        if (model.activePage === 'file') model.study='all';
-        data.append('UserKey',model.key);
-        data.append('folder',takespaces(path));
-        data.append('study','all');
-        data.append('cmd','UploadFile');
-        
-        api.uploadFile(data,fileOpSuccess);
-       
-      }
-
-      function getStudyFromFileSys(fileSystem,info){
-        
-        $.each(fileSystem, function(k, v) {
-          if (k.indexOf(".")===-1&& k!='id'&&k!='state'){//if folder
-            if (k===info.study){
-              info.studyObj=v;
-              return false;
-            }else{
-              getStudyFromFileSys(v,info);
-            }
-          }
-        });
-
-
-      }
+      
       function folderID(fileSystem){
         var res;
         $.each(fileSystem, function(k, v) {
@@ -815,7 +843,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           path+=pathA[i]+'/';
         }
         if (model.activePage === 'file') model.study='all';
-        api.deleteFile(path,model.key,'all',fileOpSuccess);
+        api.deleteFile(path,model.key,model.study,fileOpSuccess);
       }
 
 
@@ -1463,33 +1491,33 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
             '</tr>');
      }
       
-      function createRawsWButt(filesObj,recursive){
+      // function createRawsWButt(filesObj,recursive){
 
-          fileTableModel.level=fileTableModel.level+1;
-          if (recursive===false){
-            $('#result').html('');
-            createTable();
-          }
-          $.each(filesObj, function(k, v) {
-            var extension = k.split(".");
-            if (extension.length>1){
-            addFileRawB(k,fileTableModel.level,v);
-            }else{
-              if (k!='state' && k!='id'){
-                addFolderRawB(k,fileTableModel.level,v);
-                $.each(v, function(k2, v2) {
-                  if (k2==='state'){
-                    if (v2==='open'){
-                      createRawsWButt(v,true);
-                      fileTableModel.level=fileTableModel.level-1;
-                    }
-                  }
-                });
-              }
+      //     fileTableModel.level=fileTableModel.level+1;
+      //     if (recursive===false){
+      //       $('#result').html('');
+      //       createTable();
+      //     }
+      //     $.each(filesObj, function(k, v) {
+      //       var extension = k.split(".");
+      //       if (extension.length>1){
+      //       addFileRawB(k,fileTableModel.level,v);
+      //       }else{
+      //         if (k!='state' && k!='id'){
+      //           addFolderRawB(k,fileTableModel.level,v);
+      //           $.each(v, function(k2, v2) {
+      //             if (k2==='state'){
+      //               if (v2==='open'){
+      //                 createRawsWButt(v,true);
+      //                 fileTableModel.level=fileTableModel.level-1;
+      //               }
+      //             }
+      //           });
+      //         }
               
-            }
-          });
-      }
+      //       }
+      //     });
+      // }
       function setIds(filesObj,index){
 
         $.each(filesObj, function(k, v) {
@@ -1516,7 +1544,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         //console.log(data);
         $('#uploadedModal').modal('hide');
         fileObj = jQuery.parseJSON( data );
-        createTable();
         var index ={};
         index.index=0;
         setIds(fileObj,index);
@@ -1567,7 +1594,23 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function createTable(){
         fileTableModel.row =0;
         fileTableModel.level =0;
-        $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
+        if (model.activePage === 'file'){                    
+          $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');          
+        }else{
+          $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
+          $('#fileTabale > tbody').append(
+            '<tr>'+
+              '<td class="folder" id="0" >'+
+                '<span  style="margin-left:0px;">+</span>'+
+              '</td>'+
+              '<td>'+
+                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
+                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
+              '</td>'+    
+            '</tr>'
+          );
+        }
+        
 
       }
       function update(name){

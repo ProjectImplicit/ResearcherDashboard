@@ -27,7 +27,7 @@ define(['api'], function (API) {
 
 			////////
 			$('.deplotDrop').html('Not Filled '+' <span class="caret"></span>');
-			$('#clearAnch').on('click',function(){
+			$(document).on('click','#clearAnch',function(){
 				$('#hide').val('parent');
 				$('#rulename').val('parent');
 				$('#restrictionshide').val('parent');
@@ -49,6 +49,7 @@ define(['api'], function (API) {
 
     
 		this.addHTML = function(name,email,folder,chosenEXPT){
+			var that=this;
 			var html ='</br></br><table style ="width=500" class=""><tr><td><label>Researcher name: </label></td><td><span class="label label-info" id="researchName"> '+name+'</span></td></tr>'+
 				'<tr><td><label> Researcher email address: </label></td><td><span class="label label-info" id="researchEmail">'+email+'</span></td></tr>'+
 				'<tr><td><label> Study folder location: </label></td><td ><span class="label label-info" id="folder">'+folder+'</span></td></tr>'+
@@ -66,7 +67,7 @@ define(['api'], function (API) {
 					$(button).html(selection+' <span class="caret"></span>');
 				});
 				$('#processForm').on('click',function(){
-					this.processForm();
+					that.processForm();
 				});
 		
 		}
@@ -83,7 +84,7 @@ define(['api'], function (API) {
 	    	'<a id ="rulaTableAnch" href="#" onclick="window.open(\'ruletable.html\',\'Rule Generator\',\'width=1100,height=900,scrollbars=yes\')"> Open the rule generator </a></p>'+
 	    	'<div style="background-color:#f3f3f3;min-height:70px;width:300px;border:1px solid;border-color:#BDBDBD;">'+
 			'<label id ="restrictions" style="padding:5px;" name="restrictions">None</label>'+
-			'</div><a id ="clearAnch" href="#" >Clear restrictions</a>'+
+			'</div><a id ="clearAnch" href="#" onclick="return false;">Clear restrictions</a>'+
 			'<a id="addComments" href="#" style="display: inline;margin-left:20px;" onclick="$(\'#commentModal\').modal(\'show\')">Add restrictions comments</a>';
 
 			$('#CommentsOK').on('click',function(){
@@ -154,47 +155,47 @@ define(['api'], function (API) {
 
 			}
 			var button = $('#approved').find('button'); 
-			selection = $(button).text();
-			if (selection==='Not Filled'){
+			selection = this.takespaces($(button).text());
+			if (selection==='NotFilled'){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#approved_error').css("visibility","visible");
 
 			}
-			selection = $('#studyComplete').find('button').text();
+			selection = this.takespaces($('#studyComplete').find('button').text());
 
-			if (selection==='Not Filled'){
+			if (selection==='NotFilled'){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#studyComplete_error').css("visibility","visible");
 
 			}
-			selection = $('#necessary').find('button').text();
-			if (selection==='Not Filled'){
+			selection = this.takespaces($('#necessary').find('button').text());
+			if (selection==='NotFilled'){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#necessary_error').css("visibility","visible");
 
 			}
-			selection = $('#Virtual').find('button').text();
-			if (selection==='Not Filled'){
+			selection = this.takespaces($('#Virtual').find('button').text());
+			if (selection==='NotFilled'){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#Virtual_error').css("visibility","visible");
 
 			}
-			selection = $('#ReviewerYes').find('button').text();
+			selection = this.takespaces($('#ReviewerYes').find('button').text());
 
 			if (selection==='Not Filled'){
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#ReviewerYes_error').css("visibility","visible");
 			}
-			selection = $('#confirmationYes').find('button').text();
+			selection = this.takespaces($('#confirmationYes').find('button').text());
 			if (selection==='Not Filled'){
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
@@ -366,11 +367,11 @@ define(['api'], function (API) {
 			 var name = $('#researchName').text();
 			// //var ruleName = $('#rulename').val();
 			 var path = $('#folder').text();
-			 var index = path.lastIndexOf("\\") + 1;
+			 var index = path.lastIndexOf("/") + 1;
 		     var length = path.length;
 		     var filename = path.substr(index,length);
 		     if (filename=='') {
-		     	var folders = path.split("\\");
+		     	var folders = path.split("/");
 		     	var size = folders.length;
 		     	filename = folders[size-2];
 		     }
@@ -490,12 +491,11 @@ define(['api'], function (API) {
 			
 	   		var html = '<div class="dropdown depDrop" id="'+id+'" >'+
 			  '<button id="dropdownMenu1" class="btn btn-default dropdown-toggle deplotDrop" type="button" data-toggle="dropdown">'+
-			    ''+
+			    'Not Filled'+
 			    '<span class="caret"></span>'+
 			  '</button>'+
 			  '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">'+
-			  	'<li role="presentation"><a role="menuitem" tabindex="-1" class="selectdrop">Not Filled</a></li>'+
-			    '<li role="presentation"><a role="menuitem" tabindex="-1" class="selectdrop">'+val1+'</a></li>'+
+			  	'<li role="presentation"><a role="menuitem" tabindex="-1" class="selectdrop">'+val1+'</a></li>'+
 			    '<li role="presentation"><a role="menuitem" tabindex="-1" class="selectdrop">'+val2+'</a></li>'+
 			  '</ul>'+
 			'</div>';
