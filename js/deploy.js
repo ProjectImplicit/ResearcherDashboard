@@ -515,8 +515,9 @@ define(['api'], function (API) {
 	    		}
 
 	    	})
-	    	var folders = folder.split("user");
-	    	return folders[1];
+	    	//var folders = folder.split("user");
+	    	//return folders[1];
+	    	return folder;
 	    }
 
 	    this.getEXPT = function(study){

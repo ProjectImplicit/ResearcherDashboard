@@ -40,7 +40,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       
       var model={};
       var api = new API();
+      $('#uploadedModal').modal('show');
       api.init(model,setStudies,SetUser);
+      $('#uploadedModal').modal('hide');
       var id=0;
       var fileTableModel ={};
       fileTableModel.user=false;
@@ -86,10 +88,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var study;
         var info = {};
         info.found = false;
+        var folderToCreate = $('#folderName').val();
         if (model.elementID==='0'){
           path="/";
           study=model.study;
-          model.tempFolder = getStudyPath(model.studsy)+takespaces(folderToCreate)+'/';
+          model.tempFolder = model.study+'/'+takespaces(folderToCreate)+'/';
         }else{
           getPath(model.fileSystem,model.elementID,pathA,info);
           for (var i=0;i<pathA.length;i++){
@@ -100,8 +103,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         }
        
         if (model.activePage === 'file') model.study='all';
-        var folderToCreate = $('#folderName').val();
-        
         api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),study,folderCreated);
 
       });
@@ -109,10 +110,19 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function getStudyPath(study){
         var study = findStudy(study);
         var folder = study.folder;
-        var splitArray = folder.split('/');
+        var user = model.user;
+        var found=false;
+        var res='';
+        var splitArray = folder.split('\\');
         for(var i=0;i<splitArray.length;i++){
-          
+          if (found){
+            res=res+splitArray[i]+'/';
+          }
+          if (splitArray[i]===user.folder){
+            found=true;
+          }
         }
+        return res;
       }
       function prepareUpload(){
         
@@ -439,7 +449,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
          var fname = takespaces($(span).text());
          api.getUserName(takespaces(model.key),function(data){
          var userObj = jQuery.parseJSON( data );
-         var user = userObj.name;
+         var user = userObj.folder;
          var studyName = model.study;
          studyName = takeOutBraclet(studyName);
          window.open("https://dw2.psyc.virginia.edu/implicit/Launch?study=/user/"+user+"/"+studyName+"/"+fname+"&refresh=true");
@@ -625,8 +635,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
                           '</ul>'+
                     '</div>'+
                     '<hr>'+
-                    '<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
-                    '<li><a href="#" id="test"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
+                    '<li ><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
+                    '<li class="active"><a href="#" id="test"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
                     '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
                     '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> Data </a></li>'+                    
                     '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
@@ -709,13 +719,20 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function newStudySuccess(studyname){
         //alert('study was created');
         var studies = model.studyNames;
-        
-        studies[studyname] = {name:studyname,exptID:'not_set'};
+        var user = model.user;
+        studies[studyname] = {name:studyname,exptID:'not_set',folder:user.folder+"/"+studyname};
         //studies.push({name:studyname,exptID:'not_set'});
         setStudies(studies);
-        
-
+        model.study=studyname;
+        $('#instruct').hide();
+        $('#result').html('');
+        //$('#studyTablePanel').html('');
+        $('#studyTablePanel').hide();
+        $('#studyTable').hide();
+        setSideMenu();
+        populateFileTable();
       }
+
       function folderCreated(){
         //alert('folder created');
         //$('#fileSys').click();
@@ -1092,11 +1109,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         }
         model.studyNames=obj;
         model.selectedName='';
+        var sortArray= new Array();
         $.each(obj, function(key, value) {
             console.log(key + "/"+value);
-            update(key);
+            sortArray.push(key);
+            //update(key);
             
         });
+        sortArray.sort();
+        for (var i=0;i<sortArray.length;i++){
+          update(sortArray[i]);
+        }
         if (model.activePage === 'file'){
            $('#fileSys').click();
 

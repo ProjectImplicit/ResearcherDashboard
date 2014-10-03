@@ -412,11 +412,12 @@
     </div>
     
 </div>
-<div class="modal fade modal-wide" id="uploadedModal" style="background-color:transparent;">
+<div class="modal fade modal-wide" id="uploadedModal" >
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body" style="width:50px;background-color:transparent;" >
-                <img src="img/loading.gif" alt="Refreshing File System...">
+        <div class="modal-content" style="background-color: #99CCFF;">
+            <div class="modal-body" style="width:10px;background-color: #99CCFF;" >
+                <!--<img src="img/loading.gif" alt="Refreshing File System...">-->
+                <span><i class="fa fa-cog fa-spin fa-4x" style="margin-left:40px;"></i></span>
                
             </div>
          </div>
@@ -432,7 +433,7 @@
             <div class="modal-body"></div>
             <span style="margin-left:10px;"> Are You Sure ? </span>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="deleteOK" data-dismiss="modal">Ok</button>
             </div>
         </div>
