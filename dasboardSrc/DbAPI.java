@@ -43,7 +43,30 @@ public class DbAPI  {
 		return singleton;
 	}
 	
-	
+	protected boolean deleteFromExptTable(String studyID,String exptFileName){
+		Connection connection = null;
+		DashBoardConnect.getInstance(false);
+		try{
+			connection = DashBoardConnect.getConnection(db);
+			connection.setAutoCommit(true);
+			String exptQuery ="DELETE FROM EXPT WHERE STUDYID='"+studyID+"' AND EXPT_FILE_NAME='"+exptFileName+"'";
+			PreparedStatement ecs = connection.prepareStatement(exptQuery);
+			ecs.execute();
+			return true;
+		}catch(Exception e){
+			System.out.println("Error in api.updateTable "+e.getMessage()+ e.getStackTrace());
+			return false;
+		}
+		finally{
+			if (connection!=null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
 	public void insertIntoExptTable(int studyID,String exptFileName,String exptID){
 		Connection connection = null;
 		DashBoardConnect.getInstance(false);
@@ -116,13 +139,14 @@ public class DbAPI  {
 			cs.execute();
 			study_id = cs.getInt(5);
 			
-			String exptQuery ="INSERT INTO EXPT (EID,STUDYID,EXPT_FILE_NAME,EXPT_ID) VALUES (EXPT_SEQUENCE.nextval,?,?,?)";
-			PreparedStatement ecs = connection.prepareStatement(exptQuery);
-			ecs.setInt(1, study_id);
-			ecs.setString(2, exptFileName);
-			ecs.setString(3, exptid);
-			ecs.execute();
-			
+			if (!exptid.equals("not_set")){
+				String exptQuery ="INSERT INTO EXPT (EID,STUDYID,EXPT_FILE_NAME,EXPT_ID) VALUES (EXPT_SEQUENCE.nextval,?,?,?)";
+				PreparedStatement ecs = connection.prepareStatement(exptQuery);
+				ecs.setInt(1, study_id);
+				ecs.setString(2, exptFileName);
+				ecs.setString(3, exptid);
+				ecs.execute();
+			}
 			
 			String insertSQL = "INSERT INTO UsersStudies  (UserStudyID,UserID, StudyID) VALUES (userstudy_sequence.nextval,?, ?)";
 			PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);

@@ -29,6 +29,9 @@ public class User {
 	}
 	
 	public String getID(){ return this.id;}
+	public String getUserName(){
+		return userName;
+	}
 	public void setUserName(String n ){
 		this.userName=n;
 	}

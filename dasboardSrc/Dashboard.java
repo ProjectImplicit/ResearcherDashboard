@@ -193,8 +193,9 @@ public class Dashboard extends HttpServlet{
 							mng.setUserfromDB(user);
 							//String name = user.getFolderName();
 							HashMap name = new HashMap();
-							name.put("name", user.getFolderName());
+							name.put("name", user.getUserName());
 							name.put("email", user.getEmail());
+							name.put("folder",user.getFolderName());
 							String expt = JSONValue.toJSONString(name);
 							out.write(expt.getBytes("UTF8"));
 							out.flush();
@@ -234,8 +235,8 @@ public class Dashboard extends HttpServlet{
 		user.setKey(key);
 		mng.setUserfromDB(user);
 		FileUploadManager fileMng = new FileUploadManager();
-		boolean success = fileMng.createFolder("/", studyName, key);
-		String path = mng.getFolderBase()+File.separator+user.getFolderName()+File.separator+studyName;
+		boolean success = fileMng.createFolder("/", studyName, key,"all");
+		String path = user.getFolderName()+File.separator+studyName;
 		api.createStudy(studyName, "not_set","not_set","not_set", path, user.getID());
 		
 		if (success){
@@ -251,39 +252,66 @@ public class Dashboard extends HttpServlet{
 	private String deleteFile(HttpServletRequest request,HttpServletResponse response){
 		String key;
 		String path;
+		String study;
+		Boolean result;
 		key = request.getParameter("key");
 		path = request.getParameter("path");
+		study = request.getParameter("study");
+		
 		FileUploadManager fileMng = new FileUploadManager();
 		ServletContext ctx = getServletContext();
-		return fileMng.deleteFile(path,key);
+		result = fileMng.deleteFile(path,key,study);
+		Manager mng = new Manager();
+		if (result){
+			if (path.contains("expt")){
+				String[] splits = path.split("/");
+				int size = splits.length;
+				String fileName = splits[size-1];
+				User user = new User();
+				user.setKey(key);
+				mng.setUserfromDB(user);
+				mng.deleteExptFromDB(user, study, fileName);
+				
+			}
+		}
+		if (result){
+			return "File was deleted";
+		}else{
+			return "File was not deleted";
+		}
 		
 		
 		
 	}
-	private void downLoadFile(String[] arr,HttpServletRequest request,HttpServletResponse response,String cmd,ServletOutputStream out,boolean download){
+	private void downLoadFile(String[] arr,HttpServletRequest request,HttpServletResponse response,String cmd,ServletOutputStream out,boolean download) throws Exception{
 		//PrintWriter out = response.getWriter();
 		String key;
 		String fileName;
+		String study = null;
 		if (cmd.equals("download")|| cmd.equals("view")){
 			key = request.getParameter("key");
 			fileName = request.getParameter("path");
-			
+			study = request.getParameter("study");
 		}else{
 			key = arr[7];
 			fileName = arr[8];
 		}
+		fileName =java.net.URLDecoder.decode(fileName, "UTF-8");
+		//fileName=new java.net.URI(fileName).getPath();
 		FileUploadManager fileMng = new FileUploadManager();
 		ServletContext ctx = getServletContext();
 		Manager mng = new Manager();
-		fileMng.downLoadFile(key,mng.trim(fileName),ctx,request,response,out,download);
+		fileMng.downLoadFile(key,mng.trim(fileName),ctx,request,response,out,download,study);
 	}
 	private String createFolder(String[] arr,HttpServletRequest request,HttpServletResponse response) throws IOException{
 		ServletOutputStream out = response.getOutputStream();
 		String key = request.getParameter("key");
 		String folderUnder = request.getParameter("uploadFolder");
 		String folderToCreate = request.getParameter("folderCreate");
+		String study = request.getParameter("study");
 		FileUploadManager fileMng = new FileUploadManager();
-		boolean success =fileMng.createFolder(folderUnder, folderToCreate, key);
+		
+		boolean success =fileMng.createFolder(folderUnder, folderToCreate, key,study);
 		if(success){
 			return ("Folder was created");
 		}else{

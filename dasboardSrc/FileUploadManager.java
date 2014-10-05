@@ -58,18 +58,27 @@ public class FileUploadManager {
 //		
 	}
 	
-	protected boolean createFolder(String folderUnder,String folderToCreate,String key){
+	protected boolean createFolder(String folderUnder,String folderToCreate,String key,String study){
 		User user = new User();
 		mng = new Manager();
 		user.setKey(key);
 		mng.setUserfromDB(user);
+		mng.setStudyIdFromDB(user);
+		String userFolder = user.getFolderName();
 		String folder = user.getFolderName();
-		if (folderUnder.equals("/")){
-			path = mng.getFolderBase()+File.separator+folder+File.separator+folderToCreate;
-			
+		if (!study.equals("all")){
+			Study s =user.getStudy(study);
+			String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
+			path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+folderToCreate;
 		}else{
-			path = mng.getFolderBase()+File.separator+folder+File.separator+folderUnder+File.separator+folderToCreate;
+			if (folderUnder.equals("/")){
+				path = mng.getFolderBase()+File.separator+folder+File.separator+folderToCreate;
+				
+			}else{
+				path = mng.getFolderBase()+File.separator+folder+File.separator+folderUnder+File.separator+folderToCreate;
+			}
 		}
+		
 		
 		Boolean success = new File(path).mkdir();
 		if (success){
@@ -80,7 +89,9 @@ public class FileUploadManager {
 		
 		
 	}
-	protected String deleteFile(String filePath,String key){
+	protected boolean deleteFile(String filePath,String key,String study){
+		
+		boolean result=false;
 		try{
 			
 			User user = new User();
@@ -93,9 +104,9 @@ public class FileUploadManager {
     		 
     		if(file.delete()){
     			System.out.println(file.getName() + " is deleted!");
-    			return "File/Folder was deleted";
+    			result=true;
     		}else{
-    			return "File/Folder was not deleted";
+    			result= false;
     		}
  
     	}catch(Exception e){
@@ -103,10 +114,10 @@ public class FileUploadManager {
     		e.printStackTrace();
  
     	}
-		return "";
+		return result;
 	}
 	protected void downLoadFile(String key,String fileName,ServletContext ctx,HttpServletRequest request,HttpServletResponse response,
-			ServletOutputStream os,boolean download){
+			ServletOutputStream os,boolean download,String study){
 		
 		try {
 			User user = new User();
@@ -114,7 +125,15 @@ public class FileUploadManager {
 			user.setKey(key);
 			mng.setUserfromDB(user);
 			String folder = user.getFolderName();
-			path = mng.getFolderBase()+File.separator+folder+File.separator+fileName;
+			if (!study.equals("all")){
+				mng.setStudyIdFromDB(user);
+				Study s =user.getStudy(study);
+				path = mng.getFolderBase()+File.separator+folder+File.separator+s.getFolderName()+File.separator+fileName;
+				
+			}else{
+				path = mng.getFolderBase()+File.separator+folder+File.separator+fileName;
+			}
+			//path = mng.getFolderBase()+File.separator+folder+File.separator+fileName;
 			File file = new File(path);
 			if(!file.exists()){
 				System.out.println("File doesn't exists on server.");
@@ -131,7 +150,9 @@ public class FileUploadManager {
 			//response.setContentType(mimeType != null? mimeType:"application/octet-stream");
 			response.setContentLength((int) file.length());
 			if (download){
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+				String[] names= fileName.split("/");
+				
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + names[names.length-1] + "\"");
 				
 			}
 			System.out.println("file size: "+file.length());
@@ -160,6 +181,7 @@ public class FileUploadManager {
 		
 		
 	}
+	
 	 protected boolean UploadFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		 
 		boolean uploaded=false;
@@ -187,11 +209,20 @@ public class FileUploadManager {
    			mng = new Manager();
    			user.setKey(userKey);
    			mng.setUserfromDB(user);
-   			mng.setStudyIdFromDB(user);
+   			//mng.setStudyIdFromDB(user);
    			String userFolder = user.getFolderName();
-   			Study studyObj = user.getStudy(study);
-   			String studyPath = studyObj.getFolderName();
-   			path = studyPath+File.separator+uploadFolder;
+   			//Study studyObj = user.getStudy(study);
+   			//String studyPath = studyObj.getFolderName();
+   			path = mng.getFolderBase()+user.getFolderName()+File.separator+uploadFolder;
+   			if (!study.equals("all")){
+				mng.setStudyIdFromDB(user);
+				Study s =user.getStudy(study);
+				String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
+				path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+uploadFolder;
+				
+			}else{
+				path = mng.getFolderBase()+File.separator+userFolder+File.separator+uploadFolder;
+			}
    			File filesDir = new File(path);
    			fileFactory.setRepository(filesDir);
    			fileItemsIterator = fileItemsList.iterator();
@@ -248,8 +279,9 @@ public class FileUploadManager {
          System.out.println("Size in bytes="+fileItem.getSize());
          File file = new File(path+File.separator+fileItem.getName());
          if (fileItem.getName().contains("expt")){
-        	 String[] folders = uploadFolder.split("/");
-        	 String studyFolderName = folders[folders.length-1];
+        	 String seperator = "\\" + File.separator;
+        	 String[] folders = file.getAbsolutePath().split(seperator);
+        	 String studyFolderName = folders[folders.length-2];
         	 if (mng.isStudy(studyFolderName)){
         		 System.out.println("Absolute Path at server="+file.getAbsolutePath());
                  try {
@@ -257,7 +289,7 @@ public class FileUploadManager {
                 	if (exptfiles.size()==0){//if there are no expt files
                 		fileItem.write(file);
                 		uploaded=true;
-            			mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),mng.trim(uploadFolder),false,true);
+            			mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),studyFolderName,false,true);
             			
             			
                 	}
@@ -265,12 +297,12 @@ public class FileUploadManager {
                 		if (existEXPT(exptfiles,file)){//expt exist
                 			fileItem.write(file);
                     		uploaded=true;
-                    		mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),mng.trim(uploadFolder),true,true);
+                    		mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),studyFolderName,true,true);
                 			
                 		}else{//new expt
                 			fileItem.write(file);
                     		uploaded=true;
-                    		mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),mng.trim(uploadFolder),false,false);
+                    		mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),studyFolderName,false,false);
                     		//String studyName = studyFolderName+"("+mng.getNameNoExtention(file)+")";
                     		//String folderPath = mng.getFolderBase()+File.separator+user.getFolderName()+File.separator+studyFolderName;
                     		//mng.createStudyinDB(studyName, mng.getExptID(file),mng.getSchema(file),path, user.getID(),false);

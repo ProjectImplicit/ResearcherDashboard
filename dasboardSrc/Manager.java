@@ -23,8 +23,8 @@ public class Manager {
 	//1. get study ids from db
 	//2. go over the folder of that user and get study folders 
 	public Manager(){
-		//api.setMethod("cloude");
-		api.setMethod("oracle");
+		
+		api.setMethod("cloude");
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
 			System.out.println("Using folder:"+folderBase);
@@ -350,9 +350,22 @@ public class Manager {
 		return files;
 		
 	}
-	public void setUser(User user){
+	
+	protected String getStudyRelativePath(String studyPath,String userfolderName){
+		String res="";
+		Boolean found=false;
+		String[] splitArray = studyPath.split("\\\\");
+		for (int i=0;i<splitArray.length;i++){
+			if (found){
+				res=res+splitArray[i]+"\\";	
+			}
+			if (splitArray[i].equals(userfolderName)){
+				found=true;
+			}
+			
+		}
 		
-		
+		return res;
 	}
 	public HashMap listFiles(User user,String study){
 		
@@ -368,8 +381,8 @@ public class Manager {
 			}else{
 				Study s = user.getStudy(study);
 				String studyFolder = s.getFolderName();
-				//directory = new File(folderBase+"//"+folderName+"//"+studyFolder);
-				directory = new File(studyFolder);
+				directory = new File(folderBase+"//"+folderName+"//"+studyFolder);
+				//directory = new File(studyFolder);
 			}
 			
 			File[] fList = directory.listFiles();
@@ -412,6 +425,7 @@ public class Manager {
 //		api.createStudy(studyName, exptID,exptFileName,datagroup, path, userID);
 //		
 //	}
+	
 	private void walkFileSystem(File directory,User user){
 		
 		try{
@@ -429,14 +443,15 @@ public class Manager {
 		        				String exptID=getExptID((File)files.get(0));
 		        				String schema = getSchema((File)files.get(0));
 		        				String exptFileName = ((File)files.get(0)).getName();
-			        			api.createStudy(file.getName(), exptID,exptFileName,schema, file.getAbsolutePath(), user.getID());
+		        				
+			        			api.createStudy(file.getName(), exptID,exptFileName,schema, getStudyRelativePath(file.getAbsolutePath(),user.getFolderName()), user.getID());
 			        			user.addStudy(createStudy(exptID,exptFileName,file.getName()));
 		        				
 		        			}else{//there is more then one expt
 		        				String exptID=getExptID((File)files.get(0));
 		        				String schema = getSchema((File)files.get(0));
 		        				String exptFileName = ((File)files.get(0)).getName();
-		        				Integer id =api.createStudy(file.getName(), exptID,exptFileName,schema, file.getAbsolutePath(), user.getID());
+		        				Integer id =api.createStudy(file.getName(), exptID,exptFileName,schema, getStudyRelativePath(file.getAbsolutePath(),user.getFolderName()), user.getID());
 		        				user.addStudy(createStudy(exptID,exptFileName,file.getName()));
 		        				for (int i=1;i<files.size();i++){
 		        					File exptfile = (File) files.get(i);
@@ -479,7 +494,29 @@ public class Manager {
 		
 		
 	}
-	
+	protected boolean deleteExptFromDB(User user,String studyName,String exptFileName){
+		String userID = user.getID();
+		String studyID = null;
+		boolean found=false;
+		HashMap records =api.find("UsersStudies","USERID", userID);
+		Iterator it = records.entrySet().iterator();
+		while (it.hasNext()&& !found) {
+			Map.Entry pairs = (Map.Entry)it.next();
+	        String pid = (String) pairs.getKey();
+	        HashMap userRecord  = (HashMap)pairs.getValue();
+	        studyID = (String) userRecord.get("StudyID");
+	        HashMap studiesRecords = api.find("Studies", "STUDYID", studyID);
+	        Map.Entry studiesPairs = (Entry) studiesRecords.entrySet().iterator().next();
+			HashMap studyRecord = (HashMap) studiesPairs.getValue();
+			String name = (String) studyRecord.get("name");
+	        if (name.equals(studyName)){
+	        	found=true;
+	        }
+		}
+		api.deleteFromExptTable(studyID, exptFileName);
+		
+		return true;
+	}
 	
 	
 
