@@ -5,6 +5,7 @@ define(['api'], function (API) {
 	var deploy = function (model,design) {
 
 		this.setHtml = function(){
+
 			var user=model.user;
 			var name = user.name;
 			var email = user.email;
@@ -26,7 +27,8 @@ define(['api'], function (API) {
 			});
 
 			////////
-			$('.deplotDrop').html('Not Filled '+' <span class="caret"></span>');
+			
+			$('.deplotDrop').html('Select '+' <span class="caret"></span>');
 			$(document).on('click','#clearAnch',function(){
 				$('#hide').val('parent');
 				$('#rulename').val('parent');
@@ -37,12 +39,12 @@ define(['api'], function (API) {
 				
 
 			$('#clearForm').on('click',function(){
-				$('.deplotDrop').html('Not Filled '+' <span class="caret"></span>');
+				$('.deplotDrop').html('Select '+' <span class="caret"></span>');
 				$('#targetNumber').val('');
 			});
 			$('#exptDepOK').on('click',function(){
 				that.addHTML(name,email,folder,chosenEXPT);
-				$('.deplotDrop').html('Not Filled '+' <span class="caret"></span>');
+				$('.deplotDrop').html('Select '+' <span class="caret"></span>');
 			});
 				
 		}
@@ -156,7 +158,7 @@ define(['api'], function (API) {
 			}
 			var button = $('#approved').find('button'); 
 			selection = this.takespaces($(button).text());
-			if (selection==='NotFilled'){
+			if (selection==='Select'){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
@@ -165,7 +167,7 @@ define(['api'], function (API) {
 			}
 			selection = this.takespaces($('#studyComplete').find('button').text());
 
-			if (selection==='NotFilled'){
+			if (selection==='Select'){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
@@ -173,7 +175,7 @@ define(['api'], function (API) {
 
 			}
 			selection = this.takespaces($('#necessary').find('button').text());
-			if (selection==='NotFilled'){
+			if (selection==='Select'){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
@@ -181,7 +183,7 @@ define(['api'], function (API) {
 
 			}
 			selection = this.takespaces($('#Virtual').find('button').text());
-			if (selection==='NotFilled'){
+			if (selection==='Select'){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
@@ -190,13 +192,13 @@ define(['api'], function (API) {
 			}
 			selection = this.takespaces($('#ReviewerYes').find('button').text());
 
-			if (selection==='Not Filled'){
+			if (selection==='Select'){
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#ReviewerYes_error').css("visibility","visible");
 			}
 			selection = this.takespaces($('#confirmationYes').find('button').text());
-			if (selection==='Not Filled'){
+			if (selection==='Select'){
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#confirmationYes_error').css("visibility","visible");
@@ -491,7 +493,7 @@ define(['api'], function (API) {
 			
 	   		var html = '<div class="dropdown depDrop" id="'+id+'" >'+
 			  '<button id="dropdownMenu1" class="btn btn-default dropdown-toggle deplotDrop" type="button" data-toggle="dropdown">'+
-			    'Not Filled'+
+			    'Select'+
 			    '<span class="caret"></span>'+
 			  '</button>'+
 			  '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">'+
