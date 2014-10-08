@@ -1633,9 +1633,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function createTable(){
         fileTableModel.row =0;
         fileTableModel.level =0;
-        if (model.activePage === 'file'){                    
-          $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');          
-        }else{
+        //if (model.activePage === 'file'){                    
+          //$('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');          
+        //}else{
           $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
           $('#fileTabale > tbody').append(
             '<tr>'+
@@ -1649,7 +1649,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
               '</td>'+    
             '</tr>'
           );
-        }
+        //}
         
 
       }
