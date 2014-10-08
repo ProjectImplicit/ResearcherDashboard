@@ -135,6 +135,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         if (model.elementID==='0'){
           path="/";
           study=model.study;
+          if (study===undefined) study='all';
         }else{
           getPath(model.fileSystem,model.elementID,pathA,info);
           for (var i=0;i<pathA.length;i++){
@@ -173,6 +174,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       }
 
+      
+      $(document).on('click','#multiple', function(){
+        $( '.check' ).each(function( index ) {
+          var input = $(this);
+          var tr  = $(input).parent().parent();
+          var id = $(tr).attr("id");
+          if ($(input).prop('checked')){
+
+            model.elementID = id;
+            downloadFile();
+            $(this).attr('checked', false);
+
+          }
+        });
+      });
 
       $(document).on('click','#uploadFile', function(){
         var element =$(this);
@@ -1316,7 +1332,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
         $('#fileTabale > tbody').append('<tr>'+
           '<td class="file" id="'+v.id+'" >'+
-            '<span class="fileNameSpan" style="margin-left:'+level*50+'px" >'+
+            '<span class="fileNameSpan" style="margin-left:'+level*50+'px" ><input type="checkbox" class="check" style="margin-right:10px;">'+
               '<i class="fa fa-file-text" ></i> '+file+
             '</span>'+
           '</td>'+
@@ -1337,7 +1353,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         fileTableModel.row = fileTableModel.row+1;
         $('#fileTabale > tbody').append('<tr>'+
           '<td class="file" id="'+v.id+'" >'+
-            '<span style="margin-left:'+level*50+'px"><i class="fa fa-file-text" >'+
+            '<span style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;"><i class="fa fa-file-text" >'+
             '</i> '+file+
             '</span>'+
           '</td>'+
@@ -1352,7 +1368,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         fileTableModel.row = fileTableModel.row+1;
         $('#fileTabale > tbody').append('<tr>'+
           '<td class="file" id="'+v.id+'">'+
-            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"> '+
+            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"> <input type="checkbox" class="check" style="margin-right:10px;">'+
               '<i class="fa fa-file-text" ></i> '+file+
             '</span>'+
           '</td>'+
@@ -1368,7 +1384,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function addFileRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
         $('#fileTabale > tbody').append('<tr>'+
-          '<td class="file" id="'+v.id+'" >'+
+          '<td class="file" id="'+v.id+'" ><input type="checkbox" class="check" style="margin-right:10px;">'+
             '<span class="fileRaw" style="margin-left:'+level*50+'px">'+
               '<i class="fa fa-file-text"  ></i> '+file+
             '</span>'+
@@ -1387,7 +1403,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var raw = fileTableModel.row;
         $('#fileTabale > tbody').append('<tr>'+
             '<td class="folder" id="'+v.id+'" style="cursor:pointer">'+
-              '<span  style="margin-left:'+level*50+'px">'+
+              '<span  style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
                 '<i class="fa fa-folder" ></i> '+file+
               '</span>'+
             '</td>'+
@@ -1629,6 +1645,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
               '<td>'+
                 '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
                 '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
+                '<button type="button" style="margin-left:20px;" id="multiple" class="btn btn-primary btn-xs">Multiple Download</button>'+
               '</td>'+    
             '</tr>'
           );
