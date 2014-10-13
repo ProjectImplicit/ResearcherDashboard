@@ -75,6 +75,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
            var file = this.files[0];
            if (file) {
                // if file selected, do something
+               $('#uploadedModal').modal('show');
                prepareUpload();
           } else {
               // if user clicks 'Cancel', do something
@@ -176,12 +177,19 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       
       $(document).on('click','#multiple', function(){
+       
         $( '.check' ).each(function( index ) {
           var input = $(this);
           var tr  = $(input).parent().parent();
           var id = $(tr).attr("id");
+          if (id===undefined){
+            var upTD = $(tr).find('.file');
+            id = $(upTD).attr("id");
+          }
+          
+          //var id = $(tr).attr("id");
           if ($(input).prop('checked')){
-
+            
             model.elementID = id;
             downloadFile();
             $(this).attr('checked', false);
@@ -266,6 +274,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       $(document).on('click','#newStudyOK',function(){
 
         var studyName = $('#studyName').val();
+        $('#studyName').val('');
         api.newStudy(takespaces(studyName),model.key,newStudySuccess);
         //api.getStudies(model.key,setStudies);
 
@@ -463,12 +472,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
          var fname = takespaces($(span).text());
-         api.getUserName(takespaces(model.key),function(data){
-         var userObj = jQuery.parseJSON( data );
-         var user = userObj.folder;
-         var studyName = model.study;
-         studyName = takeOutBraclet(studyName);
-         window.open("https://dw2.psyc.virginia.edu/implicit/Launch?study=/user/"+user+"/"+studyName+"/"+fname+"&refresh=true");
+         api.getUser(takespaces(model.key),function(data){
+           var userObj = jQuery.parseJSON( data );
+           var user = userObj.folder;
+           var studyName = model.study;
+           studyName = takeOutBraclet(studyName);
+           window.open("https://dw2.psyc.virginia.edu/implicit/Launch?study=/user/"+user+"/"+studyName+"/"+fname+"&refresh=true");
 
 
          });
@@ -894,7 +903,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key+'&study=all');
         //window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key);
       }
-      function downloadFile(e){
+      function downloadFile(count){
         var pathA = new Array();
         var path='';
         var info = {};
@@ -905,7 +914,20 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           path+=pathA[i]+'/';
         }
         if (model.activePage === 'file') model.study='all';
-        window.location.href = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study=all';
+        //window.location.href = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study=all';
+        var url = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study=all';
+        var hiddenIFrameID = 'hiddenDownloader' + count++;
+        var iframe = document.createElement('iframe');
+        iframe.id = hiddenIFrameID;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        iframe.src = url;
+        setTimeout((function(iframe) {
+           return function() { 
+             iframe.remove(); 
+           }
+        })(iframe), 2000);
+        
         
       }
       
@@ -922,7 +944,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       function fileOpSuccess(data){
 
-        $('#uploadedModal').modal('show');
+        
         //model.activePage = 'test';
         model.active='';
         var study = model.study;
