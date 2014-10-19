@@ -340,6 +340,22 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       });
       
+      $(document).on('dragenter', function (e) 
+      {
+          e.stopPropagation();
+          e.preventDefault();
+      });
+      $(document).on('dragover', function (e) 
+      {
+        e.stopPropagation();
+        e.preventDefault();
+        obj.css('border', '2px dotted #0B85A1');
+      });
+      $(document).on('drop', function (e) 
+      {
+          e.stopPropagation();
+          e.preventDefault();
+      });
 
       /**
       * Desc: main listener for the 
@@ -395,6 +411,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       $(document).on("click",'#fileSys', function(){
         $('#uploadedModal').modal('show');
         $('#studyTablePanel').hide();
+        $('#instruct').css("display","none");
         $('#result').html('');
         $('#studyTable').hide();
         model.activePage = 'file';
@@ -513,7 +530,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       $(document).on("click",'.folder',function(){
         console.log($(this));
         //debugger;
-        var td = $(this);
+        var td = $(this).parent().parent();
         var tr = $(td).parent();
         var folderName = $(tr).text();
         var id = $(td).attr("id");
@@ -1301,52 +1318,105 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       }
 
       
+      function sortedKeys(filesObj){
+        var sortArray= new Array();
+        $.each(filesObj, function(key, value) {
+            sortArray.push(key);
+        });
+        sortArray.sort(function (a, b) {
+          return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
+        //sortArray.sort();
+        return sortArray;
+      }
       function createRaws(filesObj,recursive,user){
 
         fileTableModel.level=fileTableModel.level+1;
-       
+        var keys = sortedKeys(filesObj);
+        
         if (recursive===false){
 
           $('#result').html('');
+          createDandD();
           createTable();
         }
-        var numOfElements=0;
-        $.each(filesObj, function(k, v) {
-          if (k!='state' && k!='id'){
-            numOfElements++;
-          }
-          
-          var extension = k.split(".");
-          if (extension.length>1){
-            
-            if (extension[1]==='jsp' && user===false){
-              addJspRaw(k,fileTableModel.level,v);
-            }else{
-              if (extension[1]==='expt' && user===false){
-              addExptRaw(k,fileTableModel.level,v);
-              }else{
-                if (extension[1]==='js' && user===false){
-                  addJSRaw(k,fileTableModel.level,v);
-                }else{
-                   addFileRaw(k,fileTableModel.level,v);
-                }
-              }
-            }
-          }else{
+
+         var numOfElements=0;
+         for (var i=0;i<keys.length;i++){
+            var k = keys[i];
             if (k!='state' && k!='id'){
-              addFolderRaw(k,fileTableModel.level,v);
-              if (FolderState(v)==='open'){
-                createRaws(v,true,user);
-                fileTableModel.level=fileTableModel.level-1;
-              }
+               numOfElements++;
             }
+            var extension = k.split(".");
+            if (extension.length>1){
+              if (extension[1]==='jsp' && user===false){
+               addJspRaw(k,fileTableModel.level,filesObj[k]);
+             }else{
+               if (extension[1]==='expt' && user===false){
+               addExptRaw(k,fileTableModel.level,filesObj[k]);
+               }else{
+                 if (extension[1]==='js' && user===false){
+                   addJSRaw(k,fileTableModel.level,filesObj[k]);
+                 }else{
+                   addFileRaw(k,fileTableModel.level,filesObj[k]);
+                 }
+               }
+             }
+            }else{
+             if (k!='state' && k!='id'){
+               addFolderRaw(k,fileTableModel.level,filesObj[k]);
+               if (FolderState(filesObj[k])==='open'){
+                 createRaws(filesObj[k],true,user);
+                 fileTableModel.level=fileTableModel.level-1;
+               }
+             }
             
-          }
-        });
-        if (numOfElements===0){
+           }
+
+
+            
+         }
+         if (numOfElements===0){
           addEmptyRaw(fileTableModel.level);
 
-        }
+         }
+        // var numOfElements=0;
+        // $.each(filesObj, function(k, v) {
+        //   if (k!='state' && k!='id'){
+        //     numOfElements++;
+        //   }
+          
+        //   var extension = k.split(".");
+        //   if (extension.length>1){
+            
+        //     if (extension[1]==='jsp' && user===false){
+        //       addJspRaw(k,fileTableModel.level,v);
+        //     }else{
+        //       if (extension[1]==='expt' && user===false){
+        //       addExptRaw(k,fileTableModel.level,v);
+        //       }else{
+        //         if (extension[1]==='js' && user===false){
+        //           addJSRaw(k,fileTableModel.level,v);
+        //         }else{
+        //            addFileRaw(k,fileTableModel.level,v);
+        //         }
+        //       }
+        //     }
+        //   }else{
+        //     if (k!='state' && k!='id'){
+        //       addFolderRaw(k,fileTableModel.level,v);
+        //       if (FolderState(v)==='open'){
+        //         createRaws(v,true,user);
+        //         fileTableModel.level=fileTableModel.level-1;
+        //       }
+        //     }
+            
+        //   }
+        // });
+        // if (numOfElements===0){
+        //   addEmptyRaw(fileTableModel.level);
+
+        // }
       }
 
       function addExptRaw(file,level,v){
@@ -1406,8 +1476,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       function addFileRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
         $('#fileTabale > tbody').append('<tr>'+
-          '<td class="file" id="'+v.id+'" ><input type="checkbox" class="check" style="margin-right:10px;">'+
-            '<span class="fileRaw" style="margin-left:'+level*50+'px">'+
+          '<td class="file" id="'+v.id+'" >'+
+            '<span class="fileRaw" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
               '<i class="fa fa-file-text"  ></i> '+file+
             '</span>'+
           '</td>'+
@@ -1424,9 +1494,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         fileTableModel.row = fileTableModel.row+1;
         var raw = fileTableModel.row;
         $('#fileTabale > tbody').append('<tr>'+
-            '<td class="folder" id="'+v.id+'" style="cursor:pointer">'+
+            '<td id="'+v.id+'" style="cursor:pointer">'+
               '<span  style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
-                '<i class="fa fa-folder" ></i> '+file+
+                '<span class="folder"><i class="fa fa-folder" ></i> '+file+'</span>'+
               '</span>'+
             '</td>'+
             '<td>'+
@@ -1614,11 +1684,88 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         setOpenStruct(fileObj,model.openStruct);
         fileTableModel.user = false;
         $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+        
         createRaws(fileObj,false,fileTableModel.user);
         
 
       }
+      function createDandD(){
+        $('#result').append('<div id="dragandrophandler">Drag & Drop Files Here</div>');
+        var obj = $("#dragandrophandler");
+        obj.on('dragenter', function (e) 
+        {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).css('border', '2px solid #0B85A1');
+        });
+        obj.on('dragover', function (e) 
+        {
+             e.stopPropagation();
+             e.preventDefault();
+        });
+        obj.on('drop', function (e) 
+        {
+         
+             $(this).css('border', '2px dotted #0B85A1');
+             e.preventDefault();
+             var files = e.originalEvent.dataTransfer.files;
+         
+             //We need to send dropped files to Server
+             DrophandleFileUpload(files,obj);
+        });
+      }
 
+      function DrophandleFileUpload(files,obj){
+
+        $( '.check' ).each(function( index ) {
+          var input = $(this);
+          var tr  = $(input).parent().parent();
+          var id = $(tr).attr("id");
+          if (id===undefined){
+            var upTD = $(tr).find('.folder');
+            id = $(upTD).attr("id");
+          }
+          
+          //var id = $(tr).attr("id");
+          if ($(input).prop('checked')){
+            
+            model.elementID = id;
+            $(this).attr('checked', false);
+
+          }
+        });
+        if (model.elementID===undefined) model.elementID='0';
+        var data =new FormData();
+        var pathA = new Array();
+        var study;
+        var info={};
+        info.found=false;
+        var path='';
+        if (model.elementID==='0'){
+          path="/";
+          study=model.study;
+          if (study===undefined) study='all';
+        }else{
+          getPath(model.fileSystem,model.elementID,pathA,info);
+          for (var i=0;i<pathA.length;i++){
+            path+=pathA[i]+'/';
+          }
+          study='all';
+        }
+        
+        $.each(files, function(key, value)
+        {
+          data.append(key, value);
+        });
+        if (model.activePage === 'file') model.study='all';
+        data.append('UserKey',model.key);
+        data.append('folder',takespaces(path));
+        data.append('study',study);
+        data.append('cmd','UploadFile');
+        
+        api.uploadFile(data,fileOpSuccess);
+
+      }
       /**
       * Desc: returns the satet of the folder
       * input: folder key/value object
@@ -1676,7 +1823,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       }
       function update(name){
-        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+name+'</a></li>');
+        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="0" href="#">'+name+'</a></li>');
         $('#studyTable > tbody').append(makerow(name));
 
       }
