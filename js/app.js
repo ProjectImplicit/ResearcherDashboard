@@ -89,21 +89,34 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var study;
         var info = {};
         info.found = false;
+        $('#uploadedModal').modal('show');
         var folderToCreate = $('#folderName').val();
+        $('#folderName').val('');
         if (model.elementID==='0'){
           path="/";
-          study=model.study;
-          model.tempFolder = model.study+'/'+takespaces(folderToCreate)+'/';
-        }else{
+          
+          if (model.study==='all' || model.study===undefined){
+            study='all';
+            model.tempFolder = takespaces(folderToCreate)+'/';
+          }else{
+            model.tempFolder=model.study+'/'+takespaces(folderToCreate)+'/';
+            study=model.study;
+          }
+          
+          
+        }else{// if the folder is not a root folder
           getPath(model.fileSystem,model.elementID,pathA,info);
           for (var i=0;i<pathA.length;i++){
             path+=pathA[i]+'/';
           }
           study='all';
-          model.tempFolder = takespaces(path)+takespaces(folderToCreate)+'/';
+          model.tempFolder = path+takespaces(folderToCreate)+'/';
+          
+          
+          
         }
        
-        if (model.activePage === 'file') model.study='all';
+        //if (model.activePage === 'file') model.study='all';
         api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),study,folderCreated);
 
       });
@@ -201,16 +214,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       $(document).on('click','#uploadFile', function(){
         var element =$(this);
         var tr = $(element).parent().parent();
-        var td = $(tr).find('.folder');
+        var td = $(tr).find('.folder').parent().parent();
         var id = $(td).attr("id");
         model.elementID = id;
         uploadFile();
+
 
       });
       $(document).on('click','#newFolder', function(){
         var element =$(this);
         var tr = $(element).parent().parent();
-        var td = $(tr).find('.folder');
+        var td = $(tr).find('.folder').parent().parent();
         var id = $(td).attr("id");
         model.elementID = id;
         newFolder();
@@ -219,7 +233,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       $(document).on('click','#deleteFolder', function(){
         var element =$(this);
         var tr = $(element).parent().parent();
-        var td = $(tr).find('.folder');
+        var td = $(tr).find('.folder').parent().parent();
         var id = $(td).attr("id");
         model.elementID = id;
         model.deleteAction='folder';
@@ -259,9 +273,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       });
       
       $(document).on('click','#deleteOK', function(){
+
         if (model.deleteAction==='folder'){
+          $('#uploadedModal').modal('show');
           deleteFolder();
         }else{
+          $('#uploadedModal').modal('show');
           deleteFile();
         }
         
@@ -349,7 +366,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       {
         e.stopPropagation();
         e.preventDefault();
-        obj.css('border', '2px dotted #0B85A1');
+        //obj.css('border', '2px dotted #0B85A1');
       });
       $(document).on('drop', function (e) 
       {
@@ -416,8 +433,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         $('#studyTable').hide();
         model.activePage = 'file';
         model.active='';
-        var study = 'all';
-        api.getFiles(model.key,study,setStudyTable);
+        model.study='all';
+        api.getFiles(model.key,model.study,setStudyTable);
 
       });
       /**
@@ -780,7 +797,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         //$('#fileSys').click();
         var open =model.openStruct;
         open[model.tempFolder] = 'close';  
-        $('#uploadedModal').modal('show');
+        
         //model.activePage = 'test';
         model.active='';
         var study = model.study;
@@ -892,7 +909,13 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         
        
       }
-      function deleteFile(e){
+      /**
+      * Desc: Get the path to file or folder
+      * 
+      * 
+      *
+      */
+      function getPathToFile(){
         var pathA = new Array();
         var path='';
         var info = {};
@@ -901,25 +924,23 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+'/';
         }
+        return path;
+      }
+
+      function deleteFile(e){
+        var path = getPathToFile();
         if (model.activePage === 'file') model.study='all';
         api.deleteFile(path,model.key,model.study,fileOpSuccess);
       }
 
 
       function viewFile(e){
-        var pathA = new Array();
-        var path='';
-        var info = {};
-        var study;
-        info.found = false;
-        getPath(model.fileSystem,model.elementID,pathA,info);
-        for (var i=0;i<pathA.length;i++){
-          path+=pathA[i]+'/';
-        }
+        var path = getPathToFile();
         if (model.activePage === 'file') model.study='all';
         window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key+'&study=all');
         //window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key);
       }
+
       function downloadFile(count){
         var pathA = new Array();
         var path='';
@@ -963,6 +984,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
         
         //model.activePage = 'test';
+        model.elementID = undefined;
         model.active='';
         var study = model.study;
         if (study===null || study===undefined) study='all';
@@ -1494,9 +1516,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         fileTableModel.row = fileTableModel.row+1;
         var raw = fileTableModel.row;
         $('#fileTabale > tbody').append('<tr>'+
-            '<td id="'+v.id+'" style="cursor:pointer">'+
+            '<td id="'+v.id+'" >'+
               '<span  style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
-                '<span class="folder"><i class="fa fa-folder" ></i> '+file+'</span>'+
+                '<span class="folder" style="cursor:pointer"><i class="fa fa-folder" ></i> '+file+'</span>'+
               '</span>'+
             '</td>'+
             '<td>'+
@@ -1711,6 +1733,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
              var files = e.originalEvent.dataTransfer.files;
          
              //We need to send dropped files to Server
+             $('#uploadedModal').modal('show');
              DrophandleFileUpload(files,obj);
         });
       }
@@ -1808,8 +1831,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
           $('#fileTabale > tbody').append(
             '<tr>'+
-              '<td class="folder" id="0" >'+
-                '<span  style="margin-left:0px;">+</span>'+
+              '<td id="0" >'+
+                '<span  style="margin-left:0px;">+<span class="folder" ></span></span>'+
               '</td>'+
               '<td>'+
                 '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
