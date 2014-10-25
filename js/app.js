@@ -1198,7 +1198,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           update(sortArray[i]);
         }
         if (model.activePage === 'file'){
-           $('#fileSys').click();
+           //$('#fileSys').click();
 
         }
             
