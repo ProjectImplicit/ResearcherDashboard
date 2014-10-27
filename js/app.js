@@ -292,7 +292,22 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
         var studyName = $('#studyName').val();
         $('#studyName').val('');
-        api.newStudy(takespaces(studyName),model.key,newStudySuccess);
+        model.study=studyName;
+        api.newStudy(takespaces(studyName),model.key,function(){
+          var studies = model.studyNames;
+          var user = model.user;
+          var studyname = model.study;
+          studies[studyname] = {name:studyname,exptID:'not_set',folder:user.folder+"/"+studyname};
+          setStudies(studies);
+          //model.study=studyname;
+          $('#instruct').hide();
+          $('#result').html('');
+          $('#studyTablePanel').hide();
+          $('#studyTable').hide();
+          setSideMenu();
+          populateFileTable();
+
+        });
         //api.getStudies(model.key,setStudies);
 
       });
@@ -755,7 +770,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         api.getFiles(model.key,'all',function(data){
           $('#uploadedModal').modal('hide');
           fileObj = jQuery.parseJSON( data );
-          createTable();
+          //createTable();
           var index ={};
           index.index=0;
           setIds(fileObj,index);

@@ -205,7 +205,7 @@ define([], function () {
             $.ajax({
                 type: "GET",
                 url: url,
-                success: success(studyName)
+                success: success
                 
             });
 
