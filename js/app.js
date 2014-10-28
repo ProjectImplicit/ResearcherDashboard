@@ -31,9 +31,9 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deploy','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deploy','file','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings,Filesys,Deploy) {
+ function (domReady,API,$,Tracker,ChartFX,Settings,Filesys,Deploy,FileSys) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -293,6 +293,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var studyName = $('#studyName').val();
         $('#studyName').val('');
         model.study=studyName;
+        $('#uploadedModal').modal('show');
         api.newStudy(takespaces(studyName),model.key,function(){
           var studies = model.studyNames;
           var user = model.user;
@@ -767,25 +768,44 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         $('#studyTable').hide();
         model.activePage = 'test';
         model.active='';
-        api.getFiles(model.key,'all',function(data){
-          $('#uploadedModal').modal('hide');
-          fileObj = jQuery.parseJSON( data );
-          //createTable();
-          var index ={};
-          index.index=0;
-          setIds(fileObj,index);
-          model.openStruct={};
-          model.fileSystem = fileObj;
-          setOpenStruct(fileObj,model.openStruct);
-          fileTableModel.user = false;
-          //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
-          var info={};
-          info.study=model.study;
-          getStudyFromFileSys(fileObj,info);
-          model.studyFileSystem=info.studyObj;
-          createRaws(info.studyObj,false,fileTableModel.user);
+        // if (model.study!='all'){
+        //   var filesystem  = new FileSys(model);
+        //   api.getFiles(model.key,model.study,function(data){
+        //     $('#uploadedModal').modal('hide');
+        //     fileObj = jQuery.parseJSON( data );
+        //     model.openStruct={};
+        //     model.fileSystem = fileObj;
+        //     var index ={};
+        //     index.index=0;
+        //     filesystem.setIds(model.fileSystem,index);
+        //     filesystem.setOpenStruct(model.fileSystem);
+        //     fileTableModel.user = false;
+        //     createRaws(model.fileSystem,false,fileTableModel.user);
 
-        });
+        //   });
+
+        // }else{
+          api.getFiles(model.key,'all',function(data){
+            $('#uploadedModal').modal('hide');
+            fileObj = jQuery.parseJSON( data );
+            //createTable();
+            var index ={};
+            index.index=0;
+            setIds(fileObj,index);
+            model.openStruct={};
+            model.fileSystem = fileObj;
+            setOpenStruct(fileObj,model.openStruct);
+            fileTableModel.user = false;
+            var info={};
+            info.study=model.study;
+            getStudyFromFileSys(fileObj,info);
+            model.studyFileSystem=info.studyObj;
+            createRaws(info.studyObj,false,fileTableModel.user);
+
+          });
+
+       // }
+        
 
 
       }
