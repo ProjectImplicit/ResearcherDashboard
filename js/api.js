@@ -71,7 +71,7 @@ define([], function () {
                 model.key=key;
                 this.getUser(model.key,UserCallBack)
                 console.log("calling getfiles api");
-                this.getStudies(key,callback);
+                //this.getStudies(key,callback);
                 
             }
         }
@@ -175,6 +175,28 @@ define([], function () {
             });
 
         }
+        this.fileExist = function (fileName,userKey,path,study,filename){
+            data={};
+            data.cmd='exist';
+            data.path = path;
+            data.file  = filename;
+            var res;
+            $.ajax({
+                url:'/implicit/dashboard',
+                type: 'POST',
+                data: data,
+                async: false,
+                success: function(data){
+                    if (data==='yes'){
+                        res= true;    
+                    }else{
+                        res= false;
+                    }
+                    
+                }   
+            });
+            return res;
+        }
         this.uploadFile = function (data,callback){
           $.ajax({
               url: '/implicit/dashboard',
@@ -210,6 +232,7 @@ define([], function () {
             });
 
         }
+
         this.deleteFolder = function (path,key,study,success){
             var data ={};
             data.key = key;

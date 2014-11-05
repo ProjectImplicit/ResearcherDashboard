@@ -45,6 +45,13 @@
             margin-bottom:10px;
             font-size:200%;
         }
+        #devider{
+            position:absolute;
+            left:40%;
+            top:10%;
+            bottom:10%;
+            border-left:1px solid LightGray;
+        }
     </style>
 
 </head>
@@ -575,11 +582,33 @@
         <h4 class="modal-title">Loading Studies </h4>
       </div>
       <div class="modal-body">
-        <div></div><div></div>
+        <div><img src="img/pilogo.jpg" height="120" width="170"></div><div id="devider"></div><div></div>
       </div>
       <div class="modal-footer">
         
        
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="overwrite">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">A File with this Name Already Exist </h4>
+      </div>
+      <div class="modal-body">
+        <p><span id="overwriteFileName"></span></p>
+      </div>
+      <div class="modal-body">
+        <p><input type="checkbox" id="applytoall"> Apply to all?</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="FileoverwriteClose" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" id="FileoverwriteYes" class="btn btn-primary">Yes</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
