@@ -75,7 +75,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
            var file = this.files[0];
            if (file) {
                // if file selected, do something
-               $('#uploadedModal').modal('show');
+               //S$('#uploadedModal').modal('show');
                prepareUpload();
           } else {
               // if user clicks 'Cancel', do something
@@ -138,53 +138,22 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         }
         return res;
       }
-      function setModals(existFiles,i,model,data,study,path){
-        if (i >= existFiles.length){
+      function setModals(model){
+        var existFiles = model.exist;
+        var info = model.Modalinfo;
+        
+        if (info.index >= existFiles.length){
             model.done=true;
+            console.log('done');
             return;
           }
-        var participant = existFiles[i];
+        var participant = existFiles[info.index];
+        console.log(participant.key);
         $('#overwriteFileName').text('A file with the name '+participant.key+' already exist, overwrite?');
         $('#overwrite').modal('show');
-        var modal = $('#overwrite');
-        $('#FileoverwriteYes').on('click',function(e){
-           var all = $('#applytoall').prop('checked');
-           var fileText = $('#overwriteFileName').text();
-           var words = fileText.split(' ');
-           var name = words[5];
-           var existFiles = model.exist;
-           for (var x=0;x<existFiles.length;x++){
-             var file  = existFiles[x];
-             if (file.key===name){
-               file.overwrite=true;
-             }
-           }
 
-          $('#overwrite').modal('hide');
-          setModals(existFiles,i + 1,model,data,study,path);
-          if (model.done===true){
-            if (model.all===true){
-            for (var z=0;z<existFiles.length;z++){
-              var file = existFiles[z];
-              data.append(file.key, file.val);
-            }
-            }else{
-              for (var t=0;t<existFiles.length;t++){
-                var file = existFiles[t];
-                if (file.overwrite=true){
-                  data.append(file.formkey, file.formvalue);  
-                }
-              }
-            }
-            if (model.activePage === 'file') model.study='all';
-            data.append('UserKey',model.key);
-            data.append('folder',takespaces(path));
-            data.append('study',study);
-            data.append('cmd','UploadFile');
-            
-            api.uploadFile(data,fileOpSuccess);
-          }
-        })
+        
+        
         // modal.on('hidden.bs.modal', function (e) {
          
         // })
@@ -228,8 +197,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
             }
         });
         model.exist = existFiles;
+        var info={};
+        info.index=0;
+        info.visited=0;
+        info.data=data;
+        info.study=study;
+        info.path=path;
+        model.Modalinfo=info;
         if (existFiles.length>0){
-          setModals(existFiles,0,model,data,study,path);
+          setModals(model);
         }else{
           if (model.activePage === 'file') model.study='all';
           data.append('UserKey',model.key);
@@ -571,6 +547,65 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         api.getFiles(model.key,model.study,setStudyTable);
 
       });
+
+
+      $(document).on('click','#FileoverwriteYes',function(e){
+           var info = model.Modalinfo;
+           var data= info.data;
+           var study = info.study;
+           var path = info.path;
+           info.visited++;
+           var existFiles = model.exist;
+           if (info.visited>existFiles.length) return;
+           var all = $('#applytoall').prop('checked');
+           var fileText = $('#overwriteFileName').text();
+           var words = fileText.split(' ');
+           var name = words[5];
+           for (var x=0;x<existFiles.length;x++){
+             var file  = existFiles[x];
+             if (file.key===name){
+               file.overwrite=true;
+             }
+           }
+
+          $('#overwrite').modal('hide');
+          //$('#FileoverwriteYes').unbind();
+          //$('#FileoverwriteYes').remove();
+          $('body').removeClass('modal-open');
+          $('.modal-backdrop').remove();
+          info.index++;
+          if (!all){
+            setModals(model);  
+          }else{
+            model.done=true;
+            model.all=true;
+          }
+          
+          if (model.done===true){
+            if (model.all===true){
+            for (var z=0;z<existFiles.length;z++){
+              var file = existFiles[z];
+              data.append(file.key, file.val);
+            }
+            }else{
+              for (var t=0;t<existFiles.length;t++){
+                var file = existFiles[t];
+                if (file.overwrite=true){
+                  data.append(file.formkey, file.formvalue);  
+                }
+              }
+            }
+            if (model.activePage === 'file') model.study='all';
+            data.append('UserKey',model.key);
+            data.append('folder',takespaces(path));
+            data.append('study',study);
+            data.append('cmd','UploadFile');
+            
+            api.uploadFile(data,fileOpSuccess);
+          }
+          
+
+      })
       /**
       * Desc: main listener for the 
       * 'test' top menu navigetaion bar.
@@ -1140,6 +1175,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         model.elementID = undefined;
         model.active='';
         var study = model.study;
+        model.done=false;
+        $('#applytoall').attr('checked', false);
         if (study===null || study===undefined) study='all';
         api.getFiles(model.key,'all',function(data){
 
