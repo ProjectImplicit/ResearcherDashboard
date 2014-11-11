@@ -1,0 +1,112 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
+<style>
+.col-md-2{
+  width:15%;
+}
+#devider{
+  
+  border-left:1px solid black;
+  width:1px;
+}
+</style>
+</head>
+<body style="background-color: #6384A6;">
+  <div class="container">
+  	<div class="row">
+          <div class="span12">
+      		<div class="" id="loginModal">
+                
+                <div class="modal-body">
+                  <div class="well">
+                    <ul class="nav nav-tabs">
+                      <li class="active"><a href="#login" data-toggle="tab">Login</a></li>
+                      <li><a href="#create" data-toggle="tab">Create Account</a></li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content">
+                      <div class="tab-pane active in" id="login">
+                        <form class="form-horizontal" action="/implicit/dashboard" method="POST">
+                          <fieldset>
+                            <div id="legend">
+                              <legend class="">Login</legend>
+                            </div>    
+                            <div class="control-group">
+                              <!-- Username -->
+                              <label class="control-label"  for="username">Username</label>
+                              <div class="controls">
+                                <input type="text" id="username" name="username" placeholder="" class="input-xlarge">
+                              </div>
+                            </div>
+       
+                            <div class="control-group">
+                              <!-- Password-->
+                              <label class="control-label" for="password">Password</label>
+                              <div class="controls">
+                                <input type="password" id="password" name="password" placeholder="" class="input-xlarge">
+                              </div>
+                            </div>
+       
+                            </br>
+                            <div class="control-group">
+                              <!-- Button -->
+                              <div class="controls">
+                                <button class="btn btn-success">Login</button>
+                              </div>
+                            </div>
+                          </fieldset>
+                          <input type="hidden" value="login" name="cmd" >
+                        </form>                
+                      </div>
+                      <div class="tab-pane fade" id="create">
+                        </br>
+                        <form id="tab" action="" method="POST">
+                          <div class="row">
+                            <div class="col-md-2">
+                              <label>First Name</label></br></br>
+                              <label>Last Name</label></br></br>
+                              <label>Email</label></br></br>
+                              <label>Folder </label></br></br>
+                              <label>Password</label></br></br>
+                              <label>Repeat </label></br></br>
+                            </div
+                            <div class="col-md-3">
+                              <input type="text" value="" name="first" class="input-xlarge"></br></br>
+                              <input type="text" value="" name="last" class="input-xlarge"></br></br>
+                              <input type="text" value="" name="email" class="input-xlarge"></br></br>
+                              <input type="text" value="" name="folder" class="input-xlarge"></br></br>
+                              <input type="password" value="" name="pass" class="input-xlarge"></br></br>
+                            
+                              
+                              <input type="hidden" value="register" name="cmd" >
+                            </div
+                            
+                            <div id="devider">
+                            </div>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                          </div>
+       
+       
+                          <div>
+                            <button class="btn btn-primary">Create Account</button>
+                          </div>
+                        </form>
+                      </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+  	</div>
+  </div>
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+  </body>
+</html>
