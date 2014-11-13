@@ -1,0 +1,49 @@
+
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
+</head>
+<body style="background-color: #6384A6;">        
+
+      <div  id="create" class="container">
+        </br>
+        <div class="well">
+          <form id="tab" action="/implicit/dashboard" method="POST">
+            <fieldset>
+                <div id="legend">
+                  <legend class="">Register</legend>
+                </div>    
+                <div class="row">
+                  <div class="col-md-2">
+                    <label>User Name</label></br></br>
+                    <label>First Name</label></br></br>
+                    <label>Last Name</label></br></br>
+                    <label>Email</label></br></br>
+                    <label>Folder </label></br></br>
+                    <label>Password</label></br></br>
+                    <label>Repeat </label></br></br>
+                  </div
+                  <div class="col-md-3">
+                    <input type="text" value="" name="user" class="input-xlarge"></br></br>
+                    <input type="text" value="" name="first" class="input-xlarge"></br></br>
+                    <input type="text" value="" name="last" class="input-xlarge"></br></br>
+                    <input type="text" value="" name="email" class="input-xlarge"></br></br>
+                    <input type="text" value="" name="folder" class="input-xlarge"></br></br>
+                    <input type="password" value="" name="pass" class="input-xlarge"></br></br>
+                  
+                    <input type="hidden" value="register" name="cmd" >
+                    <input type="checkbox" name="migrate" id="migrate"> Migrate from old dev2?</p>
+                  </div>
+              
+
+
+                  <div>
+                    <button class="btn btn-primary">Create Account</button>
+                  </div>
+              </fieldset>
+          </form>
+        </div>
+      </div>
+    </body>
+  </html>

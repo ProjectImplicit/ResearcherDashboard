@@ -16,15 +16,12 @@
 <body style="background-color: #6384A6;">
   <div class="container">
   	<div class="row">
-          <div class="span12">
+          <div class="span4">
       		<div class="" id="loginModal">
                 
                 <div class="modal-body">
                   <div class="well">
-                    <ul class="nav nav-tabs">
-                      <li class="active"><a href="#login" data-toggle="tab">Login</a></li>
-                      <li><a href="#create" data-toggle="tab">Create Account</a></li>
-                    </ul>
+                    
                     <div id="myTabContent" class="tab-content">
                       <div class="tab-pane active in" id="login">
                         <form class="form-horizontal" action="/implicit/dashboard" method="POST">
@@ -59,37 +56,7 @@
                           <input type="hidden" value="login" name="cmd" >
                         </form>                
                       </div>
-                      <div class="tab-pane fade" id="create">
-                        </br>
-                        <form id="tab" action="/implicit/dashboard" method="POST">
-                          <div class="row">
-                            <div class="col-md-2">
-                              <label>User Name</label></br></br>
-                              <label>First Name</label></br></br>
-                              <label>Last Name</label></br></br>
-                              <label>Email</label></br></br>
-                              <label>Folder </label></br></br>
-                              <label>Password</label></br></br>
-                              <label>Repeat </label></br></br>
-                            </div
-                            <div class="col-md-3">
-                              <input type="text" value="" name="user" class="input-xlarge"></br></br>
-                              <input type="text" value="" name="first" class="input-xlarge"></br></br>
-                              <input type="text" value="" name="last" class="input-xlarge"></br></br>
-                              <input type="text" value="" name="email" class="input-xlarge"></br></br>
-                              <input type="text" value="" name="folder" class="input-xlarge"></br></br>
-                              <input type="password" value="" name="pass" class="input-xlarge"></br></br>
-                            
-                              <input type="hidden" value="register" name="cmd" >
-                            </div>
-                            
-       
-       
-                          <div>
-                            <button class="btn btn-primary">Create Account</button>
-                          </div>
-                        </form>
-                      </div>
+                      
                   </div>
                 </div>
               </div>

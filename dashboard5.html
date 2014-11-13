@@ -53,6 +53,21 @@
             border-left:1px solid LightGray;
             width:1px;
         }
+        #rightPanel{
+            position:absolute;
+            left:50%;
+            top:10%;
+            bottom:10%;
+        }
+        #sideMenu{
+            margin-top:4.5px;
+        }
+        #myStudies{
+            margin-left:15px;
+        }
+        .dropdown-menu {
+            left: -20px;
+        }
     </style>
 
 </head>
@@ -73,6 +88,7 @@
 
                 <ul id="sideMenu" class="nav navbar-nav side-nav">
                 </br>
+                    <div id="myStudies">
                      <strong>My Studies </strong>
                      <div class="dropdown" style="display: inline">
                           <button class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">
@@ -82,6 +98,7 @@
                           <ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">
                             
                           </ul>
+                     </div>
                     </div>
                     <hr>
                                       
@@ -583,8 +600,17 @@
         <h4 class="modal-title">Loading Studies </h4>
       </div>
       <div class="modal-body">
-        <div><img src="img/pilogo.jpg" height="120" width="170"></div><div id="devider"></div><div><font>Project Implicit.</font></div>
-      </div>
+        
+        <div >
+            <img src="img/pilogo.jpg" height="120" width="170">
+        </div>
+        <div id="devider">
+        </div>
+        <div id="rightPanel">
+            <font>Project Implicit.</font>
+
+        </div>
+    
       <div class="modal-footer">
         
        

@@ -1335,7 +1335,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         var userObj = jQuery.parseJSON( data );
         model.user = userObj;
         $('#userName').html('<i class="glyphicon glyphicon-user"></i><span class="caret"></span>'+userObj.name);
-        api.getStudies(model.key,setStudies);
+        api.getStudies('',setStudies);
       }
       // function getExptOfStudy(studyName){
       //   var exptRes=[];

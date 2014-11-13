@@ -68,8 +68,8 @@ define([], function () {
                 
             }else{
                 //var key = this.urlParam('key');
-                //model.key=key;
-                this.getUser(UserCallBack);
+                model.key='';
+                this.getUser(model.key,UserCallBack)
                 console.log("calling getfiles api");
                 //this.getStudies(key,callback);
                 
@@ -97,8 +97,8 @@ define([], function () {
         * Return: user name, user folder and user email.
         */
 
-        this.getUser = function (callback){
-            var url = "/implicit/dashboard/getname/";
+        this.getUser = function (key,callback){
+            var url = "/implicit/dashboard/getname/"+key;
             var res;
             $.ajax({
                 type: "GET",
