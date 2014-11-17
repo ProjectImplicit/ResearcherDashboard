@@ -180,6 +180,8 @@ define([], function () {
             data.cmd='exist';
             data.path = path;
             data.file  = filename;
+            data.study=study;
+
             var res;
             $.ajax({
                 url:'/implicit/dashboard',

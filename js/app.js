@@ -71,12 +71,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
 
       })
       
-      $(document).find('input[type=file]').bind("change", function () {
+      $(document).find('input[type=file]').bind("change", function (e) {
            var file = this.files[0];
            if (file) {
                // if file selected, do something
                //S$('#uploadedModal').modal('show');
-               prepareUpload();
+               prepareUpload(e);
           } else {
               // if user clicks 'Cancel', do something
           }
@@ -160,7 +160,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         
 
       }
-      function prepareUpload(){
+      function prepareUpload(event){
         
         var data =new FormData();
         var pathA = new Array();

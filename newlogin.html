@@ -2,6 +2,7 @@
 <head>
 <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <style>
 .col-md-2{
   width:15%;
@@ -12,6 +13,17 @@
   width:1px;
 }
 </style>
+<script>
+$('#form').on('submit',function(e){
+  alert('pressed submit');
+  var pass = $('#password').val();
+  var passII = $('#passwordII').val();
+  if (pass!=passII){
+    alert('Passwords don\'t match');
+    e.preventDefault();
+  }
+})
+</script>
 </head>
 <body style="background-color: #6384A6;">
   <div class="container" style="margin-top:10%;margin-left:35%;">
@@ -24,24 +36,21 @@
                     
                     <div id="myTabContent" class="tab-content">
                       <div class="tab-pane active in" id="login">
-                        <form class="form-horizontal" action="/implicit/dashboard" method="POST">
+                        <form class="form-horizontal" action="/implicit/dashboard" method="POST" id="form">
                           <fieldset>
                             <div id="legend">
-                              <legend class="">Login</legend>
+                              <legend class="">Create A New Password</legend>
                             </div>    
-                            <div class="control-group">
-                              <!-- Username -->
-                              <label class="control-label"  for="username">Username</label>
-                              <div class="controls">
-                                <input type="text" id="username" name="username" placeholder="" class="input-xlarge">
-                              </div>
-                            </div>
-       
+                                   
                             <div class="control-group">
                               <!-- Password-->
                               <label class="control-label" for="password">Password</label>
                               <div class="controls">
-                                <input type="password" id="password" name="password" placeholder="" class="input-xlarge">
+                                <input type="password" value="" id="password" name="pass" placeholder="" class="input-xlarge">
+                              </div>
+                              <label class="control-label" for="password">Retype Password</label>
+                              <div class="controls">
+                                <input type="password" id="passwordII" name="password" placeholder="" class="input-xlarge">
                               </div>
                             </div>
        
@@ -49,11 +58,11 @@
                             <div class="control-group">
                               <!-- Button -->
                               <div class="controls">
-                                <button class="btn btn-success">Login</button>
+                                <button id="submit" class="btn btn-success">Submit</button>
                               </div>
                             </div>
                           </fieldset>
-                          <input type="hidden" value="login" name="cmd" >
+                          <input type="hidden" value="newpass" name="cmd" >
                         </form>                
                       </div>
                       
