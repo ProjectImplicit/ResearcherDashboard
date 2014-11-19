@@ -14,15 +14,16 @@
 }
 </style>
 <script>
-$('#form').on('submit',function(e){
-  alert('pressed submit');
-  var pass = $('#password').val();
-  var passII = $('#passwordII').val();
-  if (pass!=passII){
-    alert('Passwords don\'t match');
-    e.preventDefault();
-  }
-})
+$(document).ready(function() { 
+  $('form').submit(function( e ) {
+    var pass = $('#passI').val();
+    var passII = $('#passII').val();
+    if (pass!=passII){
+      alert('Passwords don\'t match');
+      e.preventDefault();
+    }
+  });
+ });
 </script>
 </head>
 <body style="background-color: #6384A6;">
@@ -36,7 +37,7 @@ $('#form').on('submit',function(e){
                     
                     <div id="myTabContent" class="tab-content">
                       <div class="tab-pane active in" id="login">
-                        <form class="form-horizontal" action="/implicit/dashboard" method="POST" id="form">
+                        <form class="form-horizontal" action="/implicit/dashboard" method="POST" id="target">
                           <fieldset>
                             <div id="legend">
                               <legend class="">Create A New Password</legend>
@@ -46,11 +47,11 @@ $('#form').on('submit',function(e){
                               <!-- Password-->
                               <label class="control-label" for="password">Password</label>
                               <div class="controls">
-                                <input type="password" value="" id="password" name="pass" placeholder="" class="input-xlarge">
+                                <input type="password" id="passI" value=""  name="pass" placeholder="" class="input-xlarge">
                               </div>
                               <label class="control-label" for="password">Retype Password</label>
                               <div class="controls">
-                                <input type="password" id="passwordII" name="password" placeholder="" class="input-xlarge">
+                                <input type="password" id="passII" name="password" placeholder="" class="input-xlarge">
                               </div>
                             </div>
        
@@ -58,7 +59,7 @@ $('#form').on('submit',function(e){
                             <div class="control-group">
                               <!-- Button -->
                               <div class="controls">
-                                <button id="submit" class="btn btn-success">Submit</button>
+                                <button class="btn btn-success">Submit</button>
                               </div>
                             </div>
                           </fieldset>
