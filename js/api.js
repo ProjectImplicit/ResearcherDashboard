@@ -108,11 +108,31 @@ define([], function () {
             }).done(callback)
 
         }
-        this.Studyvalidate = function (user,study,filename,callback){
-            var url = "/implicit/dashboard/studyvalidate/"+user+"/file/"+study+"/"+filename;
+        this.logout = function (){
+            var url = "/implicit/dashboard/logout/";
+            var res;
             $.ajax({
                 type: "GET",
                 url: url,
+                success: function(data){console.log(data);
+                    window.location = data;
+                }
+               
+                                
+            })
+        }
+        this.Studyvalidate = function (user,study,path,filename,callback){
+            //var url = "/implicit/dashboard/studyvalidate/"+user+"/file/"+study+"/"+filename;
+            var url = "/implicit/dashboard/";
+            data ={};
+            data.study= study;
+            data.path = path;
+            data.filename = filename;
+            data.cmd = 'studyvalidate';
+            $.ajax({
+                type: "POST",
+                url: url,
+                data:data,
                 dataType: "html"
                 //success: callback
                 
@@ -198,6 +218,21 @@ define([], function () {
                 }   
             });
             return res;
+        }
+
+        this.submitforreview = function(studyName,success){
+            var data ={};
+            data.studyname = studyName;
+            data.cmd='review';
+
+            $.ajax({
+                url: '/implicit/dashboard',
+                //url:url,
+                type: "POST",
+                data: data,
+                success: success
+                
+            });
         }
         this.uploadFile = function (data,callback){
           $.ajax({

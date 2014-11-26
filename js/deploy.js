@@ -14,6 +14,7 @@ define(['api'], function (API) {
 			var exptFile;
 			if (model.exptFile===undefined || model.exptFile===null){
 				exptFile = this.getEXPT(study);
+
 			}else{
 				exptFile = model.exptFile;
 				this.addHTML(name,email,folder,exptFile);
@@ -29,6 +30,7 @@ define(['api'], function (API) {
 			////////
 			
 			$('.deplotDrop').html('Select '+' <span class="caret"></span>');
+			that.addHTML(name,email,folder,exptFile);
 			$(document).on('click','#clearAnch',function(){
 				$('#hide').val('parent');
 				$('#rulename').val('parent');
@@ -522,32 +524,47 @@ define(['api'], function (API) {
 	    	return folder;
 	    }
 
-	    this.getEXPT = function(study){
+	    this.getEXPT = function(studyname){
 	    	var expt=[];
 	    	var numOfExpt=0;
-	    	$.each(model.studyNames,function(k,v){
-	    		if (k===study){
-	    			$.each(v,function(k2,v2){
-	    				if (k2.indexOf('exptName')!=-1){
-	    					expt.push(v2);
-	    					numOfExpt++;
-	    				}
-	    			})
-	    		}
+	    	var studies= model.studyNames;
+	    	var study = studies[studyname];
+	    	$.each(study,function(k2,v2){
+				if (k2.indexOf('exptName')!=-1){
+					if (v2!='not_set')
+					expt.push(v2);
+					numOfExpt++;
+				}
+			})
+	    	// $.each(model.studyNames,function(k,v){
+	    	// 	if (k===study){
+	    	// 		$.each(v,function(k2,v2){
+	    	// 			if (k2.indexOf('exptName')!=-1){
+	    	// 				expt.push(v2);
+	    	// 				numOfExpt++;
+	    	// 			}
+	    	// 		})
+	    	// 	}
 
-	    	})
-	    	if (numOfExpt==1){
-	    		return expt[0];
-	    	}else{
-	    		var exphHtml='<div> There are several expt files for this study, choose one: ';
-	    		for (var i=0;i<expt.length;i++){
-	    			exphHtml = exphHtml+'</br>';
-	    			exphHtml = exphHtml+ '<input type="checkbox" class="expt" /><label> '+expt[i]+'</label>';
-	    		}
-	    		exphHtml = exphHtml+ '</div>';
-	    		$('#chooseEXPTDivDep').html(exphHtml);
-	    		$('#chooseEXPTModalDeply').modal('show');
-	    	}
+	    	// })
+			if (numOfExpt==0){
+				return '';
+			}else{
+				if (numOfExpt==1){
+	    			return expt[0];
+		    	}else{
+		    		var exphHtml='<div> There are several expt files for this study, choose one: ';
+		    		for (var i=0;i<expt.length;i++){
+		    			exphHtml = exphHtml+'</br>';
+		    			exphHtml = exphHtml+ '<input type="checkbox" class="expt" /><label> '+expt[i]+'</label>';
+		    		}
+		    		exphHtml = exphHtml+ '</div>';
+		    		$('#chooseEXPTDivDep').html(exphHtml);
+		    		$('#chooseEXPTModalDeply').modal('show');
+		    	}
+
+			}
+	    	
 	    }
 	};
     return deploy;
