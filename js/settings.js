@@ -4,10 +4,14 @@ define([], function () {
     	var dbString='newwarehouse';
     	var curl = 'http://app-dev-01.implicit.harvard.edu/implicit/research/library/randomStudiesConfig/RandomStudiesConfig.xml';
         var hurl = 'http://app-dev-01.implicit.harvard.edu/implicit/research/library/randomStudiesConfig/HistoryRand.xml';
-    	//var db = 'Research';
+    	var testStudyURL = 'http://app-dev-01.implicit.harvard.edu/implicit/Launch?study=/user/';
+        //var db = 'Research';
     	//var current = 'Any';
     	var baseURL = 'http://app-dev-01.implicit.harvard.edu/implicit';
-
+        
+        this.gettestStudyURL=function(){
+            return testStudyURL;
+        }
     	this.getDbString = function(){
     		return dbString;
 

@@ -11,10 +11,11 @@ define(['api','settings','datepicker'], function (API,Settings) {
 
 		
 		var trackNum=0;
+		var that=this;
 	    this.getTracker = function(expt){
 	    	
 	    	console.log('from tracker:'+exptid);
-	    	var that=this;
+	    	
 			var exptid;
 			
 	    	if (expt.length>1){
@@ -53,18 +54,18 @@ define(['api','settings','datepicker'], function (API,Settings) {
         	var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
        		var html='<div id="trackerDashBoard" style="width:auto;margin-top:20px;">'+
 				         '<label >Study: </label>'+
-						 '<input id="studyI" type="text" value='+exptid+'></input>'+
+						 '<input id="studyI" style="margin-left:8px;" type="text" value='+exptid+'></input>'+
 						 '<label>Task: </label>'+
-						 '<input id="filterI" type="text" style="margin-left:10x;"></input>'+
+						 '<input id="filterI" type="text" style="margin-left:8px;"></input>'+
 						 '<div id="sinceUntil" style="display:inline;">'+
 							'<label>Since: </label>'+
-							'<input id="sinceI" type="text" data-provide="datepicker" id="sinceI" value='+since+'></input>'+
+							'<input id="sinceI" style="margin-left:8px;" type="text" data-provide="datepicker" id="sinceI" value='+since+'></input>'+
 							'<label>Until: </label>'+
-							'<input id="untilI" type="text" id="untilI" value='+until+'></input>'+
+							'<input id="untilI" style="margin-left:8px;" type="text" id="untilI" value='+until+'></input>'+
 						'</div>'+ this.designHtml()+
 
-						 '<div class="dropdown" style="display:inline;margin-left:10px;">'+
-				              '<button class="btn btn-default dropdown-toggle btn-sm" type="button" id="dbButton" data-toggle="dropdown">'+
+						 '<div class="dropdown" style="display:inline;margin-left:8px;">'+
+				              '<button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dbButton" data-toggle="dropdown">'+
 				                'Research'+
 				                '<span class="caret"></span>'+
 				              '</button>'+
@@ -74,8 +75,8 @@ define(['api','settings','datepicker'], function (API,Settings) {
 				              	'<li><a href="#" id="both">Both</a><li>'+
 				              '</ul>'+
 		         		 '</div>'+
-		        		 '<div class="dropdown" style="display: inline;margin-left:10px;">'+
-			                '<button class="btn btn-default dropdown-toggle btn-sm" type="button" id="listButton" data-toggle="dropdown">'+
+		        		 '<div class="dropdown" style="display: inline;margin-left:8px;">'+
+			                '<button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="listButton" data-toggle="dropdown">'+
 			                'Any'+
 			                '<span class="caret"></span>'+
 			                '</button>'+
@@ -84,7 +85,7 @@ define(['api','settings','datepicker'], function (API,Settings) {
 				              	'<li><a href="#" id="history">History</a><li>'+
 				              	'<li><a href="#" id="any">Any</a><li>'+
 			                '</ul>'+
-			                '<button class="btn btn-primary btn-sm" type="button" id="submit" style="margin-left:10px;">Submit</button>'+
+			                '<button class="btn btn-success btn-sm" type="button" id="submit" style="margin-left:10px;">Submit</button>'+
 		         		 '</div><br/>'+this.getShowBy()+
 						''+this.getCompute();+
 					'</div>';
@@ -111,12 +112,12 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	    	var html=''+
 	    		'<div style="margin-top:10px;">'+
 					'<div style="display:inline;">'+
-						'<span style="font-style:italic;">Compute completion:  </span>'+
+						'<span style="font-style:italic;margin-left:10px">Compute completion:  </span>'+
 					'</div>'+
 		
 					'<div id="enterStarted" style="display:inline;" class="inline" style="margin-left:80px;">'+
 						'<label>First Task: </label>'+
-						'<input id="taskI" type="text" style="margin-left:8px;"></input>'+
+						'<input id="taskI" type="text" style="margin-left:10px;"></input>'+
 						'<label style="margin-left:10px;">Last Task: </label>'+
 						'<input id="completedI" type="text" style="margin-left:8px;"></input>'+
 					'</div>'+
@@ -159,6 +160,7 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	    }
 	    this.setTrackerTable = function(data){
 	        console.log(data);
+	        $('#uploadedModal').modal('hide');
 	        //$('#knob').modal('hide');
 		    $('#CSVTable').CSVToTable(data,{
 		    	tableClass:'tablesorter'
@@ -360,7 +362,7 @@ define(['api','settings','datepicker'], function (API,Settings) {
 			});
 
 	    	$('#submit').click(function(){
-	    		
+	    		$('#uploadedModal').modal('show');
 	    		var api = new API();
 	      		var exptid = $('#studyI').val();
 	      		console.log('exptid: '+exptid);

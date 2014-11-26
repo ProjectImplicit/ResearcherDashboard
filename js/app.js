@@ -66,8 +66,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       // ]);
 
       //$(document).find('input[type=file]').on('change', prepareUpload);
-
-      
+      $.ajaxSetup({
+        statusCode: {
+            401: requestUnauthorized,
+        }
+      });
+      function requestUnauthorized(xhr){
+        alert('You are logged out');
+        window.location.href = xhr.getResponseHeader("Location");
+      }
       $(document).find('input[type=file]').on('click',function(){
         this.value = null;
 
@@ -717,7 +724,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
            var user = userObj.folder;
            var studyName = model.study;
            studyName = takeOutBraclet(studyName);
-           window.open("https://dw2.psyc.virginia.edu/implicit/Launch?study=/user/"+user+"/"+studyName+"/"+fname+"&refresh=true");
+           var settings = new Settings();
+           var url = settings.gettestStudyURL();
+           window.open(url+user+"/"+studyName+"/"+fname+"&refresh=true");
 
 
          });
@@ -813,47 +822,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         $('#result').html('');
         $('#studyTable').hide();
         model.activePage = 'trackmenu';
-        var studyExpt;
-        if (model.study!=undefined){
-          studyExpt = getExptid(model.study);
-          if (studyExpt==='not_set'){
-            api.getExpt(model.key,model.study,function(data){
-              studyExpt = data;
-              appendTracker(studyExpt);
-            })
-          }else{
-            appendTracker(studyExpt);
-          }
-          
-        }else{
-          api.getUserName(takespaces(model.key),function(data){
-          appendTracker(data);
-           
-          });
-        }
-      });
-      $(document).on("click",'#statisticsButton',function(){
-
-        $('#result').html('');
-        $('#studyTable').hide();
-        var button = $(this);
-        var span = $(button).parent().parent().find('.fileNameSpan');
-        var fname = takespaces($(span).text());
-        model.exptFile = fname;
-        model.activePage = 'trackmenu';
-        var study = findStudy(model.study);
-        var exptID = getEXPTIDFromStudy(fname,study);
         var studyExpt=[];
-        studyExpt[0]=exptID;
         if (model.study!=undefined){
-          if (studyExpt==='not_set'){
-            api.getExpt(model.key,model.study,function(data){
-              studyExpt = data;
-              appendTracker(studyExpt);
+          //studyExpt = getExptid(model.study);
+          //if (studyExpt==='not_set'){
+          api.getExpt(model.key,model.study,function(data){
+            var obj = jQuery.parseJSON( data );
+            $.each(obj, function(key, value){
+              studyExpt.push(value);
             })
-          }else{
+
             appendTracker(studyExpt);
-          }
+          })
+          //}else{
+            //appendTracker(studyExpt);
+          ///}
           
         }else{
           api.getUserName(takespaces(model.key),function(data){
@@ -861,8 +844,38 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
            
           });
         }
-
       });
+      // $(document).on("click",'#statisticsButton',function(){
+
+      //   $('#result').html('');
+      //   $('#studyTable').hide();
+      //   var button = $(this);
+      //   var span = $(button).parent().parent().find('.fileNameSpan');
+      //   var fname = takespaces($(span).text());
+      //   model.exptFile = fname;
+      //   model.activePage = 'trackmenu';
+      //   var study = findStudy(model.study);
+      //   var exptID = getEXPTIDFromStudy(fname,study);
+      //   var studyExpt=[];
+      //   studyExpt[0]=exptID;
+      //   if (model.study!=undefined){
+      //     if (studyExpt==='not_set'){
+      //       api.getExpt(model.key,model.study,function(data){
+      //         studyExpt = data;
+      //         appendTracker(studyExpt);
+      //       })
+      //     }else{
+      //       appendTracker(studyExpt);
+      //     }
+          
+      //   }else{
+      //     api.getUserName(takespaces(model.key),function(data){
+      //     appendTracker(data);
+           
+      //     });
+      //   }
+
+      // });
 
       $(document).on("click",'.statistics',function(){
 
@@ -2180,15 +2193,18 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
       }
       function getExptid(name){
         
-        var study = findStudy(name);
-        var res=[];
-        $.each(study, function(key, value) {
-            if (key.indexOf('exptID')!=-1){
-              res.push(value);
+         var study = findStudy(name);
+         var res=[];
+         api.getEXPT(study.name,function(data){
+          res=data;
+         })
+        // $.each(study, function(key, value) {
+        //     if (key.indexOf('exptID')!=-1){
+        //       res.push(value);
               
-            }
+        //     }
                
-        });
+        // });
         return res;    
       }
 
