@@ -1,5 +1,5 @@
 define([], function () {
-    
+      
     var settings = function () {
     	var dbString='newwarehouse';
     	var curl = 'http://app-dev-01.implicit.harvard.edu/implicit/research/library/randomStudiesConfig/RandomStudiesConfig.xml';

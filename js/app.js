@@ -8,9 +8,9 @@
         'tablesorter':'tablesorter/jquery.tablesorter',
         'datepicker':'datepicker/js/bootstrap-datepicker',
         'chart': 'chart',
-        //'jui':'//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui',
         'context':'Contextmaster/context',
         'knobmin':'knobmin'
+
         
 
     },
@@ -31,9 +31,9 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deploy','file','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings,Filesys,Deploy,FileSys) {
+ function (domReady,API,$,Tracker,ChartFX,Settings,Deploy) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -1232,7 +1232,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
         if (study===null || study===undefined) study='all';
         api.getFiles(model.key,model.study,function(data){
 
-          $('#uploadedModal').modal('hide');
+          
           $('#result').html('');
           $('#studyTablePanel').hide();
           $('#studyTable').hide();
@@ -1262,6 +1262,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','fileSys','deplo
           
 
         });
+        $('#uploadedModal').modal('hide');
         
       }
       function uploadError(jqXHR, textStatus, errorThrown){

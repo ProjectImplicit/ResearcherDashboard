@@ -16,9 +16,20 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	    	
 	    	console.log('from tracker:'+exptid);
 	    	
-			var exptid;
+			var exptid='';
 			
 	    	if (expt.length>1){
+	    		$(document).one("click",'.expt',function(){
+					exptid= $(this).next('label').text();
+					exptid = that.takespaces(exptid);
+				});
+				
+				// $(document).one('click','#exptOK',function(){
+	   //  			that.addTracker(exptid);
+				// });
+				$(document).one('hidden.bs.modal',function(){
+	    			that.addTracker(exptid);
+				});
 	    		var exphHtml='<div> There are several expt files for this study, choose one: ';
 	    		for (var i=0;i<expt.length;i++){
 	    			exphHtml = exphHtml+'</br>';
@@ -31,19 +42,7 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	    		exptid = expt[0];
 	    		that.addTracker(exptid);
 	    	}
-	    	$('.expt').on('click',function(){
-				exptid= $(this).next('label').text();
-				exptid = that.takespaces(exptid);
-			});
-			if (trackNum===0){
-				$(document).on('click','#exptOK',function(){
-	    			that.addTracker(exptid);
-				});
-				trackNum++;
-			}
-	    	
-	    	
-	         
+	 
 	    }
 	    this.takespaces = function(name){ 
    			return name.replace(/\s+/g, '');
