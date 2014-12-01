@@ -425,20 +425,24 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         $('#studyName').val('');
         model.study=studyName;
         $('#uploadedModal').modal('show');
-        api.newStudy(takespaces(studyName),model.key,function(){
-          var studies = model.studyNames;
-          var user = model.user;
-          var studyname = model.study;
-          studies[studyname] = {name:studyname,exptID:'not_set',folder:user.folder+"/"+studyname,status:null};
-          setStudies(studies);
-          //model.study=studyname;
-          $('#instruct').hide();
-          $('#result').html('');
-          $('#studyTablePanel').hide();
-          $('#studyTable').hide();
-          setSideMenu();
-          populateFileTable();
-
+        api.newStudy(takespaces(studyName),model.key,function(data){
+          if (data.indexOf(":")!=-1){
+            var msg = data.split(":")[1];
+            alert(msg);
+            $('#uploadedModal').modal('hide');
+          }else{
+            var studies = model.studyNames;
+            var user = model.user;
+            var studyname = model.study;
+            studies[studyname] = {name:studyname,exptID:'not_set',folder:user.folder+"/"+studyname,status:null};
+            setStudies(studies);
+            $('#instruct').hide();
+            $('#result').html('');
+            $('#studyTablePanel').hide();
+            $('#studyTable').hide();
+            setSideMenu();
+            populateFileTable();
+          }
         });
         //api.getStudies(model.key,setStudies);
 
@@ -549,7 +553,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                             'Studies '+
                             '<span class="caret"></span>'+
                           '</button>'+
-                          '<ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">'+
+                          '<ul class="dropdown-menu dropdownLI"  role="menu" aria-labelledby="dropdownMenu1">'+
                           '</ul>'+
                     '</div>'+
                     '<hr>'+
@@ -719,15 +723,31 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
          var fname = takespaces($(span).text());
+         var tr = $(span).parent();
+         var id = $(tr).attr("id");
+         model.elementID = id;
          api.getUser(takespaces(model.key),function(data){
            var userObj = jQuery.parseJSON( data );
            var user = userObj.folder;
            var studyName = model.study;
-           studyName = takeOutBraclet(studyName);
+           //studyName = takeOutBraclet(studyName);
+           if (studyName==='all' || studyName==='user'){
+            var pathA = new Array();
+            var path='';
+            var info = {};
+            info.found = false;
+            getPath(model.fileSystem,model.elementID,pathA,info);
+            for (var i=0;i<pathA.length;i++){
+              path+=pathA[i]+"/";// dont change this is the right seperator for a URL.
+            }
+            studyName=path;
+            fname='';
+            if (model.study==='user') user='';
+
+           }
            var settings = new Settings();
            var url = settings.gettestStudyURL();
            window.open(url+user+"/"+studyName+"/"+fname+"&refresh=true");
-
 
          });
       });
@@ -1224,6 +1244,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
         
         //model.activePage = 'test';
+        if (data!=undefined && (typeof data==='string') && data.indexOf(":")!=-1){
+          var msg = data.split(":")[1];
+          alert(msg);
+        }
         model.elementID = undefined;
         model.active='';
         var study = model.study;
@@ -1705,24 +1729,28 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       function addExptRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
 
-        $('#fileTabale > tbody').append('<tr>'+
+        
+        var html = '<tr>'+
           '<td class="file" id="'+v.id+'" >'+
             '<span class="fileNameSpan" style="margin-left:'+level*50+'px" ><input type="checkbox" class="check" style="margin-right:10px;">'+
               '<i class="fa fa-file-text" ></i> '+file+
             '</span>'+
           '</td>'+
           '<td>'+
-            '<button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button>'+
-            '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button>'+
-            '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button>'+
-            '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
-            '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
-            '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
-            '<!--<button type="button" id="deployButton" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
-            '<button type="button" style="margin-left:20px;" id="statisticsButton" class="btn btn-primary btn-xs ">Statistics</button>'+
-            '<button type="button" style="margin-left:20px;" id="dataFile" class="btn btn-primary btn-xs ">Data</button>-->'+
-           '</td>'+
-        '</tr>');
+              '<button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button>'+
+              '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button>'+
+              '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button>'+
+              '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
+              '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
+              '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
+              '<!--<button type="button" id="deployButton" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
+              '<button type="button" style="margin-left:20px;" id="statisticsButton" class="btn btn-primary btn-xs ">Statistics</button>'+
+              '<button type="button" style="margin-left:20px;" id="dataFile" class="btn btn-primary btn-xs ">Data</button>-->'+
+            '</td>'+
+          '</tr>';
+          
+          
+        $('#fileTabale > tbody').append(html);
       }
       function addJspRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;

@@ -23,7 +23,7 @@ define(['api'], function (API) {
 			
 			var chosenEXPT;
 			var that=this;
-			$('.expt').on('click',function(){
+			$(document).one("click",'.expt',function(){
 				chosenEXPT= $(this).next('label').text();
 			});
 
@@ -85,7 +85,7 @@ define(['api'], function (API) {
 			' See http://peoplescience.org/node/104 for more information on this item. '+'</br>'+
 			' Type \'n/a\' for private studies (not in the Project Implicit research pool).</br>'+
 			'To create restrictions, open the rules generator.'+
-	    	'<a id ="rulaTableAnch" href="#" onclick="window.open(\'ruletable.html\',\'Rule Generator\',\'width=1100,height=900,scrollbars=yes\')"> Open the rule generator </a></p>'+
+	    	'<a id ="rulaTableAnch" href="#" onclick="window.open(\'user/bgoldenberg/dashBoard/ruletable.html\',\'Rule Generator\',\'width=1100,height=900,scrollbars=yes\')"> Open the rule generator </a></p>'+
 	    	'<div style="background-color:#f3f3f3;min-height:70px;width:300px;border:1px solid;border-color:#BDBDBD;">'+
 			'<label id ="restrictions" style="padding:5px;" name="restrictions">None</label>'+
 			'</div><a id ="clearAnch" href="#" onclick="return false;">Clear restrictions</a>'+
@@ -371,11 +371,11 @@ define(['api'], function (API) {
 			 var name = $('#researchName').text();
 			// //var ruleName = $('#rulename').val();
 			 var path = $('#folder').text();
-			 var index = path.lastIndexOf("/") + 1;
+			 var index = path.lastIndexOf(this.fileSeperator()) + 1;
 		     var length = path.length;
 		     var filename = path.substr(index,length);
 		     if (filename=='') {
-		     	var folders = path.split("/");
+		     	var folders = path.split(this.fileSeperator());
 		     	var size = folders.length;
 		     	filename = folders[size-2];
 		     }
@@ -433,6 +433,13 @@ define(['api'], function (API) {
 	 
  		}
 
+ 		this.fileSeperator = function(){
+	        if(model.user.os==='unix'){
+	            return '/';
+	          }else{
+	            return '\\';
+	        }
+      	}
  		this.sendFormToServer = function(name,text,msg1,url,callback){
  			var timeStamp = Math.round(+new Date()/1000); 
 			var data={};
@@ -507,21 +514,25 @@ define(['api'], function (API) {
 	   	}
 	    this.getFolder = function (study){
 	    	var studies = model.studyNames;
-	    	var folder;
-	    	$.each(studies,function(k,v){
-	    		if (k===study){
-	    			$.each(v,function(k2,v2){
-	    				if (k2==='folder'){
-	    					folder = v2;
-	    					return false;
-	    				}
-	    			})
-	    		}
+	    	var study = studies[study];
+	    	var studyfolder = study.folder;
+	    	var user = model.user;
+	    	var userfolder = user.folder;
 
-	    	})
+	    	// $.each(studies,function(k,v){
+	    	// 	if (k===study){
+	    	// 		$.each(v,function(k2,v2){
+	    	// 			if (k2==='folder'){
+	    	// 				folder = v2;
+	    	// 				return false;
+	    	// 			}
+	    	// 		})
+	    	// 	}
+
+	    	// })
 	    	//var folders = folder.split("user");
 	    	//return folders[1];
-	    	return folder;
+	    	return userfolder+this.fileSeperator()+studyfolder;
 	    }
 
 	    this.getEXPT = function(studyname){
@@ -529,13 +540,39 @@ define(['api'], function (API) {
 	    	var numOfExpt=0;
 	    	var studies= model.studyNames;
 	    	var study = studies[studyname];
-	    	$.each(study,function(k2,v2){
-				if (k2.indexOf('exptName')!=-1){
-					if (v2!='not_set')
-					expt.push(v2);
-					numOfExpt++;
+	    	
+	  //   	$.each(study,function(k2,v2){
+			// 	if (k2.indexOf('exptName')!=-1){
+			// 		if (v2!='not_set')
+			// 		expt.push(v2);
+			// 		numOfExpt++;
+			// 	}
+			// })
+			var api = new API();
+			api.getExpt(model.key,model.study,function(data){
+	            var obj = jQuery.parseJSON( data );
+	            $.each(obj, function(key, value){
+	              numOfExpt++;
+	              expt.push(value);
+	        	})
+	        	if (numOfExpt==0){
+					return '';
+				}else{
+					if (numOfExpt==1){
+		    			return expt[0];
+			    	}else{
+			    		var exphHtml='<div> There are several expt files for this study, choose one: ';
+			    		for (var i=0;i<expt.length;i++){
+			    			exphHtml = exphHtml+'</br>';
+			    			exphHtml = exphHtml+ '<input type="checkbox" class="expt" /><label> '+expt[i]+'</label>';
+			    		}
+			    		exphHtml = exphHtml+ '</div>';
+			    		$('#chooseEXPTDivDep').html(exphHtml);
+			    		$('#chooseEXPTModalDeply').modal('show');
+			    	}
+
 				}
-			})
+            });
 	    	// $.each(model.studyNames,function(k,v){
 	    	// 	if (k===study){
 	    	// 		$.each(v,function(k2,v2){
@@ -547,23 +584,7 @@ define(['api'], function (API) {
 	    	// 	}
 
 	    	// })
-			if (numOfExpt==0){
-				return '';
-			}else{
-				if (numOfExpt==1){
-	    			return expt[0];
-		    	}else{
-		    		var exphHtml='<div> There are several expt files for this study, choose one: ';
-		    		for (var i=0;i<expt.length;i++){
-		    			exphHtml = exphHtml+'</br>';
-		    			exphHtml = exphHtml+ '<input type="checkbox" class="expt" /><label> '+expt[i]+'</label>';
-		    		}
-		    		exphHtml = exphHtml+ '</div>';
-		    		$('#chooseEXPTDivDep').html(exphHtml);
-		    		$('#chooseEXPTModalDeply').modal('show');
-		    	}
-
-			}
+			
 	    	
 	    }
 	};
