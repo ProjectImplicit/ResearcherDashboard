@@ -306,7 +306,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         // $('#overwrite').modal('hide');
       });
       $(document).on('click','#personalFolder',function(){
-        $('#filesys').click();
+        $('#fileSys').click();
       });
       $(document).on('click','#userFolder',function(){
         $('#uploadedModal').modal('show');
@@ -939,7 +939,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                     '<li ><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
                     '<li class="active"><a href="#" id="test"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
                     '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
-                    '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> Data </a></li>'+                    
+                    '<!--<li><a href="#" class="disabled"><i class="fa fa-tasks" ></i> Data </a></li>-->'+                    
                     '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
                     '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
                   );
@@ -1443,7 +1443,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       function setStudies (data){
         
        console.log(data);
-       $('#studyModel').modal('hide');
+       
        $('.dropdownLI').html('');
         $('#studyTable > tbody').html('');
         var obj;
@@ -1472,7 +1472,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
            //$('#fileSys').click();
 
         }
-            
+        $('#studyModel').modal('hide');    
       }
       function openStudyValidation(data){
         //debugger;
@@ -1480,6 +1480,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         console.log(errors);
         var len = errors[0].length;
         errors[0]=errors[0].slice(4,len);
+        $('#validatetitle').text('Study Validation');
         $('#validateTable > tbody').empty();
         if (errors.length===0){
           $('#validateTable > tbody').append('<tr><td>No Errors Found</td></tr>');
@@ -1739,7 +1740,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           '<td>'+
               '<button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button>'+
               '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button>'+
-              '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button>'+
+              '<!--<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button>-->'+
               '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
               '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
               '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
@@ -2057,8 +2058,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
          
              $(this).css('border', '2px dotted #0B85A1');
              e.preventDefault();
-             var files = e.originalEvent.dataTransfer.files;
-         
+             //var files = e.originalEvent.dataTransfer.files;
+             var files = e.originalEvent.dataTransfer.items;
+             //var length = e.originalEvent.dataTransfer.items.length;
              //We need to send dropped files to Server
              $('#uploadedModal').modal('show');
              DrophandleFileUpload(files,obj);
@@ -2068,6 +2070,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       function DrophandleFileUpload(files,obj){
 
         model.elementID=undefined;
+        var cmd='UploadFile';
         $( '.check' ).each(function( index ) {
           var input = $(this);
           var tr  = $(input).parent().parent();
@@ -2102,7 +2105,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         
         $.each(files, function(key, value)
         {
-          data.append(key, value);
+          var entry = value.webkitGetAsEntry();
+          if (entry.isFile){
+            var file = value.getAsFile();
+            data.append(key, file);
+          }else if (entry.isDirectory){
+            cmd='uploadFolder';
+            var folder = 
+
+          }
+          
         });
         //if (model.activePage === 'file') model.study='all';
         data.append('UserKey',model.key);
