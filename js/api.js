@@ -141,8 +141,8 @@ define([], function () {
             });
 
         }
-        this.validateFile = function (user,study,filename,callback){
-            var url = "/implicit/dashboard/validate/"+user+"/file/"+study+"/"+filename;
+        this.validateFile = function (user,study,path,filename,callback){
+            var url = "/implicit/dashboard/validate/"+user+"/file/"+study+"/"+filename+"/"+path;
             $.ajax({
                 type: "GET",
                 url: url,
@@ -250,7 +250,7 @@ define([], function () {
 
         }
         this.getFiles = function (user,study,successFunc){
-            var url = "/implicit/dashboard/test/"+user+"/files/"+study;
+            var url = "/implicit/dashboard/filesys/"+user+"/files/"+study;
             $.ajax({
                 type: "GET",
                 url: url,

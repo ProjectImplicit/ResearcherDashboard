@@ -82,6 +82,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       
       $(document).find('input[type=file]').bind("change", function (e) {
            var file = this.files[0];
+
            if (file) {
                // if file selected, do something
                //S$('#uploadedModal').modal('show');
@@ -633,10 +634,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                 }
               }
             }
-            if (model.activePage === 'file') model.study='all';
+            if (model.activePage === 'file' && model.study!='user') model.study='all';
             data.append('UserKey',model.key);
             data.append('folder',takespaces(path));
-            data.append('study',study);
+            data.append('study',model.study);
             data.append('cmd','UploadFile');
             
             api.uploadFile(data,fileOpSuccess);
@@ -770,7 +771,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
          var span = $(button).parent().parent().find('.fileNameSpan');
          console.log(span);
          var fname = $(span).text();
-         api.validateFile(model.key,model.study,takespaces(fname),openValidation);
+         var id = $(span).parent().attr("id");
+         model.elementID = id;
+         var pathA = new Array();
+         var path='';
+         var info = {};
+         info.found = false;
+         getPath(model.fileSystem,model.elementID,pathA,info);
+         for (var i=0;i<pathA.length;i++){
+          path+=pathA[i]+fileSeperator();
+         }
+         api.validateFile(model.key,model.study,path,takespaces(fname),openValidation);
 
       });
       
@@ -1284,9 +1295,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
           }
           
-
+          $('#uploadedModal').modal('hide');
         });
-        $('#uploadedModal').modal('hide');
+        
         
       }
       function uploadError(jqXHR, textStatus, errorThrown){
@@ -2058,7 +2069,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
          
              $(this).css('border', '2px dotted #0B85A1');
              e.preventDefault();
-             //var files = e.originalEvent.dataTransfer.files;
+             var filesI = e.originalEvent.dataTransfer.files;
              var files = e.originalEvent.dataTransfer.items;
              //var length = e.originalEvent.dataTransfer.items.length;
              //We need to send dropped files to Server
@@ -2071,6 +2082,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
         model.elementID=undefined;
         var cmd='UploadFile';
+        var folderpath='';
+
         $( '.check' ).each(function( index ) {
           var input = $(this);
           var tr  = $(input).parent().parent();
@@ -2102,20 +2115,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           }
           //study='all';
         }
-        
-        $.each(files, function(key, value)
-        {
-          var entry = value.webkitGetAsEntry();
-          if (entry.isFile){
-            var file = value.getAsFile();
-            data.append(key, file);
-          }else if (entry.isDirectory){
-            cmd='uploadFolder';
-            var folder = 
-
-          }
-          
-        });
+        updateDatawithFiles(files,data,cmd,folderpath);
         //if (model.activePage === 'file') model.study='all';
         data.append('UserKey',model.key);
         data.append('folder',takespaces(path));
@@ -2124,6 +2124,45 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         
         api.uploadFile(data,fileOpSuccess);
 
+      }
+      function errorHandler(data){
+        console.log(data);
+      }
+      function updateDatawithFiles(files,data,cmd){
+
+        
+        for (var i=0;i<files.length;i++){
+          var item = files[i];
+          var entry = item.webkitGetAsEntry();
+          if (entry.isFile){
+             var file = item.getAsFile();
+             data.append(i, file);
+          }else if (entry.isDirectory){
+             cmd='uploadFolder';
+             var direntry=entry.createReader();
+             // direntry.readEntries(function(results){
+             //    updateDatawithFiles(results,data,cmd);
+             // }, errorHandler);
+
+    
+          }
+        }       
+
+        // $.each(files, function(key, value)
+        // {
+        //   var entry = value.webkitGetAsEntry();
+        //   if (entry.isFile){
+        //     var file = value.getAsFile();
+        //     data.append(key, file);
+        //   }else if (entry.isDirectory){
+        //     cmd='uploadFolder';
+        //     var direntry=entry.createReader();
+        //     var entries=direntry.entries();
+            
+
+        //   }
+          
+        // });
       }
       /**
       * Desc: returns the satet of the folder

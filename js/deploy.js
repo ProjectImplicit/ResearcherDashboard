@@ -54,10 +54,10 @@ define(['api'], function (API) {
     
 		this.addHTML = function(name,email,folder,chosenEXPT){
 			var that=this;
-			var html ='</br></br><table style ="width=500" class=""><tr><td><label>Researcher name: </label></td><td><span class="label label-info" id="researchName"> '+name+'</span></td></tr>'+
-				'<tr><td><label> Researcher email address: </label></td><td><span class="label label-info" id="researchEmail">'+email+'</span></td></tr>'+
-				'<tr><td><label> Study folder location: </label></td><td ><span class="label label-info" id="folder">'+folder+'</span></td></tr>'+
-				'<tr><td><label>Name of experiment file: </label></td><td><span class="label label-info" id="experimentFile" >'+chosenEXPT+'</span></td></tr></table></br>'+
+			var html ='</br></br><table style ="width=500" class=""><tr><td><label>Researcher name: </label></td><td><input type="text" id="researchName" value='+name+'> </input></td></tr>'+
+				'<tr><td><label> Researcher email address: </label></td><td><input type="text" id="researchEmail" value='+email+'></input></td></tr>'+
+				'<tr><td><label> Study folder location: </label></td><td ><input type="text" id="folder" value='+folder+'></input></td></tr>'+
+				'<tr><td><label>Name of experiment file: </label></td><td><input type="text" id="experimentFile" value='+chosenEXPT+'></input></td></tr></table></br>'+
 				'<h5 style="float: left;">Target number of completed study sessions: </h5> <div class="col-lg-1" style="float: left;"><input type="text" id="targetNumber" class="form-control" ></div></br>'+
 				'<label id="targetNumber_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 				//'';
@@ -221,10 +221,10 @@ define(['api'], function (API) {
 			var timestamp  = month+ "/"+day+"/"+year+", "+hour+":"+minute;
 			
 			//'<tr><td>8/19/2011 16:23:30</td><td>colintest</td><td>cts2e@virginia.edu</td><td>colin</td><td>1</td><td>non</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td><td></td><td></td><td></td></tr>'
-			var filedata = '<tr><td>'+timestamp+'</td><td><a href=\''+this.value('folder','label')+'\' >'+this.value('folder','label')+' </a></td><td>'+this.value('researchEmail','label')+'</td><td>'+this.value('researchName','label')+'</td><td>'+
+			var filedata = '<tr><td>'+timestamp+'</td><td><a href=\''+this.value('folder','input')+'\' >'+this.value('folder','input')+' </a></td><td>'+this.value('researchEmail','input')+'</td><td>'+this.value('researchName','input')+'</td><td>'+
 			this.value('targetNumber','input')+'</td><td>'+this.value('rulename','input')+'</td><td>'+this.value('restrictions','label')+'</td><td>'+this.value('restrictionsComments','input')+'</td><td>'+this.value('ReviewerYes','drop')+'</td><td>'+this.value('studyComplete','drop')+
 			'</td><td>'+this.value('Virtual','drop')+'</td><td>'+this.value('necessary','drop')+'</td><td>'+this.value('approved','drop')+'</td><td>'+
-			this.value('experimentFile','label')+'</td><td>'+this.value('confirmationYes','drop')+'</td><td>'+this.value('comments','input')+'</td></tr>';
+			this.value('experimentFile','input')+'</td><td>'+this.value('confirmationYes','drop')+'</td><td>'+this.value('comments','input')+'</td></tr>';
 
 			return filedata;
    		}
@@ -349,7 +349,7 @@ define(['api'], function (API) {
 	        });
    		}
 	   	this.processForm = function(){
-	   		
+	   		debugger;
 	   		if (this.validate()){
 				alert('Some of the fields above were not filled');
 				return;
@@ -368,9 +368,9 @@ define(['api'], function (API) {
 		     //var msgurl = "/implicit/user/bgoldenberg/ruleGenerator/msg.html";//on implicit
 			
 			 var xml = $('#hide' ).val();
-			 var name = $('#researchName').text();
+			 var name = $('#researchName').val();
 			// //var ruleName = $('#rulename').val();
-			 var path = $('#folder').text();
+			 var path = $('#folder').val();
 			 var index = path.lastIndexOf(this.fileSeperator()) + 1;
 		     var length = path.length;
 		     var filename = path.substr(index,length);
