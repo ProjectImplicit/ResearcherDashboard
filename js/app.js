@@ -717,6 +717,48 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         
 
       // });
+      $(document).on("click",'.copyLink',function(){
+         var button = $(this);
+         var span = $(button).parent().parent().find('.fileNameSpan');
+         console.log(span);
+         var fname = takespaces($(span).text());
+         var tr = $(span).parent();
+         var id = $(tr).attr("id");
+         model.elementID = id;
+         api.getUser(takespaces(model.key),function(data){
+           var userObj = jQuery.parseJSON( data );
+           var user = userObj.folder;
+           var studyName = model.study;
+           //studyName = takeOutBraclet(studyName);
+           if (studyName==='all' || studyName==='user'){
+            var pathA = new Array();
+            var path='';
+            var info = {};
+            info.found = false;
+            getPath(model.fileSystem,model.elementID,pathA,info);
+            for (var i=0;i<pathA.length;i++){
+              path+=pathA[i]+"/";// dont change this is the right seperator for a URL.
+            }
+            studyName=path;
+            fname='';
+            if (model.study==='user') user='';
+
+           }
+           var settings = new Settings();
+           var url = settings.gettestStudyURL();
+           $('#copytextinput').val(url+user+"/"+studyName+"/"+fname+"&refresh=true");
+           $('#CopyModal').modal('show');
+           $(document).find('#CopyModal').on('shown.bs.modal',function(){
+            $('#copytextinput').select();
+             //$(this).select();
+           });
+           
+
+         });
+
+
+
+      });
       $(document).on("click",'.testStudy',function(){
          console.log($(this));
          //debugger;
@@ -1737,7 +1779,24 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
         // }
       }
+      // function copyToClipboard(text) {
+      //   window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
+      // }
+      function getStudyTestlHtml(){
+        var html='<div class="dropdown" style="display: inline">'+
+                    '<button type="button" id="dropdownTest" style="margin-left:20px;" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">'+
+                      'Study Tester'+
+                      '<span class="caret"></span>'+
+                    '</button>'+
+                    '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownTest">'+
+                      '<li><a href="#" class="testStudy">Run Study</a></li>'+
+                      '<li><a href="#" class="copyLink">Copy link</a></li>'+
+                    '</ul>'+
+                    '</div>'+
+                  '</div>';
+        return html;
 
+      }
       function addExptRaw(file,level,v){
         fileTableModel.row = fileTableModel.row+1;
 
@@ -1749,9 +1808,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
             '</span>'+
           '</td>'+
           '<td>'+
-              '<button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button>'+
-              '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button>'+
-              '<!--<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button>-->'+
+              '<button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button>'+getStudyTestlHtml()+
+              '<!--<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button>'+
+              '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button>-->'+
               '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
               '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
               '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+

@@ -142,11 +142,19 @@ define([], function () {
 
         }
         this.validateFile = function (user,study,path,filename,callback){
-            var url = "/implicit/dashboard/validate/"+user+"/file/"+study+"/"+filename+"/"+path;
+
+            //var url = "/implicit/dashboard/validate/"+user+"/file/"+study+"/"+filename+"/"+path;
+            var url = "/implicit/dashboard/";
+            data ={};
+            data.study= study;
+            data.path = path;
+            data.filename = filename;
+            data.cmd = 'validate';
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: url,
-                success: callback
+                success: callback,
+                data:data
                 
             });
 

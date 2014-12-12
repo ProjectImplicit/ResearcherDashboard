@@ -224,7 +224,7 @@ define(['api'], function (API) {
 			var filedata = '<tr><td>'+timestamp+'</td><td><a href=\''+this.value('folder','input')+'\' >'+this.value('folder','input')+' </a></td><td>'+this.value('researchEmail','input')+'</td><td>'+this.value('researchName','input')+'</td><td>'+
 			this.value('targetNumber','input')+'</td><td>'+this.value('rulename','input')+'</td><td>'+this.value('restrictions','label')+'</td><td>'+this.value('restrictionsComments','input')+'</td><td>'+this.value('ReviewerYes','drop')+'</td><td>'+this.value('studyComplete','drop')+
 			'</td><td>'+this.value('Virtual','drop')+'</td><td>'+this.value('necessary','drop')+'</td><td>'+this.value('approved','drop')+'</td><td>'+
-			this.value('experimentFile','input')+'</td><td>'+this.value('confirmationYes','drop')+'</td><td>'+this.value('comments','input')+'</td></tr>';
+			this.value('experimentFile','input')+'</td><td>'+this.value('confirmationYes','drop')+'</td><td> Created with Researchers DashBoard on new dev 2.</br>'+this.value('comments','input')+'</td></tr>';
 
 			return filedata;
    		}
