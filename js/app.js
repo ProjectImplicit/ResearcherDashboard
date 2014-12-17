@@ -93,6 +93,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       });
 
 
+
       $(document).on("click","#logout",function(){
         api.logout();
 
@@ -719,7 +720,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       // });
       $(document).on("click",'.copyLink',function(){
          var button = $(this);
-         var span = $(button).parent().parent().find('.fileNameSpan');
+         var span = $(button).parent().parent().parent().parent().parent().find('.fileNameSpan');
          console.log(span);
          var fname = takespaces($(span).text());
          var tr = $(span).parent();
@@ -763,7 +764,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
          console.log($(this));
          //debugger;
          var button = $(this);
-         var span = $(button).parent().parent().find('.fileNameSpan');
+         var span = $(button).parent().parent().parent().parent().parent().find('.fileNameSpan');
          console.log(span);
          var fname = takespaces($(span).text());
          var tr = $(span).parent();
@@ -840,12 +841,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         console.log('in .folder' +model.study);
         var td = $(this).parent().parent();
         var tr = $(td).parent();
-        var folderName = $(tr).text();
+        var folderName = takespaces($(this).text());
         var id = $(td).attr("id");
-        changeFolderState(takespaces(folderName),id);
+        var currentFolder={};
+        currentFolder.name = folderName;
+        currentFolder.id = id;
+        var state = changeFolderState(takespaces(folderName),id);
+        currentFolder.state=state;
+        model.currentFolder = currentFolder;
         createRaws(model.studyFileSystem,false,fileTableModel.user);
-                   
-        //createRawsWButt(fileObj,false);
+        
       });
 
       $(document).on("click",'.test',function(){
@@ -994,6 +999,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                     '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
                     '<!--<li><a href="#" class="disabled"><i class="fa fa-tasks" ></i> Data </a></li>-->'+                    
                     '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
+                    '<li><a href="#" id="submitReview"><i class="fa fa-tasks" ></i> Submit for Review </a></li>'+
                     '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
                   );
         
@@ -1602,21 +1608,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         var element = obj[path];
         if (element==='open'){
           obj[path]='close';
+          return 'close';
         }else{
           obj[path]='open';
+          return 'open';
         }
-        // for (var key in obj) {
-        //    if (obj.hasOwnProperty(key)) {
-        //       if (key===path){
-        //         if(obj[key]==='open'){
-        //           obj[key]='close';
-        //         }else{
-        //           obj[key]='open';
-        //         }
-        //       }
-        //    }
-        // }
-              
+                   
       }
 
 
@@ -1689,9 +1686,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
   
         }
       }
-      function createRaws(filesObj,recursive,user){
+      function createRawsRecursive(filesObj,recursive,user){
 
-        fileTableModel.level=fileTableModel.level+1;
+         fileTableModel.level=fileTableModel.level+1;
         var keys = sortedKeys(filesObj);
         console.log('in create raws:' +model.study);
         if (recursive===false){//entering this function for the first time
@@ -1741,42 +1738,32 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           addEmptyRaw(fileTableModel.level);
 
          }
-        // var numOfElements=0;
-        // $.each(filesObj, function(k, v) {
-        //   if (k!='state' && k!='id'){
-        //     numOfElements++;
-        //   }
-          
-        //   var extension = k.split(".");
-        //   if (extension.length>1){
-            
-        //     if (extension[1]==='jsp' && user===false){
-        //       addJspRaw(k,fileTableModel.level,v);
-        //     }else{
-        //       if (extension[1]==='expt' && user===false){
-        //       addExptRaw(k,fileTableModel.level,v);
-        //       }else{
-        //         if (extension[1]==='js' && user===false){
-        //           addJSRaw(k,fileTableModel.level,v);
-        //         }else{
-        //            addFileRaw(k,fileTableModel.level,v);
-        //         }
-        //       }
-        //     }
-        //   }else{
-        //     if (k!='state' && k!='id'){
-        //       addFolderRaw(k,fileTableModel.level,v);
-        //       if (FolderState(v)==='open'){
-        //         createRaws(v,true,user);
-        //         fileTableModel.level=fileTableModel.level-1;
-        //       }
-        //     }
-            
-        //   }
-        // });
-        // if (numOfElements===0){
-        //   addEmptyRaw(fileTableModel.level);
+      }
+      
+      function createRaws(filesObj,recursive,user){
 
+        var currentFolder={};
+        var check;
+        if (model.currentFolder != null && model.currentFolder != undefined){
+         currentFolder = model.currentFolder;
+         var td = $(document).find('#'+currentFolder.id);
+         var tr  = td.parent();
+         check = $(tr).find('[type=checkbox]');
+         if (currentFolder.state==='open'){
+           $(check).prop('checked', true);
+           currentFolder.name = takespaces($(tr).find('.folder').text());
+         }else{
+           $(check).prop('checked', false);
+           currentFolder.name='';
+         }
+        }
+        createRawsRecursive(filesObj,recursive,user);
+        // if (currentFolder.state==='open'){
+        //    $(check).prop('checked', true);
+           
+        // }else{
+        //    $(check).prop('checked', false);
+           
         // }
       }
       // function copyToClipboard(text) {
@@ -1792,7 +1779,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                       '<li><a href="#" class="testStudy">Run Study</a></li>'+
                       '<li><a href="#" class="copyLink">Copy link</a></li>'+
                     '</ul>'+
-                    '</div>'+
                   '</div>';
         return html;
 
@@ -2110,7 +2096,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
       }
       function createDandD(){
-        $('#result').append('<div id="dragandrophandler">Drag & Drop Files Here</div>');
+        var name;
+        if (model.currentFolder != null && model.currentFolder != undefined){
+          var currentFolder = model.currentFolder;
+          name = currentFolder.name;
+        }
+        $('#result').append('<label style="position:relative;left:-10px;color:#92AAB0;" id="currentfolder">Current folder: '+name+'</label></br><div id="dragandrophandler">Drag & Drop Files Here</div>');
         var obj = $("#dragandrophandler");
         obj.on('dragenter', function (e) 
         {
@@ -2300,7 +2291,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
               '</td>'+
               '<td class="">'+status+'</td>'+
               '<td class="">'+
-                  '<button type="button" class="btn btn-primary btn-xs review">Submit for Review</button>'+
+                  '<!--<button type="button" class="btn btn-primary btn-xs review">Submit for Review</button>-->'+
               '</td>'+
               '<!--<td class="">'+
                   '<button type="button" class="btn btn-primary btn-xs test" >Test</button>'+
