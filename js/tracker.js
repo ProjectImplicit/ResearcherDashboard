@@ -2,7 +2,7 @@
 
 
 
-define(['api','settings','datepicker'], function (API,Settings) {
+define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 
 
 	
@@ -12,6 +12,18 @@ define(['api','settings','datepicker'], function (API,Settings) {
 		
 		var trackNum=0;
 		var that=this;
+		var resultCVS;
+		var inputData;
+		var dbChoise;
+		
+		var pihistory = [];
+		var historyLimit =5;
+		var historyIndex=0;
+		var hostoryCurrent=0;
+
+
+
+
 	    this.getTracker = function(expt){
 	    	
 	    	console.log('from tracker:'+exptid);
@@ -47,11 +59,30 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	    this.takespaces = function(name){ 
    			return name.replace(/\s+/g, '');
    		}
+
+   		this.getHistoryButt = function(){
+   			var html=
+   			'<div style="margin-left:0.5%;display:inline">'+
+				'<i id="historyLeft" style="color:#4588E6;cursor: pointer;" class="fa fa-caret-square-o-left" title="backward"></i>'+
+				'<i id="historyRight" style="color:#4588E6;margin-left:10px;cursor: pointer;" class="fa fa-caret-square-o-right" title="forward"></i>'+
+			'</div>';
+
+			return html;
+   		}
+   		this.setHistory = function(csv,data){
+			var historyObj={};
+			historyObj.csv = csv;
+			historyObj.data = data;
+			pihistory.push(historyObj);
+			historyIndex++;
+			historyCurrent=historyIndex;
+
+		}
 	    this.addTracker = function (exptid){
 	    	var currentdate = new Date(); 
 	    	var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
         	var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();
-       		var html='<div id="trackerDashBoard" style="width:auto;margin-top:20px;">'+
+       		var html=this.getHistoryButt()+'</br></br>'+this.getbuttons()+'</br><div id="trackerDashBoard" style="width:auto;margin-top:20px;">'+
 				         '<label >Study: </label>'+
 						 '<input id="studyI" style="margin-left:8px;" type="text" value='+exptid+'></input>'+
 						 '<label>Task: </label>'+
@@ -62,32 +93,10 @@ define(['api','settings','datepicker'], function (API,Settings) {
 							'<label>Until: </label>'+
 							'<input id="untilI" style="margin-left:8px;" type="text" id="untilI" value='+until+'></input>'+
 						'</div>'+ this.designHtml()+
-
-						 '<div class="dropdown" style="display:inline;margin-left:8px;">'+
-				              '<button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dbButton" data-toggle="dropdown">'+
-				                'Research'+
-				                '<span class="caret"></span>'+
-				              '</button>'+
-				              '<ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">'+
-				              	'<li><a href="#" id="research">Research</a><li>'+
-				              	'<li><a href="#" id="demo">Demo</a><li>'+
-				              	'<li><a href="#" id="both">Both</a><li>'+
-				              '</ul>'+
-		         		 '</div>'+
-		        		 '<div class="dropdown" style="display: inline;margin-left:8px;">'+
-			                '<button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="listButton" data-toggle="dropdown">'+
-			                'Any'+
-			                '<span class="caret"></span>'+
-			                '</button>'+
-			                '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">'+
-			                	'<li><a href="#" id="current">Current</a><li>'+
-				              	'<li><a href="#" id="history">History</a><li>'+
-				              	'<li><a href="#" id="any">Any</a><li>'+
-			                '</ul>'+
-			                '<button class="btn btn-success btn-sm" type="button" id="submit" style="margin-left:10px;">Submit</button>'+
-		         		 '</div><br/>'+this.getShowBy()+
-						''+this.getCompute();+
-					'</div>';
+						   '<button class="btn btn-success btn-sm" type="button" id="submit" style="margin-left:10px;">Submit</button>'+
+		         			'<br/>'+this.getShowBy()+
+						''+this.getCompute()+
+					'</br>'+this.getMoreOptions()+'</div>';
 
 					model.tracker.studyc = 'true';
 					$('#result').append(html);
@@ -99,6 +108,33 @@ define(['api','settings','datepicker'], function (API,Settings) {
 					this.setListeners();
 	    }
 	    
+	    this.getbuttons = function(){
+	    	 
+	    	var html=
+	    	'<div class="dropdown" style="display:inline;margin-left:8px;">'+
+              '<button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="dbButton" data-toggle="dropdown">'+
+                'Research'+
+                '<span class="caret"></span>'+
+              '</button>'+
+              '<ul class="dropdown-menu " role="menu" aria-labelledby="dropdownMenu1">'+
+              	'<li><a href="#" id="research">Research</a><li>'+
+              	'<li><a href="#" id="demo">Demo</a><li>'+
+              	'<li><a href="#" id="both">Both</a><li>'+
+              '</ul>'+
+ 		 '</div>'+
+		 '<div class="dropdown" style="display: inline;margin-left:8px;">'+
+            '<button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="listButton" data-toggle="dropdown">'+
+            'Any'+
+            '<span class="caret"></span>'+
+            '</button>'+
+            '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">'+
+            	'<li><a href="#" id="current">Current</a><li>'+
+              	'<li><a href="#" id="history">History</a><li>'+
+              	'<li><a href="#" id="any">Any</a><li>'+
+            '</ul>'+
+          '</div>';  
+          return html;
+	    }
 	    this.designHtml = function(){
 	    	var html='';
 	    	if (design==='design2'){
@@ -124,6 +160,19 @@ define(['api','settings','datepicker'], function (API,Settings) {
 
 	    	return html;
 	    }
+	    this.getMoreOptions = function(){
+	    	var html =
+	    	'<div style="margin-top:10px;margin-left:10px;">'+
+				'<span style="font-style:italic;">More options: </span>'+
+				'<div style="display:inline">'+
+					'<div style="margin-top:2px;display: inline;"><input id="zero" type="checkbox" name="sports" value="soccer"  />Hide Rows with Zero Started Sessions</div>'+
+					'<button id="download" class="btn-primary btn-xs" style="margin-left:10px; display:inline;">Download CSV</button>'+
+					'</br>'+
+				'</div>'+
+			'</div>';
+			return html;
+
+	    }
 	    this.getShowBy = function(){
 	    	var html = ''+
 	    	'<div style="display:inline-block;margin-left:10px;margin-top:20px;">'+
@@ -148,26 +197,33 @@ define(['api','settings','datepicker'], function (API,Settings) {
 
 	    this.getTable = function(studyExpt){
 	    	
-	    	var data = this.getData();
-	    	console.log(data);
+	    	inputData = this.getData();
+	    	//console.log(data);
 	    	var api = new API();
 	    	//$('#knob').modal('show');
 	    	//$(".dial").knob({'min':-50,
               //   			'max':50});
-	    	api.getTracker(data,this.setTrackerTable);
+	    	api.getTracker(inputData,this.setTrackerTable);
 	    	//if (listeners) this.setListeners();
 	    }
 	    this.setTrackerTable = function(data){
 	        console.log(data);
 	        $('#uploadedModal').modal('hide');
-	        //$('#knob').modal('hide');
-		    $('#CSVTable').CSVToTable(data,{
+	        resultCVS=data;
+	        resultCVS = that.handleZero(resultCVS);
+	        that.setHistory(resultCVS,inputData);
+	        that.setTable(resultCVS);
+		   
+      	}
+      	this.setTable = function(data) {
+	  		$('#CSVTable').CSVToTable(data,{
 		    	tableClass:'tablesorter'
 		        }).bind("loadComplete",function() { 
 		      	$('#CSVTable').find('#cvsT').addClass('tablesorter');
 		      	$('#CSVTable').find('table').tablesorter();
 	        });
-      	} 
+      	}
+
       	this.getData = function (){
 
 	        var settings = new Settings();
@@ -246,6 +302,7 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	        data.tasksM='3';
 	        data.threads = 'yes';
 	        data.threadsNum = '1';
+	        data.zero = model.tracker.zero;
 	        data.baseURL = settings.getBaseURL();
 	        return data;
       	}
@@ -289,22 +346,70 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	        return res;
       	}
 
+      	this.handleZero = function(csv){
+
+			var AnelysedCSV='';
+			if( ($('#zero').is(':checked')) ){
+			
+				 var lines =csv.split("\n");
+				 var commas = lines[0].split(",");
+				 var index;
+				  for (var i=0;i<commas.length;i++){
+				  	if (commas[i]==='Started'){
+				  		index=i;
+				  	}
+				  }
+				  for(var i = lines.length - 1; i >= 0; i--) {
+				  	var line = lines[i];
+				  	var lineCommas = line.split(",");
+				  	var started  = lineCommas[index];
+				  	if (started==='0'){
+				  		lines.splice(i,1);
+						
+				  	}
+				  }
+				
+				for (var i=0;i<lines.length;i++){
+					AnelysedCSV += lines[i]+'\n';
+				}
+				return AnelysedCSV;
+			}else{
+				return csv;
+			}
+			
+		}
 	    this.setListeners = function(){
 
+	    	$('#download').click(function(){
+	    		var csvName = $('#studyI').val();
+      			var blob = new Blob([resultCVS], {type: "text/plain;charset=utf-8"});
+        		saveAs(blob,csvName+'.csv');
+	    	});
 	    	$('#research').click(function(){
 	    		model.tracker.db = 'Research';
 	    		$('#dbButton').html('Research <span class="caret"></span>');
+	    		$(document).find('#listButton').html('Current <span class="caret"></span>');
+				dbChoise = 'research';
+				$(document).find("#listButton").prop('disabled', false);
+		
 
 	    	});
 	    	$('#demo').click(function(){
 	    		model.tracker.db = 'Demo';
 	    		$('#dbButton').html('Demo <span class="caret"></span>');
+	    		$(document).find('#listButton').html('Any <span class="caret"></span>');
+				dbChoise = 'demo';
+				$(document).find("#listButton").prop('disabled', true);
+		
 
 	    	});
 	    	$('#both').click(function(){
 	    		model.tracker.db = 'Both';
 	    		$('#dbButton').html('Both <span class="caret"></span>');
-
+	    		$(document).find('#listButton').html('Any <span class="caret"></span>');
+				dbChoise = 'both';
+				$(document).find("#listButton").prop('disabled', true);
+				$('#dataC').prop('checked', true);
 	    	});
 	    	$('#current').click(function(){
 	    		model.tracker.list = 'Current';
@@ -368,7 +473,191 @@ define(['api','settings','datepicker'], function (API,Settings) {
 	      		that.getTable(exptid,false);
 
 	    	});
+	    	////////////////////////////////////////
 
+	    	$('#historyRight').on('click',function(){
+
+				if (historyCurrent===historyIndex) return;
+				historyCurrent++;
+				var historyObj = pihistory[historyCurrent-1];
+				var csv = historyObj.csv;
+				var data = historyObj.data;
+				if (data.db==='Research'){
+					$(document).find('#dbButton').html('Research <span class="caret"></span>');
+				}
+				if (data.db==='Demo'){
+					$(document).find('#dbButton').html('Demo <span class="caret"></span>');
+					$(document).find('#listButton').html('Any <span class="caret"></span>');
+					dbChoise='demo';
+					$("#listButton").prop('disabled', true);
+				}
+				if (data.current==='Both'){
+					$(document).find('#dbButton').html('<span class="ui-button-text">Both <i class="icon-caret-down" ></i>');
+					$(document).find('#listButton').html('Any <span class="caret"></span>');
+					dbChoise = 'both';
+					$("#listButton").prop('disabled', true);
+					$('#dataC').prop('checked', true);
+				}
+				if (data.current==='Current'){
+					$(document).find('#listButton').html('<span class="ui-button-text">Current <i class="icon-caret-down" ></i>');
+				}
+				if (data.current==='History'){
+					$(document).find('#listButton').html('<span class="ui-button-text">History <i class="icon-caret-down" ></i>');
+				}
+				if (data.current==='Any'){
+					$(document).find('#listButton').html('<span class="ui-button-text">Any <i class="icon-caret-down" ></i>');
+				}
+				if (data.studyc === 'true'){
+					$('#studyC').prop('checked', true);
+				}else{
+					$('#studyC').prop('checked', false);
+				}
+				if (data.taskc === 'true'){
+					$('#taskC').prop('checked', true);
+				}else{
+					$('#taskC').prop('checked', false);
+				}
+				if (data.datac=== 'true'){
+					$('#dataC').prop('checked', true);
+				}else{
+					$('#dataC').prop('checked', false);
+				}
+				if (data.timec=== 'true'){
+					$('#timeC').prop('checked', true);
+					$('#timeTable').fadeIn();
+				}else{
+					$('#timeC').prop('checked', false);
+					$('#timeTable').fadeOut();
+				}
+				if (data.dayc ==='true'){
+					$('#dayC').prop('checked', true);
+				}else{
+					$('#dayC').prop('checked', false);
+				}
+				if (data.weekc=== 'true'){
+					$('#weekC').prop('checked', true);
+				}else{
+					$('#weekC').prop('checked', false);
+				}
+				if (data.monthc=== 'true'){
+					$('#monthC').prop('checked', true);
+				}else{
+					$('#monthC').prop('checked', false);
+				}
+				if (data.yearc ==='true'){
+					$('#yearC').prop('checked', true);
+				}else{
+					$('#yearC').prop('checked', false);
+				}
+				if (data.zero ==='true'){
+					$('#zero').prop('checked', true);
+				}else{
+					$('#zero').prop('checked', false);
+				}
+				
+				$(document).find('#studyI').val(data.study);
+				$(document).find('#taskI').val(data.task);
+				$(document).find('#sinceI').val(data.since);
+				$(document).find('#untilI').val(data.until);
+				$(document).find('#completedI').val(data.endTask);
+				$(document).find('#filterI').val(data.filter);
+				that.setTable(csv);
+				resultCVS= csv;
+			});
+			$('#historyLeft').on('click',function(){
+				if (historyCurrent===1) return;
+				historyCurrent--;
+				var historyObj = pihistory[historyCurrent-1];
+				var csv = historyObj.csv;
+				var data = historyObj.data;
+				if (data.db==='Research'){
+					$(document).find('#dbButton').html('Research <span class="caret"></span>');
+					
+				}
+				if (data.db==='Demo'){
+					$(document).find('#dbButton').html('Demo <span class="caret"></span>');
+					$(document).find('#listButton').html('Any <span class="caret"></span>');
+					dbChoise='demo';
+					$("#listButton").prop('disabled', true);
+				}
+				if (data.current==='Both'){
+					$(document).find('#dbButton').html('Both <span class="caret"></span>');
+					$(document).find('#listButton').html('Any <span class="caret"></span>');
+					dbChoise = 'both';
+					$("#listButton").prop('disabled', true);
+					$('#dataC').prop('checked', true);
+				}
+				if (data.current==='Current'){
+					$(document).find('#listButton').html('Current <span class="caret"></span>');
+					$("#listButton").prop('disabled', false);
+					
+				}
+				if (data.current==='History'){
+					$(document).find('#listButton').html('<span class="ui-button-text">History <i class="icon-caret-down" ></i>');
+					$$("#listButton").prop('disabled', false);
+				}
+				if (data.current==='Any'){
+					$(document).find('#listButton').html('<span class="ui-button-text">Any <i class="icon-caret-down" ></i>');
+				}
+				if (data.studyc === 'true'){
+					$('#studyC').prop('checked', true);
+				}else{
+					$('#studyC').prop('checked', false);
+				}
+				if (data.taskc === 'true'){
+					$('#taskC').prop('checked', true);
+				}else{
+					$('#taskC').prop('checked', false);
+				}
+				if (data.datac=== 'true'){
+					$('#dataC').prop('checked', true);
+				}else{
+					$('#dataC').prop('checked', false);
+				}
+				if (data.timec=== 'true'){
+					$('#timeC').prop('checked', true);
+					$('#timeTable').fadeIn();
+				}else{
+					$('#timeC').prop('checked', false);
+					$('#timeTable').fadeOut();
+
+				}
+				if (data.dayc ==='true'){
+					$('#dayC').prop('checked', true);
+				}else{
+					$('#dayC').prop('checked', false);
+				}
+				if (data.weekc=== 'true'){
+					$('#weekC').prop('checked', true);
+				}else{
+					$('#weekC').prop('checked', false);
+				}
+				if (data.monthc=== 'true'){
+					$('#monthC').prop('checked', true);
+				}else{
+					$('#monthC').prop('checked', false);
+				}
+				if (data.yearc ==='true'){
+					$('#yearC').prop('checked', true);
+				}else{
+					$('#yearC').prop('checked', false);
+				}
+				if (data.zero ==='true'){
+					$('#zero').prop('checked', true);
+				}else{
+					$('#zero').prop('checked', false);
+				}
+				$(document).find('#studyI').val(data.study);
+				$(document).find('#taskI').val(data.task);
+				$(document).find('#sinceI').val(data.since);
+				$(document).find('#untilI').val(data.until);
+				$(document).find('#completedI').val(data.endTask);
+				$(document).find('#filterI').val(data.filter);
+				that.setTable(csv);
+				resultCVS= csv;
+			});
+
+	    	////////////////////////////////////////
 
 	    }
     	

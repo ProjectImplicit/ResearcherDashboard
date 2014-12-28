@@ -1,7 +1,8 @@
 define([], function () {
       
     var settings = function () {
-    	var dbString='newwarehouse';
+    	//var dbString='newwarehouse';
+        var dbString='test';
     	var curl = 'http://app-dev-01.implicit.harvard.edu/implicit/research/library/randomStudiesConfig/RandomStudiesConfig.xml';
         var hurl = 'http://app-dev-01.implicit.harvard.edu/implicit/research/library/randomStudiesConfig/HistoryRand.xml';
     	var testStudyURL = 'http://app-dev-01.implicit.harvard.edu/implicit/Launch?study=/user/';

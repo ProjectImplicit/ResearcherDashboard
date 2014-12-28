@@ -177,6 +177,33 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         
 
       }
+      function createExistFilesArray(files,path,data,study){
+         var existFiles = new Array();
+        
+        $.each(files, function(key, value){
+            console.log(key);
+            console.log(value);
+          //data.append(key, value);
+            var res= api.fileExist(key,model.key,takespaces(path),study,value.name);
+            if (res){
+              var file={};
+              file.key =value.name;
+              file.formkey = key;
+              file.formvalue = value;
+              existFiles.push(file);
+            }else{
+              data.append(key, value);
+            }
+        });
+        var info={};
+        info.index=0;
+        info.visited=0;
+        info.data=data;
+        info.study=study;
+        info.path=path;
+        model.Modalinfo=info;
+        return existFiles;
+      }
       function prepareUpload(event){
         
         $('#uploadedModal').modal('show');
@@ -197,32 +224,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           }
           study='all';
         }
-        var existFiles = new Array();
+       
+        model.exist = createExistFilesArray(event.target.files,path,data,study);
         
-        $.each(event.target.files, function(key, value){
-            console.log(key);
-            console.log(value);
-          //data.append(key, value);
-            var res= api.fileExist(key,model.key,takespaces(path),model.study,value.name);
-            if (res){
-              var file={};
-              file.key =value.name;
-              file.formkey = key;
-              file.formvalue = value;
-              existFiles.push(file);
-            }else{
-              data.append(key, value);
-            }
-        });
-        model.exist = existFiles;
-        var info={};
-        info.index=0;
-        info.visited=0;
-        info.data=data;
-        info.study=study;
-        info.path=path;
-        model.Modalinfo=info;
-        if (existFiles.length>0){
+        if (model.exist.length>0){
           setModals(model);
         }else{
           //if (model.activePage === 'file') model.study='all';
@@ -234,40 +239,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           api.uploadFile(data,fileOpSuccess);
 
         }
-        
-        // for (var i=0;i<existFiles.length;i++){
-        //   var file = existFiles[i];
-        //   $('#overwriteFileName').text('A file with the name '+file.key+' already exist, overwrite?');
-        //   $('#overwrite').modal('show');
-        //   if (model.all===true){
-        //      break;
-        //   }
-        // }
-        // if (model.done===true){
-        //   if (model.all===true){
-        //   for (var i=0;i<existFiles.length;i++){
-        //     var file = existFiles[i];
-        //     data.append(file.key, file.val);
-        //   }
-        //   }else{
-        //     for (var i=0;i<existFiles.length;i++){
-        //       var file = existFiles[i];
-        //       if (file.overwrite=true){
-        //         data.append(file.key, file.val);  
-        //       }
-        //     }
-        //   }
-        //   if (model.activePage === 'file') model.study='all';
-        //   data.append('UserKey',model.key);
-        //   data.append('folder',takespaces(path));
-        //   data.append('study',study);
-        //   data.append('cmd','UploadFile');
-          
-        //   api.uploadFile(data,fileOpSuccess);
-
-        // }
-        
-       
       }
 
       function getStudyFromFileSys(fileSystem,info){
@@ -292,21 +263,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         api.submitforreview(studyName);
         alert('Your study was submitted.');
       });
-      $(document).on('click','#FileoverwriteYes',function(){
-        // var all = $('#applytoall').prop('checked');
-        // var fileText = $('#overwriteFileName').text();
-        // var words = fileText.split(' ');
-        // var name = words[5];
-        // var existFiles = model.exist;
-        // for (var i=0;i<existFiles.length;i++){
-        //   var file  = existFiles[i];
-        //   if (file.key===name){
-        //     file.overwrite=true;
-        //   }
-        // }
-
-        // $('#overwrite').modal('hide');
-      });
+      
       $(document).on('click','#personalFolder',function(){
         $('#fileSys').click();
       });
@@ -557,14 +514,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                           '</button>'+
                           '<ul class="dropdown-menu dropdownLI"  role="menu" aria-labelledby="dropdownMenu1">'+
                           '</ul>'+
-                    '</div>'+
+                    '</div>'+ 
                     '<hr>'+
                     '<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
                     '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> File System</a></li>'+                    
                     '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
                   );
-        $.each(model.studyNames, function(key, value) {
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+key+'</a></li>');
+        var sortedArray = sortStudies(model.studyNames);
+        $.each(sortedArray, function(key, value) {
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value+'</a></li>');
         });
         setLiseners();
         $('#studyTablePanel').show();
@@ -1003,8 +961,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                     '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
                   );
         
-        $.each(model.studyNames, function(key, value) {
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+key+'</a></li>');
+
+        var sortedArray = sortStudies(model.studyNames);
+        $.each(sortedArray, function(key, value) {
+            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value+'</a></li>');
         });
         $('.studyButt').html(model.study+'<span class="caret"></span>');
         setLiseners();
@@ -1166,8 +1126,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         
         $.each(fileSystem, function(k, v) {
                if (info.found) return false; 
-               var extension = k.split(".");
-               if (extension.length>1){
+               //var extension = k.split(".");
+               if (isFile(k,fileSystem)){
                  if (v.id===elementID){
                   info.folder = k;
                   info.found=true;
@@ -1203,8 +1163,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         
           $.each(fileSystem, function(k, v) {
                if (info.found) return false; 
-               var extension = k.split(".");
-               if (extension.length>1){
+               //var extension = k.split(".");
+               if (isFile(k,fileSystem)){
                  if (v.id===elementID){
                   if (!info.found) pathA.push(k);
                   info.found=true;
@@ -1499,6 +1459,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       //   });
 
       // }
+      function sortStudies(studyArray){
+        var sortArray= new Array();
+        $.each(studyArray, function(key, value) {
+            console.log(key + "/"+value);
+            sortArray.push(key);
+            //update(key);
+            
+        });
+        sortArray.sort();
+        return sortArray;
+      }
       function setStudies (data){
         
        console.log(data);
@@ -1514,14 +1485,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         }
         model.studyNames=obj;
         model.selectedName='';
-        var sortArray= new Array();
-        $.each(obj, function(key, value) {
-            console.log(key + "/"+value);
-            sortArray.push(key);
-            //update(key);
-            
-        });
-        sortArray.sort();
+        var sortArray = sortStudies(obj);
         for (var i=0;i<sortArray.length;i++){
           var key = sortArray[i];
           var value = obj[key];
@@ -1686,6 +1650,19 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
   
         }
       }
+      function isFile(k,obj){
+        if (k==='state' || k==='id' || k==='path****'){
+          return false;
+        }
+        var object = obj[k];
+        var path = object['path****'];
+        if (path!=undefined){
+          return false;
+        }else{
+          return true;
+        }
+
+      }
       function createRawsRecursive(filesObj,recursive,user){
 
          fileTableModel.level=fileTableModel.level+1;
@@ -1699,37 +1676,38 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           createTable();
         }
 
-         var numOfElements=0;
-         for (var i=0;i<keys.length;i++){
-            var k = keys[i];
-            if (k!='state' && k!='id' && k!='path****'){
-               numOfElements++;
-            }
-            var extension = k.split(".");
-            if (extension.length>1){
-              if (extension[1]==='jsp' && user===false){
-               addJspRaw(k,fileTableModel.level,filesObj[k]);
+       var numOfElements=0;
+       for (var i=0;i<keys.length;i++){
+          var k = keys[i];
+          if (k!='state' && k!='id' && k!='path****'){
+             numOfElements++;
+          }
+
+          var extension = k.split(".");
+          if (isFile(k,filesObj)){
+            if (extension[1]==='jsp' && user===false){
+             addJspRaw(k,fileTableModel.level,filesObj[k]);
+           }else{
+             if (extension[1]==='expt' && user===false){
+             addExptRaw(k,fileTableModel.level,filesObj[k]);
              }else{
-               if (extension[1]==='expt' && user===false){
-               addExptRaw(k,fileTableModel.level,filesObj[k]);
+               if (extension[1]==='js' && user===false){
+                 addJSRaw(k,fileTableModel.level,filesObj[k]);
                }else{
-                 if (extension[1]==='js' && user===false){
-                   addJSRaw(k,fileTableModel.level,filesObj[k]);
-                 }else{
-                   addFileRaw(k,fileTableModel.level,filesObj[k]);
-                 }
+                 addFileRaw(k,fileTableModel.level,filesObj[k]);
                }
              }
-            }else{
-             if (k!='state' && k!='id' && k!='path****'){
-               addFolderRaw(k,fileTableModel.level,filesObj[k]);
-               if (FolderState(filesObj[k])==='open'){
-                 createRaws(filesObj[k],true,user);
-                 fileTableModel.level=fileTableModel.level-1;
-               }
-             }
-            
            }
+          }else{
+           if (k!='state' && k!='id' && k!='path****'){
+             addFolderRaw(k,fileTableModel.level,filesObj[k]);
+             if (FolderState(filesObj[k])==='open'){
+               createRaws(filesObj[k],true,user);
+               fileTableModel.level=fileTableModel.level-1;
+             }
+           }
+          
+         }
 
 
             
@@ -1742,6 +1720,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       
       function createRaws(filesObj,recursive,user){
 
+        
+        createRawsRecursive(filesObj,recursive,user);
         var currentFolder={};
         var check;
         if (model.currentFolder != null && model.currentFolder != undefined){
@@ -1757,7 +1737,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
            currentFolder.name='';
          }
         }
-        createRawsRecursive(filesObj,recursive,user);
         // if (currentFolder.state==='open'){
         //    $(check).prop('checked', true);
            
@@ -1765,6 +1744,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         //    $(check).prop('checked', false);
            
         // }
+        $('#currentName').text(currentFolder.name);
       }
       // function copyToClipboard(text) {
       //   window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
@@ -1938,8 +1918,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       function setOpenStruct(fileObj){
       
        $.each(fileObj, function(k, v) {
-          var extension = k.split(".");
-          if (extension.length>1){//file 
+          //var extension = k.split(".");
+          if (isFile(k,fileObj)){//file 
           }else{
             if (k!='state' && k!='id' && k!='path****'){
               var obj = model.openStruct;
@@ -2055,8 +2035,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
         $.each(filesObj, function(k, v) {
           index.index++;
-          var extension = k.split(".");
-          if (extension.length>1){
+          //var extension = k.split(".");
+          if (isFile(k,filesObj)){
             v.id='file'+index.index;
           }else{
             if (k!='state' && k!='id' && k!='path****'){
@@ -2100,8 +2080,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         if (model.currentFolder != null && model.currentFolder != undefined){
           var currentFolder = model.currentFolder;
           name = currentFolder.name;
+        }else{
+          name='';
         }
-        $('#result').append('<label style="position:relative;left:-10px;color:#92AAB0;" id="currentfolder">Current folder: '+name+'</label></br><div id="dragandrophandler">Drag & Drop Files Here</div>');
+
+        $('#result').append('<label style="position:relative;left:-10px;color:#92AAB0;" id="currentfolder">Current folder: <span id="currentName">'+name+'</span></label></br><div id="dragandrophandler">Drag & Drop Files Here</div>');
         var obj = $("#dragandrophandler");
         obj.on('dragenter', function (e) 
         {
@@ -2124,7 +2107,13 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
              //var length = e.originalEvent.dataTransfer.items.length;
              //We need to send dropped files to Server
              $('#uploadedModal').modal('show');
-             DrophandleFileUpload(files,obj);
+             if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
+              DrophandleFileUpload(filesI,obj);
+
+             }else{
+              DrophandleFileUpload(files,obj);
+             }
+             
         });
       }
 
@@ -2167,12 +2156,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         }
         updateDatawithFiles(files,data,cmd,folderpath);
         //if (model.activePage === 'file') model.study='all';
-        data.append('UserKey',model.key);
-        data.append('folder',takespaces(path));
-        data.append('study',model.study);
-        data.append('cmd','UploadFile');
+        model.exist = createExistFilesArray(files,path,data,study);
+        if (model.exist.length>0){
+          setModals(model);
+        }else{
+          data.append('UserKey',model.key);
+          data.append('folder',takespaces(path));
+          data.append('study',model.study);
+          data.append('cmd','UploadFile');
         
-        api.uploadFile(data,fileOpSuccess);
+          api.uploadFile(data,fileOpSuccess);
+        }
 
       }
       function errorHandler(data){
@@ -2180,23 +2174,29 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       }
       function updateDatawithFiles(files,data,cmd){
 
-        
-        for (var i=0;i<files.length;i++){
-          var item = files[i];
-          var entry = item.webkitGetAsEntry();
-          if (entry.isFile){
-             var file = item.getAsFile();
-             data.append(i, file);
-          }else if (entry.isDirectory){
-             cmd='uploadFolder';
-             var direntry=entry.createReader();
-             // direntry.readEntries(function(results){
-             //    updateDatawithFiles(results,data,cmd);
-             // }, errorHandler);
-
-    
-          }
-        }       
+        if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
+          $.each(files, function(key, value){
+            data.append(key, value);
+          });
+        }else{
+          for (var i=0;i<files.length;i++){
+            var item = files[i];
+            var entry = item.webkitGetAsEntry();
+            if (entry.isFile){
+               var file = item.getAsFile();
+               data.append(i, file);
+            }else{ 
+              if (entry.isDirectory){
+               //cmd='uploadFolder';
+               //var direntry=entry.createReader();
+               // direntry.readEntries(function(results){
+               //    updateDatawithFiles(results,data,cmd);
+               // }, errorHandler);
+              }
+            }
+      
+          }       
+        }
 
         // $.each(files, function(key, value)
         // {
