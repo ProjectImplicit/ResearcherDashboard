@@ -124,7 +124,7 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
  		 '</div>'+
 		 '<div class="dropdown" style="display: inline;margin-left:8px;">'+
             '<button class="btn btn-primary dropdown-toggle btn-sm" type="button" id="listButton" data-toggle="dropdown">'+
-            'Any'+
+            'Current'+
             '<span class="caret"></span>'+
             '</button>'+
             '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">'+
@@ -484,6 +484,7 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 				var data = historyObj.data;
 				if (data.db==='Research'){
 					$(document).find('#dbButton').html('Research <span class="caret"></span>');
+					$("#listButton").prop('disabled', false);
 				}
 				if (data.db==='Demo'){
 					$(document).find('#dbButton').html('Demo <span class="caret"></span>');
@@ -492,20 +493,21 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 					$("#listButton").prop('disabled', true);
 				}
 				if (data.current==='Both'){
-					$(document).find('#dbButton').html('<span class="ui-button-text">Both <i class="icon-caret-down" ></i>');
+					$(document).find('#dbButton').html('Both <span class="caret"></span>');
 					$(document).find('#listButton').html('Any <span class="caret"></span>');
 					dbChoise = 'both';
 					$("#listButton").prop('disabled', true);
 					$('#dataC').prop('checked', true);
 				}
 				if (data.current==='Current'){
-					$(document).find('#listButton').html('<span class="ui-button-text">Current <i class="icon-caret-down" ></i>');
+					$(document).find('#listButton').html('Current <span class="caret"></span>');
+
 				}
 				if (data.current==='History'){
-					$(document).find('#listButton').html('<span class="ui-button-text">History <i class="icon-caret-down" ></i>');
+					$(document).find('#listButton').html('History <span class="caret"></span>');
 				}
 				if (data.current==='Any'){
-					$(document).find('#listButton').html('<span class="ui-button-text">Any <i class="icon-caret-down" ></i>');
+					$(document).find('#listButton').html('Any <span class="caret"></span>');
 				}
 				if (data.studyc === 'true'){
 					$('#studyC').prop('checked', true);
@@ -572,7 +574,7 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 				var data = historyObj.data;
 				if (data.db==='Research'){
 					$(document).find('#dbButton').html('Research <span class="caret"></span>');
-					
+					$("#listButton").prop('disabled', false);
 				}
 				if (data.db==='Demo'){
 					$(document).find('#dbButton').html('Demo <span class="caret"></span>');
@@ -593,11 +595,11 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 					
 				}
 				if (data.current==='History'){
-					$(document).find('#listButton').html('<span class="ui-button-text">History <i class="icon-caret-down" ></i>');
-					$$("#listButton").prop('disabled', false);
+					$(document).find('#listButton').html('History <span class="caret"></span>');
+					$("#listButton").prop('disabled', false);
 				}
 				if (data.current==='Any'){
-					$(document).find('#listButton').html('<span class="ui-button-text">Any <i class="icon-caret-down" ></i>');
+					$(document).find('#listButton').html('Any <span class="caret"></span>');
 				}
 				if (data.studyc === 'true'){
 					$('#studyC').prop('checked', true);

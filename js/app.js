@@ -256,6 +256,19 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
 
       }
+      $(document).on('click','[type=checkbox]',function(){
+        var check =$(this);
+        var td = $(check).parent().parent();
+        var span = $(td).find('#folderNameR');
+        var folderName = $(span).text();
+        if ($(check).prop('checked')){
+          $('#currentName').text(folderName);
+        }else{
+          $('#currentName').text('');
+        }
+        
+
+      });
       $(document).on('click','.review',function(){
         var butt = $(this);
         var tr = $(this).parent();
@@ -1844,7 +1857,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         $('#fileTabale > tbody').append('<tr>'+
             '<td id="'+v.id+'" >'+
               '<span  style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
-                '<span class="folder" style="cursor:pointer"><i class="fa fa-folder" ></i> '+file+'</span>'+
+                '<span class="folder" style="cursor:pointer"><i class="fa fa-folder" ></i> <span id="folderNameR">'+file+'</span></span>'+
               '</span>'+
             '</td>'+
             '<td>'+
