@@ -4,6 +4,7 @@ import oracle.jdbc.OracleTypes;
 import org.uva.dao.ConnectionPool;
 import org.uva.util.PITConnection;
 
+import java.io.Serializable;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,8 +15,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
-public class DbAPI  {
+//UPDATED
+public class DbAPI implements Serializable  {
 	
 	
 	HashMap Users = new HashMap();
@@ -94,7 +95,35 @@ public class DbAPI  {
 				}
 		}
 	}
+	
+	public void updateExptTable(String studyID,String exptName,String exptid){
+		
+		Connection connection = null;
+		DashBoardConnect.getInstance(false);
+		
+		try{
+			connection = DashBoardConnect.getConnection(db);
+			connection.setAutoCommit(true);
+			String query = "UPDATE EXPT SET EXPT_ID = '"+exptid+"' where studyid='"+studyID+"' and EXPT_FILE_NAME='"+exptName+"'";
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.executeUpdate();
+			
+		}catch(Exception e){
+			System.out.println("Error in api.updateTable "+e.getMessage()+ e.getStackTrace());
+		}
+		finally{
+			if (connection!=null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
 	public void updateTable(String table,String col,String val,String whereCol,String whereVal ){
+		System.out.println("starting updateTable ");
+		System.out.println("db is:  "+db);
 		Connection connection = null;
 		DashBoardConnect.getInstance(false);
 		
@@ -120,6 +149,7 @@ public class DbAPI  {
 		
 	}
 	 
+	
 	protected Integer createStudy(String name,String exptid,String exptFileName,String datagroup,String folder,String userID) {
 		Connection connection = null;
 		DashBoardConnect.getInstance(false);
@@ -129,15 +159,16 @@ public class DbAPI  {
 			connection.setAutoCommit(true);
 			
 			
-			String query = "BEGIN INSERT INTO Studies (StudyID,name, study_exptid,study_schema,folder_name) VALUES (study_sequence.nextval,?,?, ?,?) returning StudyID into ?; END;";
+			String query = "BEGIN INSERT INTO Studies (StudyID,name, study_exptid,study_schema,folder_name,status) VALUES (study_sequence.nextval,?,?, ?,?,?) returning StudyID into ?; END;";
 			CallableStatement cs = connection.prepareCall(query);
 			cs.setString(1, name);
 			cs.setInt(2,0);
 			cs.setString(3, datagroup);
 			cs.setString(4, folder);
-			cs.registerOutParameter(5, OracleTypes.NUMBER);
+			cs.setString(5, "N");
+			cs.registerOutParameter(6, OracleTypes.NUMBER);
 			cs.execute();
-			study_id = cs.getInt(5);
+			study_id = cs.getInt(6);
 			
 			if (!exptid.equals("not_set")){
 				String exptQuery ="INSERT INTO EXPT (EID,STUDYID,EXPT_FILE_NAME,EXPT_ID) VALUES (EXPT_SEQUENCE.nextval,?,?,?)";
@@ -177,12 +208,12 @@ public class DbAPI  {
 			
 		}
 		if(this.method.equals("oracle") || this.method.equals("cloude")){
-			createUserInOracle(name,OSFKey,folder);
+			createUserInOracle(name,"","",OSFKey,folder,"","");
 		}
 	}
 	
 	
-	private void createUserInOracle(String userName,String key,String folder){
+	public void createUserInOracle(String userName,String firstName,String lastName,String hpass,String folder,String email,String salt){
 		
 		Connection connection = null;
 		DashBoardConnect.getInstance(false);
@@ -190,12 +221,16 @@ public class DbAPI  {
 		try{
 			connection = DashBoardConnect.getConnection(db);
 			connection.setAutoCommit(true);
-			String insertSQL = "INSERT INTO Users (UserID,username, OSFKey,folder_name) VALUES (user_sequence.nextval,?, ?,?)";
+			String insertSQL = "INSERT INTO Users (UserID,USERNAME,FIRST_NAME,LAST_NAME, OSFKey,folder_name,EMAIL,SALT) VALUES (user_sequence.nextval,?,?, ?,?,?,?,?)";
 			PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
 			//preparedStatement.setString(1, "user_sequence.nextval");
 			preparedStatement.setString(1, userName);
-			preparedStatement.setString(2, key);
-			preparedStatement.setString(3, folder);
+			preparedStatement.setString(2, firstName);
+			preparedStatement.setString(3, lastName);
+			preparedStatement.setString(4, hpass);
+			preparedStatement.setString(5, folder);
+			preparedStatement.setString(6, email);
+			preparedStatement.setString(7, salt);
 			preparedStatement.executeUpdate();
 			
 		}catch(Exception e){
@@ -240,7 +275,7 @@ public class DbAPI  {
 		
 		
 	}
-	public HashMap finfInOracle(String table,String column,String value){
+	public HashMap findInOracle(String table,String column,String value){
 		
 		HashMap res= new HashMap();
 		Connection connection = null;
@@ -268,6 +303,8 @@ public class DbAPI  {
 					record.put("userFolder", (String)rs.getString(5));
 	         		record.put("id", id);
 	         		record.put("email", (String)rs.getString(8));
+	         		record.put("salt", (String)rs.getString(19));
+	         		record.put("role", (String)rs.getString(20));
 					res.put(id, record);
 					
 				}
@@ -323,7 +360,7 @@ public class DbAPI  {
 			return this.findInMemory(table,column,value);
 		}
 		if (this.method.equals("oracle") || this.method.equals("cloude") ){
-			return this.finfInOracle(table,column,value);
+			return this.findInOracle(table,column,value);
 		}
 		return null;
 	};

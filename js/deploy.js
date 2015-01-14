@@ -4,6 +4,7 @@ define(['api'], function (API) {
 
 	var deploy = function (model,design) {
 
+		var that=this;
 		this.setHtml = function(){
 
 			var user=model.user;
@@ -58,7 +59,8 @@ define(['api'], function (API) {
 				'<tr><td><label> Researcher email address: </label></td><td><input type="text" id="researchEmail" value='+email+'></input></td></tr>'+
 				'<tr><td><label> Study folder location: </label></td><td ><input type="text" id="folder" value='+folder+'></input></td></tr>'+
 				'<tr><td><label>Name of experiment file: </label></td><td><input type="text" id="experimentFile" value='+chosenEXPT+'></input></td></tr></table></br>'+
-				'<h5 style="float: left;">Target number of completed study sessions: </h5> <div class="col-lg-1" style="float: left;"><input type="text" id="targetNumber" class="form-control" ></div></br>'+
+				'<h5 style="float: left;">Target number of completed study sessions: </h5><div class="col-lg-1" style="float: left;"><input type="text" id="targetNumber" class="form-control" ></div></br></br>'+
+				'<h5><small>For private studies (not in the Project Implicit research pool), enter n/a</small></h5>'+
 				'<label id="targetNumber_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 				//'';
 				this.addParticipation()+
@@ -109,30 +111,30 @@ define(['api'], function (API) {
 			'<input type="hidden" id="rulename" name="Language" value="parent">'+
 			'<input type="hidden" id="hide" name="Language" value="parent">'+
 			'<input type="hidden" id="restrictionshide" name="Language" value="parent">'+
-			'<h4> This study has been approved by the appropriate IRB *</h4>'+this.addDrop('Yes','No','approved')+
+			'<h4> This study has been approved by the appropriate IRB *</h4>'+this.addCheck('approved')+
 			'<label id="approved_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 			'<h4>All items on "Study Testing" and "Study Approval" from Project Implicit Study Development Checklist completed (items 9 - 17) *</br>'+
-			'<small>The checklist is available at http://peoplescience.org/node/105</small></h4>'+this.addDrop('Yes','No','studyComplete')+
+			'<small>The checklist is available at http://peoplescience.org/node/105</small></h4>'+this.addCheck('studyComplete')+
 			'<label id="studyComplete_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 			'<h4>My study folder on dev2 includes ZERO files that aren\'t necessary for the study (e.g., word documents, older versions of files, items that were dropped from the final version) *</h4>'+
-			this.addDrop('Yes','No','necessary')+
+			this.addCheck('necessary')+
 			'<label id="necessary_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 			'<h4>Study approved by a *User Experience* Reviewer (Colin Smith or Kate Ratliff) *</h4>'+
 			'<p class="plabel">Email studysubmission@projectimplicit.net to have your study approved by one of the above reviewers.</p>'+
-			this.addDrop('Yes','No','ReviewerYes')+
+			this.addDrop('Yes','No, this study is not for the Project Implicit pool.','ReviewerYes')+
 			'<label id="ReviewerYes_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 			'<h4>If you are building this study for another researcher (e.g. a contract study), has the researcher received the standard final launch confirmation email and confirmed that the study is ready to be launched? *</h4>'+
-			'<p class="plabel">The standard email can be found here: http://peoplescience.org/node/135</p>'+this.addDrop('Yes','No','confirmationYes')+
+			'<p class="plabel">The standard email can be found here: http://peoplescience.org/node/135</p>'+this.addDrop('Yes','No,this study is mine','confirmationYes')+
 			'<label id="confirmationYes_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 			'<h4>Study submitted to the Virtual Lab (http://rde.implicit.net/) *</h4>'+
 			'<p class="plabel">Researchers should retrieve "real" data from the Virtual Lab at first opportunity after it moves to production as a sanity check on study and data accuracy</p>'+
-			this.addDrop('Yes','No','Virtual')+
+			this.addCheck('Virtual')+
 			'<label id="Virtual_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 			'</br>'+
 			'<a id="addFinalComments" href="#" style="display: inline;" onclick="$(\'#CommentFinalModal\').modal(\'show\')">Add comments</a>'+
 			'<br/><br/>'+
 			'<button type="button" class="btn btn-primary" id="processForm">Submit</button>'+
-			'<button type="button" class="btn btn-warning" id="clearForm" style="margin-left:20px;" >Clear</button>';
+			'<!--<button type="button" class="btn btn-warning" id="clearForm" style="margin-left:20px;" >Clear</button>-->';
 		return html;
 	   	}
 
@@ -158,40 +160,70 @@ define(['api'], function (API) {
 				$('#targetNumber_error').css("visibility","visible");
 
 			}
-			var button = $('#approved').find('button'); 
-			selection = this.takespaces($(button).text());
-			if (selection==='Select'){
+			;
+			if (!$('#approved').is(':checked')){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#approved_error').css("visibility","visible");
 
 			}
-			selection = this.takespaces($('#studyComplete').find('button').text());
+			// var button = $('#approved').find('button'); 
+			// selection = this.takespaces($(button).text());
+			// if (selection==='Select'){
 
-			if (selection==='Select'){
+			// 	notfilled  = "Name of experiment file is not filled";
+			// 	mistake=true;
+			// 	$('#approved_error').css("visibility","visible");
+
+			// }
+			if (!($('#studyComplete').is(':checked'))){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#studyComplete_error').css("visibility","visible");
 
 			}
-			selection = this.takespaces($('#necessary').find('button').text());
-			if (selection==='Select'){
+			if (!($('#necessary').is(':checked'))){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#necessary_error').css("visibility","visible");
 
 			}
-			selection = this.takespaces($('#Virtual').find('button').text());
-			if (selection==='Select'){
+			if (!($('#Virtual').is(':checked'))){
 
 				notfilled  = "Name of experiment file is not filled";
 				mistake=true;
 				$('#Virtual_error').css("visibility","visible");
 
 			}
+			// selection = this.takespaces($('#studyComplete').find('button').text());
+
+			// if (selection==='Select'){
+
+			// 	notfilled  = "Name of experiment file is not filled";
+			// 	mistake=true;
+			// 	$('#studyComplete_error').css("visibility","visible");
+
+			// }
+			// selection = this.takespaces($('#necessary').find('button').text());
+			// if (selection==='Select'){
+
+			// 	notfilled  = "Name of experiment file is not filled";
+			// 	mistake=true;
+			// 	$('#necessary_error').css("visibility","visible");
+
+			// }
+
+			// selection = this.takespaces($('#Virtual').find('button').text());
+			// if (selection==='Select'){
+
+			// 	notfilled  = "Name of experiment file is not filled";
+			// 	mistake=true;
+			// 	$('#Virtual_error').css("visibility","visible");
+
+			// }
 			selection = this.takespaces($('#ReviewerYes').find('button').text());
 
 			if (selection==='Select'){
@@ -222,14 +254,14 @@ define(['api'], function (API) {
 			
 			//'<tr><td>8/19/2011 16:23:30</td><td>colintest</td><td>cts2e@virginia.edu</td><td>colin</td><td>1</td><td>non</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td><td></td><td></td><td></td></tr>'
 			var filedata = '<tr><td>'+timestamp+'</td><td><a href=\''+this.value('folder','input')+'\' >'+this.value('folder','input')+' </a></td><td>'+this.value('researchEmail','input')+'</td><td>'+this.value('researchName','input')+'</td><td>'+
-			this.value('targetNumber','input')+'</td><td>'+this.value('rulename','input')+'</td><td>'+this.value('restrictions','label')+'</td><td>'+this.value('restrictionsComments','input')+'</td><td>'+this.value('ReviewerYes','drop')+'</td><td>'+this.value('studyComplete','drop')+
-			'</td><td>'+this.value('Virtual','drop')+'</td><td>'+this.value('necessary','drop')+'</td><td>'+this.value('approved','drop')+'</td><td>'+
+			this.value('targetNumber','input')+'</td><td>'+this.value('rulename','input')+'</td><td>'+this.value('restrictions','label')+'</td><td>'+this.value('restrictionsComments','input')+'</td><td>'+this.value('ReviewerYes','drop')+'</td><td>'+this.value('studyComplete','check')+
+			'</td><td>'+this.value('Virtual','check')+'</td><td>'+this.value('necessary','check')+'</td><td>'+this.value('approved','check')+'</td><td>'+
 			this.value('experimentFile','input')+'</td><td>'+this.value('confirmationYes','drop')+'</td><td> Created with Researchers DashBoard on new dev 2.</br>'+this.value('comments','input')+'</td></tr>';
 
 			return filedata;
    		}
 
-   		this.takespaces = function(name){ 
+   		this.takespaces = function (name){ 
    			return name.replace(/\s+/g, '');
    		}
 
@@ -239,20 +271,22 @@ define(['api'], function (API) {
    			var value;
 
 			if (field==='folder'){
-				value ='https://dw2.psyc.virginia.edu/implicit/showfiles.jsp';
-				var showfile = $('#'+field).text();
-				var array = showfile.split('\\');
-				var length = array.length;
-				var last = showfile.lastIndexOf('\\');
+				value ='http://app-dev-01.implicit.harvard.edu/implicit/showfiles.jsp';
+				var showfile = $('#'+field).val();
 				var user;
 				var study;
-				if (last===-1){
-					user = showfile;
-					study='';
+				if (showfile.indexOf('\\')!=-1){
+					var array = showfile.split('\\');
+					var length = array.length;
+					user = array[0];
+					study = array[length-2];
 				}else{
-					user = showfile.slice(1,last);
-					study = array[length-1];
+					var array = showfile.split('/');
+					var length = array.length;
+					user = array[0];
+					study = array[length-2];
 				}
+				
 				
 				value=value+'?'+'user='+user+'&study='+study;
 				
@@ -282,11 +316,17 @@ define(['api'], function (API) {
 					value= '&nbsp';
 				}
 			}
-
+			if (type==='check'){
+				if ($('#Virtual').is(':checked')){
+					value='Yes';
+				}else{
+					value='No';
+				}
+			}
 
 			
 			if (value==='parent') return 'None';
-			if (field!='restrictions' && field!='restrictionsComments' && type!='drop'){
+			if (field!='restrictions' && field!='restrictionsComments' && field!='comments' && type!='drop'){
 				value  = this.takespaces(value); 
 
 			}
@@ -312,15 +352,16 @@ define(['api'], function (API) {
 	              url: url,
 	              data: JSON.stringify(data),
 	              success: function(result) {
-
-	                      var res = result.length;
-	                      if(res === 3){
+	              		  var res = that.takespaces(result);  	
+	                      //var res = result.length;
+	                      //res++;
+	                      if(res === '1'){
 	                        //alert('File was saved successfully.');
 	                        msg2.success=true;
-	                        msg2.text = "File was saved successfully, on: "+path+'/'+name;
+	                        msg2.text = "File was saved successfully, on: "+path+name;
 	                        callback(msg2);
 	                      }else{
-	                      	if (res=== 4){
+	                      	if (res=== '21'){
 	                      		msg2.success=false;
 	                      		msg2.text = "File was not saved, a file with this name already exist on the server.";
 	                      		callback(msg2);
@@ -360,57 +401,78 @@ define(['api'], function (API) {
 		    	success: true,
 		    	text :'No Rule File'
 		    };
-
-
-		     //var url="/implicit/rules";//on implicit
-		     var url="/implicit/rules";//for local
-		     //var msgurl = "/ruleGeneratorDev/msg.html";//for local
-		     //var msgurl = "/implicit/user/bgoldenberg/ruleGenerator/msg.html";//on implicit
-			
-			 var xml = $('#hide' ).val();
-			 var name = $('#researchName').val();
-			// //var ruleName = $('#rulename').val();
-			 var path = $('#folder').val();
-			 var index = path.lastIndexOf(this.fileSeperator()) + 1;
-		     var length = path.length;
-		     var filename = path.substr(index,length);
-		     if (filename=='') {
-		     	var folders = path.split(this.fileSeperator());
-		     	var size = folders.length;
+		    var url="/implicit/rules";//for local
+		    var xml = $('#hide' ).val();
+			var name = $('#researchName').val();
+			var path = $('#folder').val();
+			var index = path.lastIndexOf(this.fileSeperator()) + 1;
+		    var length = path.length;
+		    var filename = path.substr(index,length);
+		    if (filename=='') {
+		    	var folders = path.split(this.fileSeperator());
+		    	var size = folders.length;
 		     	filename = folders[size-2];
-		     }
-		     var ruleName = filename+'.rules';
-		     if (xml!='parent'){
-		     	$('#rulename').val(ruleName);
-		     }else{
+		    }
+		    var ruleName = filename+'.rules';
+		    if (xml!='parent'){
+		    	$('#rulename').val(ruleName);
+		    }else{
 		     	$('#rulename').val('None');
-		     }
+		    }
     
-			 var text = this.getFile();
-			 if (xml!='parent'){
+			var text = this.getFile();
+			if (xml!='parent'){
 			 	this.sendToServer(xml,path,ruleName,url,msg2,'false',function(msg2){
 			 		if (msg2.success===false && msg2.text==='File was not saved, a file with this name already exist on the server.'){
 
-			 		$('#ruleModel').modal('show');
-			 		$('#overwriteB').on('click',function(){
-			 			//alert('click');
-			 			$('#ruleModel').modal('hide');
-			 			that.sendToServer(xml,path,ruleName,url,msg2,'true',function(msg2){
-			 				if (msg2.success!=false){
-				 				that.sendFormToServer(name,text,msg1,url,function(){alert('Study Deployed');});
-				 			}
-			 			});
-			 		});
-			 		$('#overwriteClose').on('click',function(){
-			 			$('#ruleModel').modal('hide');
-			 			
-			 		});
+				 		$('#ruleModel').modal('show');
+				 		$('#overwriteB').one('click',function(){
+				 			//alert('click');
+				 			$('#ruleModel').modal('hide');
+				 			that.sendToServer(xml,path,ruleName,url,msg2,'true',function(msg2){
+				 				if (msg2.success!=false){
+					 				that.sendFormToServer(name,text,msg1,url,function(){
+					 					var Mmsg;
+					 					
+					 					if (msg1.success===true && msg2.success===true){
+											Mmsg = 'The Form Was Sent Successfully';
+										}else{
+											Mmsg = 'There was a Problem Sending the Form ';
+										}
+										$('#msglabel').text(Mmsg);
+										if (msg1.text!='undefined') $('#msg1p').text(msg1.text);
+										if (msg1.success===true) {
+											$('#linktoForm').css("visibility","visible"); 
+										}
+										if (msg2.text !='undefined') $('#msg2').text(msg2.text);
+					 					$('#studydeployModal').modal('show');
+					 					//alert('Study Deployed');
+					 				});
+					 			}
+				 			});
+				 		});
+				 		$('#overwriteClose').on('click',function(){
+				 			$('#ruleModel').modal('hide');
+				 			
+				 		});
 				 	}else{
 
 
 						if (msg2.success!=false){
 							that.sendFormToServer(name,text,msg1,url,function(){
-								alert('Study Deployed');	
+								var Mmsg;
+					 			if (msg1.success===true && msg2.success===true){
+									Mmsg = 'The Form Was Sent Successfully';
+								}else{
+									Mmsg = 'There was a Problem Sending the Form ';
+								}
+								$('#msglabel').text(Mmsg);
+								if (msg1.text!='undefined') $('#msg1p').text(msg1.text);
+								if (msg1.success===true) {
+									$('#linktoForm').css("visibility","visible"); 
+								}
+								if (msg2.text !='undefined') $('#msg2').text(msg2.text);
+			 					$('#studydeployModal').modal('show');	
 							});
 							
 							//window.location.assign(msgurl+'?success1='+msg1.success+'&msg1='+msg1.text+'&success2='+msg2.success+'&msg2='+msg2.text);
@@ -428,6 +490,23 @@ define(['api'], function (API) {
 				 	}
 
 				});
+			}else{
+				that.sendFormToServer(name,text,msg1,url,function(){
+					var Mmsg;
+					 					
+ 					if (msg1.success===true && msg2.success===true){
+						Mmsg = 'The Form Was Sent Successfully';
+					}else{
+						Mmsg = 'There was a Problem Sending the Form ';
+					}
+					$('#msglabel').text(Mmsg);
+					if (msg1.text!='undefined') $('#msg1p').text(msg1.text);
+					if (msg1.success===true) {
+						$('#linktoForm').css("visibility","visible"); 
+					}
+					if (msg2.text !='undefined') $('#msg2').text(msg2.text);
+ 					$('#studydeployModal').modal('show');	
+				});
 			}
 				
 	 
@@ -444,7 +523,7 @@ define(['api'], function (API) {
  			var timeStamp = Math.round(+new Date()/1000); 
 			var data={};
 		    //data.path='/user/'+'bgoldenberg';
-		    data.path='/forms/checklistold.html';
+		    data.path='/forms/checklist.html';
 		    data.FileName =name+timeStamp;
 		    console.log('name: '+data.FileName+ ', folder: '+data.path);
 		    data.xml = text;
@@ -457,9 +536,10 @@ define(['api'], function (API) {
 		              url: url,
 		              data: JSON.stringify(data),
 		              success: function(result) {
-
-		                      var res = result.length;
-		                      if(res === 3){
+		              		  var res = that.takespaces(result);	
+		                      //var res = result.length;
+		                      //res++;
+		                      if(res === '1'){
 		                        //alert('File was saved successfully.');
 								    msg1.success=true;
 									msg1.text = "The Deploy form was sent successfully ";
@@ -484,21 +564,12 @@ define(['api'], function (API) {
 		              async:false
 		   });
  		}
+ 		this.addCheck = function(id){
+ 			var html = '<input id="'+id+'" type="checkbox" > Yes';
+ 			return html;
+
+ 		}
 	   	this.addDrop = function(val1,val2,id){
-
-	  //  		var html='<div class="row">'+
-			//   '<div class="col-lg-1">'+
-			//     '<div class="input-group">'+
-			//       '<span class="input-group-addon">'+
-			//         '<input type="checkbox">'+
-			//       '</span>'+
-			//       '<input type="text" class="form-control" value="'+val+'">'+
-			//     '</div><!-- /input-group -->'+
-			//   '</div><!-- /.col-lg-3 -->'+
-			// '</div>';
-			// return html;
-
-			//id="'+id+'"
 			
 	   		var html = '<div class="dropdown depDrop" id="'+id+'" >'+
 			  '<button id="dropdownMenu1" class="btn btn-default dropdown-toggle deplotDrop" type="button" data-toggle="dropdown">'+
@@ -519,41 +590,24 @@ define(['api'], function (API) {
 	    	var user = model.user;
 	    	var userfolder = user.folder;
 
-	    	// $.each(studies,function(k,v){
-	    	// 	if (k===study){
-	    	// 		$.each(v,function(k2,v2){
-	    	// 			if (k2==='folder'){
-	    	// 				folder = v2;
-	    	// 				return false;
-	    	// 			}
-	    	// 		})
-	    	// 	}
-
-	    	// })
-	    	//var folders = folder.split("user");
-	    	//return folders[1];
+	    
 	    	return userfolder+this.fileSeperator()+studyfolder;
 	    }
-
+	    
 	    this.getEXPT = function(studyname){
 	    	var expt=[];
 	    	var numOfExpt=0;
 	    	var studies= model.studyNames;
-	    	var study = studies[studyname];
-	    	
-	  //   	$.each(study,function(k2,v2){
-			// 	if (k2.indexOf('exptName')!=-1){
-			// 		if (v2!='not_set')
-			// 		expt.push(v2);
-			// 		numOfExpt++;
-			// 	}
-			// })
-			var api = new API();
+	    	var study = studies[studyname];   	
+	 		var api = new API();
 			api.getExpt(model.key,model.study,function(data){
 	            var obj = jQuery.parseJSON( data );
 	            $.each(obj, function(key, value){
 	              numOfExpt++;
-	              expt.push(value);
+	              if (key.indexOf('exptFile')!=-1){
+	              	expt.push(value);
+	              }
+	              
 	        	})
 	        	if (numOfExpt==0){
 					return '';
@@ -573,18 +627,7 @@ define(['api'], function (API) {
 
 				}
             });
-	    	// $.each(model.studyNames,function(k,v){
-	    	// 	if (k===study){
-	    	// 		$.each(v,function(k2,v2){
-	    	// 			if (k2.indexOf('exptName')!=-1){
-	    	// 				expt.push(v2);
-	    	// 				numOfExpt++;
-	    	// 			}
-	    	// 		})
-	    	// 	}
-
-	    	// })
-			
+	    	
 	    	
 	    }
 	};

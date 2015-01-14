@@ -16,12 +16,14 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +37,7 @@ import javax.servlet.ServletContext;
 
 
  
-
+//UPDATED
  
 
 public class FileUploadManager {
@@ -58,26 +60,40 @@ public class FileUploadManager {
 //		
 	}
 	
-	protected boolean createFolder(String folderUnder,String folderToCreate,String key,String study){
-		User user = new User();
-		mng = new Manager();
-		user.setKey(key);
-		mng.setUserfromDB(user);
-		mng.setStudyIdFromDB(user);
+	protected boolean createFolder(String folderUnder,String folderToCreate,User user,String study,Manager mng){
+		//User user = new User();
+		//mng = new Manager();
+		//user.setKey(key);
+		//mng.setUserfromDB(user);
+		//mng.setStudyIdFromDB(user);
 		String userFolder = user.getFolderName();
 		String folder = user.getFolderName();
-		if (!study.equals("all")){
-			Study s =user.getStudy(study);
-			String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
-			path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+folderToCreate;
+		if (study.equals("user")){
+			path = mng.getFolderBase()+File.separator+folderUnder+File.separator+folderToCreate;
 		}else{
-			if (folderUnder.equals("/")){
-				path = mng.getFolderBase()+File.separator+folder+File.separator+folderToCreate;
+			if (!study.equals("all")){
+				if (folderUnder.equals(File.separator)){
+					Study s =user.getStudy(study);
+					String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+folderToCreate;
+				}else{
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderUnder+File.separator+folderToCreate;
+					
+				}
+				
+				
 				
 			}else{
-				path = mng.getFolderBase()+File.separator+folder+File.separator+folderUnder+File.separator+folderToCreate;
+				if (folderUnder.equals(File.separator)){
+					path = mng.getFolderBase()+File.separator+folder+File.separator+folderToCreate;
+					
+				}else{
+					path = mng.getFolderBase()+File.separator+folder+File.separator+folderUnder+File.separator+folderToCreate;
+				}
 			}
+			
 		}
+		
 		
 		
 		Boolean success = new File(path).mkdir();
@@ -89,26 +105,51 @@ public class FileUploadManager {
 		
 		
 	}
-	protected boolean deleteFile(String filePath,String key,String study){
+	protected boolean deleteFile(String filePath,String key,User user,Manager mng,String study){
 		
 		boolean result=false;
 		try{
 			
-			User user = new User();
-			mng = new Manager();
-			user.setKey(key);
-			mng.setUserfromDB(user);
-			String folder = user.getFolderName();
-			path = mng.getFolderBase()+File.separator+folder+File.separator+filePath;
-			File file = new File(path); 
-    		 
-    		if(file.delete()){
-    			System.out.println(file.getName() + " is deleted!");
-    			result=true;
-    		}else{
-    			result= false;
-    		}
- 
+			//User user = new User();
+			//mng = new Manager();
+			//user.setKey(key);
+			//mng.setUserfromDB(user);
+			if (study.equals("user")){
+				path = mng.getFolderBase()+File.separator+filePath;
+			}else{
+				String folder = user.getFolderName();
+				path = mng.getFolderBase()+File.separator+folder+File.separator+filePath;
+				
+			}
+			
+			File file = new File(path);
+			if (file.isDirectory()){
+				String studyName = file.getName();
+				if( user.existStudy(studyName) ){// in user study list, but need to check if it is indeed a study
+					String folder = user.getFolderName();
+					String studypath = mng.getFolderBase()+folder+File.separator+studyName;
+					String deleteStudyPath =file.getAbsolutePath(); 
+					if (studypath.equals(deleteStudyPath)){
+						return result;
+					}else{// not a study can delete
+						FileUtils util = new FileUtils();
+						util.deleteDirectory(file);
+						result=true;
+					}
+				}else{// not in the user study list, not a study can delete
+					FileUtils util = new FileUtils();
+					util.deleteDirectory(file);
+					result=true;
+				}
+			}else{// it is a file not a directory
+				if(file.delete()){
+	    			System.out.println(file.getName() + " is deleted!");
+	    			result=true;
+	    		}else{
+	    			result= false;
+	    		}
+			}
+			
     	}catch(Exception e){
  
     		e.printStackTrace();
@@ -116,23 +157,33 @@ public class FileUploadManager {
     	}
 		return result;
 	}
-	protected void downLoadFile(String key,String fileName,ServletContext ctx,HttpServletRequest request,HttpServletResponse response,
-			ServletOutputStream os,boolean download,String study){
+	protected void setpath(String study,String fileName, Manager mng,User user){
 		
-		try {
-			User user = new User();
-			mng = new Manager();
-			user.setKey(key);
-			mng.setUserfromDB(user);
-			String folder = user.getFolderName();
+		String folder = user.getFolderName();
+		if (study.equals("user")){
+			path = mng.getFolderBase()+File.separator+fileName;
+		}else{
 			if (!study.equals("all")){
-				mng.setStudyIdFromDB(user);
+				//mng.setStudyIdFromDB(user);
 				Study s =user.getStudy(study);
-				path = mng.getFolderBase()+File.separator+folder+File.separator+s.getFolderName()+File.separator+fileName;
+				path = mng.getFolderBase()+File.separator+folder+File.separator+fileName;
 				
 			}else{
 				path = mng.getFolderBase()+File.separator+folder+File.separator+fileName;
 			}
+			
+		}
+		
+		
+		
+		
+	}
+	protected void downLoadFile(User user,Manager mng,String fileName,ServletContext ctx,HttpServletRequest request,HttpServletResponse response,
+			ServletOutputStream os,boolean download,String study){
+		
+		try {
+			setpath(study,fileName,mng,user);
+			
 			//path = mng.getFolderBase()+File.separator+folder+File.separator+fileName;
 			File file = new File(path);
 			if(!file.exists()){
@@ -150,12 +201,12 @@ public class FileUploadManager {
 			//response.setContentType(mimeType != null? mimeType:"application/octet-stream");
 			response.setContentLength((int) file.length());
 			if (download){
-				String[] names= fileName.split("/");
+				String[] names= fileName.split("\\" +File.separator);
 				
 				response.setHeader("Content-Disposition", "attachment; filename=\"" + names[names.length-1] + "\"");
 				
 			}
-			System.out.println("file size: "+file.length());
+			//System.out.println("file size: "+file.length());
 			
 			//ServletOutputStream os = response.getOutputStream();
 			
@@ -205,24 +256,27 @@ public class FileUploadManager {
                     
                 }
 			}
-			User user = new User();
-   			mng = new Manager();
-   			user.setKey(userKey);
-   			mng.setUserfromDB(user);
-   			//mng.setStudyIdFromDB(user);
+			HttpSession session = request.getSession();
+			User user = (User) session.getAttribute("userobject");
+			Manager mng = (Manager) session.getAttribute("mng");
    			String userFolder = user.getFolderName();
-   			//Study studyObj = user.getStudy(study);
-   			//String studyPath = studyObj.getFolderName();
-   			path = mng.getFolderBase()+user.getFolderName()+File.separator+uploadFolder;
-   			if (!study.equals("all")){
-				mng.setStudyIdFromDB(user);
-				Study s =user.getStudy(study);
-				String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
-				path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+uploadFolder;
-				
-			}else{
-				path = mng.getFolderBase()+File.separator+userFolder+File.separator+uploadFolder;
-			}
+   			if (study.equals("user")){
+   				path = mng.getFolderBase()+File.separator+uploadFolder;
+   			}else{
+   				if (!study.equals("all")){
+   					if (uploadFolder.equals(File.separator)){
+   						Study s =user.getStudy(study);
+   	   					String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
+   	   					path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+uploadFolder;
+   					}else{
+   						path = mng.getFolderBase()+File.separator+userFolder+File.separator+File.separator+uploadFolder;
+   					}
+   				}else{
+   					path = mng.getFolderBase()+File.separator+userFolder+File.separator+uploadFolder;
+   				}
+   				
+   			}
+   			
    			File filesDir = new File(path);
    			fileFactory.setRepository(filesDir);
    			fileItemsIterator = fileItemsList.iterator();
@@ -230,7 +284,7 @@ public class FileUploadManager {
 
                 FileItem fileItem = fileItemsIterator.next();
                 if (!fileItem.isFormField()) {
-                	uploaded=processUploadedFile(fileItem,user);
+                	uploaded=processUploadedFile(fileItem,user,mng,study);
                 }
 			}
 			
@@ -270,26 +324,44 @@ public class FileUploadManager {
 		 return false;
 		 
 	 }
-	 private boolean processUploadedFile(FileItem fileItem,User user) throws ServletException{
+	 private boolean processUploadedFile(FileItem fileItem,User user,Manager mng,String study) throws ServletException{
 		 
 		 boolean uploaded = false;
 		 System.out.println("FieldName="+fileItem.getFieldName());
          System.out.println("FileName="+fileItem.getName());
          System.out.println("ContentType="+fileItem.getContentType());
          System.out.println("Size in bytes="+fileItem.getSize());
+         
          File file = new File(path+File.separator+fileItem.getName());
-         if (fileItem.getName().contains("expt")){
+         System.out.println("upload to: "+file.getAbsolutePath());
+         if (fileItem.getName().contains(".expt")){
+        	 if (study.equals("user")){// in super user case
+        		 String seperator = "\\" + File.separator;
+            	 String[] folders = file.getAbsolutePath().split(seperator);
+            	 String folderName = folders[mng.getUserLocation()];
+            	 System.out.println("user location: "+folderName);
+        		 User diffrentUser = new User();
+        		 diffrentUser.setFolderName(folderName);
+        		 mng.setUserfromDBbyFolder(diffrentUser);
+        		 mng.setStudyIdFromDB(diffrentUser);
+        		 user=null;
+        		 user=diffrentUser;
+        	 }
         	 String seperator = "\\" + File.separator;
         	 String[] folders = file.getAbsolutePath().split(seperator);
         	 String studyFolderName = folders[folders.length-2];
-        	 if (mng.isStudy(studyFolderName)){
+        	 Study s = user.getStudy(studyFolderName);
+        	 
+        	 if (s!=null){
         		 System.out.println("Absolute Path at server="+file.getAbsolutePath());
                  try {
                 	ArrayList exptfiles  = mng.cheackforExpt(new File(path));
                 	if (exptfiles.size()==0){//if there are no expt files
                 		fileItem.write(file);
                 		uploaded=true;
-            			mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),studyFolderName,false,true);
+                		String exptID = mng.getExptID(file);
+            			mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,false,true,user);
+            			s.addorUpdateEXPT(file.getName(), exptID);
             			
             			
                 	}
@@ -297,12 +369,16 @@ public class FileUploadManager {
                 		if (existEXPT(exptfiles,file)){//expt exist
                 			fileItem.write(file);
                     		uploaded=true;
-                    		mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),studyFolderName,true,true);
+                    		String exptID = mng.getExptID(file);
+                    		mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,true,true,user);
+                    		s.addorUpdateEXPT(file.getName(), exptID);
                 			
                 		}else{//new expt
                 			fileItem.write(file);
                     		uploaded=true;
-                    		mng.updateStudy(mng.getExptID(file),file.getName(),mng.getSchema(file),studyFolderName,false,false);
+                    		String exptID = mng.getExptID(file);
+                    		mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,false,false,user);
+                    		s.addorUpdateEXPT(file.getName(), exptID);
                     		//String studyName = studyFolderName+"("+mng.getNameNoExtention(file)+")";
                     		//String folderPath = mng.getFolderBase()+File.separator+user.getFolderName()+File.separator+studyFolderName;
                     		//mng.createStudyinDB(studyName, mng.getExptID(file),mng.getSchema(file),path, user.getID(),false);

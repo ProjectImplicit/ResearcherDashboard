@@ -203,7 +203,7 @@ define([], function () {
             });
 
         }
-        this.fileExist = function (fileName,userKey,path,study,filename){
+        this.fileExist = function (fileName,userKey,path,study,filename,callback){
             data={};
             data.cmd='exist';
             data.path = path;
@@ -216,16 +216,10 @@ define([], function () {
                 type: 'POST',
                 data: data,
                 async: false,
-                success: function(data){
-                    if (data==='yes'){
-                        res= true;    
-                    }else{
-                        res= false;
-                    }
-                    
-                }   
+                success: callback
+                
             });
-            return res;
+            
         }
 
         this.submitforreview = function(studyName,success){

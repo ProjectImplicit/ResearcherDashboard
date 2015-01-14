@@ -169,12 +169,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         $('#uploadedModal').modal('hide');
         $('#overwrite').modal('show');
 
-        
-        
-        // modal.on('hidden.bs.modal', function (e) {
-         
-        // })
-        
 
       }
       function createExistFilesArray(files,path,data,study){
@@ -184,16 +178,24 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
             console.log(key);
             console.log(value);
           //data.append(key, value);
-            var res= api.fileExist(key,model.key,takespaces(path),study,value.name);
-            if (res){
-              var file={};
-              file.key =value.name;
-              file.formkey = key;
-              file.formvalue = value;
-              existFiles.push(file);
-            }else{
-              data.append(key, value);
-            }
+            api.fileExist(key,model.key,takespaces(path),study,value.name,function(resdata){
+              var res;
+              if (resdata=='yes'){
+                res=true;
+              }else{
+                res=false;
+              }
+              if (res){
+                var file={};
+                file.key =value.name;
+                file.formkey = key;
+                file.formvalue = value;
+                existFiles.push(file);
+              }else{
+                data.append(key, value);
+              }
+            });
+            
         });
         var info={};
         info.index=0;
@@ -206,7 +208,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       }
       function prepareUpload(event){
         
-        $('#uploadedModal').modal('show');
+        //$('#uploadedModal').modal('show');
         var data =new FormData();
         var pathA = new Array();
         var study;
@@ -235,7 +237,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           data.append('folder',takespaces(path));
           data.append('study',model.study);
           data.append('cmd','UploadFile');
-          
+          $('#uploadedModal').modal('show');
           api.uploadFile(data,fileOpSuccess);
 
         }
@@ -260,11 +262,25 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         var check =$(this);
         var td = $(check).parent().parent();
         var span = $(td).find('#folderNameR');
+        if (span===undefined) return;
         var folderName = $(span).text();
         if ($(check).prop('checked')){
+          var currentFolder={};
+          currentFolder.name = folderName;
+          currentFolder.id = id;
+          //currentFolder.state=state;
+          model.currentFolder = currentFolder;
+        
           $('#currentName').text(folderName);
         }else{
-          $('#currentName').text('');
+          var current = model.currentFolder;
+          var name = current.name;
+          if(name===folderName){
+            $('#currentName').text('');
+            model.currentFolder=undefined;
+
+          }
+          
         }
         
 
@@ -560,8 +576,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       });
 
 
-      $(document).on('click','#FileoverwriteYes',function(e){
-           var info = model.Modalinfo;
+      $(document).on('hidden.bs.modal','#overwrite', function () {
+        //alert('hidden event fired!');
+        if (model.clickedYes){
+          var info = model.Modalinfo;
            var data= info.data;
            var study = info.study;
            var path = info.path;
@@ -582,8 +600,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           $('#overwrite').modal('hide');
           //$('#FileoverwriteYes').unbind();
           //$('#FileoverwriteYes').remove();
-          $('body').removeClass('modal-open');
-          $('.modal-backdrop').remove();
+          //$('body').removeClass('modal-open');
+          //$('.modal-backdrop').remove();
+          //setTimeout(doNothing,10000);
           info.index++;
           if (!all){
             setModals(model);  
@@ -611,9 +630,70 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
             data.append('folder',takespaces(path));
             data.append('study',model.study);
             data.append('cmd','UploadFile');
-            
+            $('#uploadedModal').modal('show');
             api.uploadFile(data,fileOpSuccess);
           }
+
+        }
+        model.clickedYes=false;
+      })
+      $(document).on('click','#FileoverwriteYes',function(e){
+        model.clickedYes=true;
+        $('#overwrite').modal('hide');
+          //  var info = model.Modalinfo;
+          //  var data= info.data;
+          //  var study = info.study;
+          //  var path = info.path;
+          //  info.visited++;
+          //  var existFiles = model.exist;
+          //  if (info.visited>existFiles.length) return;
+          //  var all = $('#applytoall').prop('checked');
+          //  var fileText = $('#overwriteFileName').text();
+          //  var words = fileText.split(' ');
+          //  var name = words[5];
+          //  for (var x=0;x<existFiles.length;x++){
+          //    var file  = existFiles[x];
+          //    if (file.key===name){
+          //      file.overwrite=true;
+          //    }
+          //  }
+
+          // $('#overwrite').modal('hide');
+          // //$('#FileoverwriteYes').unbind();
+          // //$('#FileoverwriteYes').remove();
+          // //$('body').removeClass('modal-open');
+          // //$('.modal-backdrop').remove();
+          // //setTimeout(doNothing,10000);
+          // info.index++;
+          // if (!all){
+          //   setModals(model);  
+          // }else{
+          //   model.done=true;
+          //   model.all=true;
+          // }
+          
+          // if (model.done===true){
+          //   if (model.all===true){
+          //   for (var z=0;z<existFiles.length;z++){
+          //     var file = existFiles[z];
+          //     data.append(file.key, file.val);
+          //   }
+          //   }else{
+          //     for (var t=0;t<existFiles.length;t++){
+          //       var file = existFiles[t];
+          //       if (file.overwrite=true){
+          //         data.append(file.formkey, file.formvalue);  
+          //       }
+          //     }
+          //   }
+          //   if (model.activePage === 'file' && model.study!='user') model.study='all';
+          //   data.append('UserKey',model.key);
+          //   data.append('folder',takespaces(path));
+          //   data.append('study',model.study);
+          //   data.append('cmd','UploadFile');
+            
+          //   api.uploadFile(data,fileOpSuccess);
+          // }
           
 
       })
@@ -762,7 +842,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
            }
            var settings = new Settings();
            var url = settings.gettestStudyURL();
-           window.open(url+user+"/"+studyName+"/"+fname+"&refresh=true");
+           var random =Math.random();
+           window.open(url+user+"/"+studyName+"/"+fname+"&refresh=true&_="+random);
 
          });
       });
@@ -814,19 +895,29 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         var tr = $(td).parent();
         var folderName = takespaces($(this).text());
         var id = $(td).attr("id");
-        var currentFolder={};
-        currentFolder.name = folderName;
-        currentFolder.id = id;
         var state = changeFolderState(takespaces(folderName),id);
-        currentFolder.state=state;
-        model.currentFolder = currentFolder;
+        if (state==='open'){
+          var currentFolder={};
+          currentFolder.name = folderName;
+          currentFolder.id = id;
+         //currentFolder.state=state;
+          model.currentFolder = currentFolder;
+        }else{
+          var currnetModel = model.currentFolder;
+          if (currnetModel != undefined){
+            var name = currnetModel.name;
+            if (name===folderName){
+             model.currentFolder=undefined;
+            }
+          }
+          
+        }
         createRaws(model.studyFileSystem,false,fileTableModel.user);
         
       });
 
       $(document).on("click",'.test',function(){
-        //$('#result').html('');
-        //$('#studyTable').hide();
+        
         model.activePage = 'test';     
         fileTableModel.user=true;
         console.log($(this));
@@ -835,8 +926,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         model.study = $(anchor).text();
         $('.studyButt').text(model.study);
         $('#test').click();
-        //console.log(model.key);
-        //api.getFiles(model.key,model.study,setStudyTable);
+        
 
 
       });
@@ -878,7 +968,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           api.getExpt(model.key,model.study,function(data){
             var obj = jQuery.parseJSON( data );
             $.each(obj, function(key, value){
-              studyExpt.push(value);
+              if (key.indexOf('exptID')!=-1){
+                  studyExpt.push(value);
+                }
+              
             })
 
             appendTracker(studyExpt);
@@ -1208,6 +1301,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       *
       */
       function getPathToFile(){
+
         var pathA = new Array();
         var path='';
         var info = {};
@@ -1742,13 +1836,13 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
          var td = $(document).find('#'+currentFolder.id);
          var tr  = td.parent();
          check = $(tr).find('[type=checkbox]');
-         if (currentFolder.state==='open'){
+         //if (currentFolder.state==='open'){
            $(check).prop('checked', true);
            currentFolder.name = takespaces($(tr).find('.folder').text());
-         }else{
-           $(check).prop('checked', false);
-           currentFolder.name='';
-         }
+         //}//else{
+         //   $(check).prop('checked', false);
+         //   currentFolder.name='';
+         // }
         }
         // if (currentFolder.state==='open'){
         //    $(check).prop('checked', true);
@@ -2160,12 +2254,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           path=fileSeperator();
           study=model.study;
           if (study===undefined) study='all';
-        }else{
+        }else{//this is not a root file operation so use full path study='all'
           getPath(model.fileSystem,model.elementID,pathA,info);
           for (var i=0;i<pathA.length;i++){
             path+=pathA[i]+fileSeperator();
           }
-          //study='all';
+          study='all';
         }
         updateDatawithFiles(files,data,cmd,folderpath);
         //if (model.activePage === 'file') model.study='all';
@@ -2177,7 +2271,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           data.append('folder',takespaces(path));
           data.append('study',model.study);
           data.append('cmd','UploadFile');
-        
+          $('#uploadedModal').modal('show');
           api.uploadFile(data,fileOpSuccess);
         }
 
@@ -2351,6 +2445,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         return res;    
       }
 
+      function doNothing(){
+
+      }
      
       function takeOutBraclet(name){
         var studyName;

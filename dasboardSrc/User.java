@@ -1,9 +1,11 @@
 package org.implicit.dasboard;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class User {
+//UPDATED
+public class User implements Serializable{
 	
 	String id;
 	String OSFKey;
@@ -12,6 +14,7 @@ public class User {
 	String userName;
 	String pass;
 	String email;
+	String role;
 	
 	
 	public User(){
@@ -24,10 +27,17 @@ public class User {
 		this.OSFKey=key;
 	}
 	
+	public void setRole(String r ){
+		this.role=r;
+	}
+	
+	
 	public void setID(String id ){
 		this.id=id;
 	}
+	//////////
 	
+	public String getRole(){ return this.role;}
 	public String getID(){ return this.id;}
 	public String getUserName(){
 		return userName;
@@ -80,6 +90,7 @@ public class User {
 		
 		
 	}
+	
 	public String getEmail(){
 		return email;
 	}
@@ -94,10 +105,12 @@ public class User {
 			Study study = (Study) this.Studies.get(index);
 			String name = study.getName();
 			String foler = study.getFolderName();
+			String status = study.getStatus();
 			ArrayList exptArray = study.getstudyEXPTID();
 			HashMap record = new HashMap();
 			record.put("name", name);
 			record.put("folder", foler);
+			record.put("status", status);
 			for (int i=0;i<exptArray.size();i++){
 				EXPT ex= (EXPT) exptArray.get(i);
 				record.put("exptID."+String.valueOf(i), ex.expt_id);
