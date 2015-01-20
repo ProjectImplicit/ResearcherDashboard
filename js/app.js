@@ -349,6 +349,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         newFolder();
 
       });
+      $(document).on('click','#downloadFolder', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder').parent().parent();
+        var id = $(td).attr("id");
+        model.elementID = id;
+        api.downloadFolder(getPathToFile());
+
+      });
       $(document).on('click','#deleteFolder', function(){
         var element =$(this);
         var tr = $(element).parent().parent();
@@ -559,9 +568,20 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
       }); 
 
-
-
+      /********************************
+      *   
+      * Listener for the 'File System' menu.
+      * if the currnet request is for the file syste,
+      * and not for a study, then 'model.activepage'    
+      * would be set for 'file'.
+      * We call the api getFiles command with the function
+      * to render the file list.
+      * model.active that is not set here is about to set an object
+      * listener that will be triggerd when there is a changein the view.
+      */
       
+
+
       $(document).on("click",'#fileSys', function(){
         $('#uploadedModal').modal('show');
         $('#studyTablePanel').hide();
@@ -713,62 +733,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         populateFileTable();
 
 
-
-        // $('#uploadedModal').modal('show');
-        // $('#result').html('');
-        // $('#studyTable').hide();
-        // model.activePage = 'test';
-        // model.active='';
-        // var study = model.study;
-        // if (study===null || study===undefined) study='all';
-        // //api.getFiles(model.key,study,setStudyTable);
-        // api.getFiles(model.key,'all',function(data){
-        //   $('#uploadedModal').modal('hide');
-        //   fileObj = jQuery.parseJSON( data );
-        //   createTable();
-        //   var index ={};
-        //   index.index=0;
-        //   setIds(fileObj,index);
-        //   model.openStruct={};
-        //   model.fileSystem = fileObj;
-        //   setOpenStruct(fileObj,model.openStruct);
-        //   fileTableModel.user = false;
-        //   //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
-        //   var info={};
-        //   info.study=model.study;
-        //   getStudyFromFileSys(fileObj,info);
-        //   model.studyFileSystem=info.studyObj;
-
-        //   createRaws(info.studyObj,false,fileTableModel.user);
-
-        // });
-
-
       });
 
       
 
-      /**
-      * Desc: main listener for the 
-      * 'file system' top menu navigetaion bar.
-      *
-      */  
-
-      // $(document).on("click",'#fileSys', function(){
-      //   $('#uploadedModal').modal('show');
-      //   $('#result').html('');
-      //   fileTableModel.user=true;
-      //   model.active='';
-      //   model.activePage = 'file';
-      //   var study = model.study;
-      //   //var fs = new Filesys(model,fileTableModel);
-      //   //fs.setFileSysTable('all');
-
-      //   api.getFiles(model.key,'all',setUserFileTable);
-      //   $('#studyTable').hide();
-        
-
-      // });
       $(document).on("click",'.copyLink',function(){
          var button = $(this);
          var span = $(button).parent().parent().parent().parent().parent().find('.fileNameSpan');
@@ -1296,8 +1264,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       }
       /**
       * Desc: Get the path to file or folder
-      * 
-      * 
+      * goes over the 'fileSystem' Object and calculate the
+      * path according to the id stored in model.elementID
       *
       */
       function getPathToFile(){
@@ -1958,6 +1926,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                 '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
                 '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
                 '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
+                '<button type="button" style="margin-left:20px;" id="downloadFolder" class="btn btn-primary btn-xs ">Download Folder</button>'+
             '</td>'+
           '</tr>');
 
@@ -2156,24 +2125,25 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
       }
       /**
-      * Desc: callback function that sets 
-      * the table of studies and the study dropdown
-      *
+      * Desc: Used as a callback function to 
+      * render the list of files.
+      * get the list of files and folders
+      * as a jason object from the back end.
+      * 'openfilesys' is a data stracture to save
+      * the state of folders.
       */
+
       function setStudyTable(data){
-        //console.log(data);
+        
         $('#uploadedModal').modal('hide');
         var dataObj = jQuery.parseJSON( data );
         fileObj = dataObj.filesys;
         model.openStruct= dataObj.openfilesys;
-        //fileObj = jQuery.parseJSON( data );
         var index ={};
         index.index=0;
         setIds(fileObj,index);
-        //model.openStruct={};
         model.fileSystem = fileObj;
         model.studyFileSystem=fileObj;
-        //setOpenStruct(fileObj,model.openStruct);
         fileTableModel.user = false;
         $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
         console.log('before createRaws'+model.study);

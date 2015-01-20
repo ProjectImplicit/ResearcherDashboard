@@ -186,6 +186,19 @@ define([], function () {
             });
 
         }
+        this.downloadFolder = function (downloadPath){
+            var data ={};
+            data.downloadFolder = downloadPath;
+            data.cmd='downloadFolder';
+
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
+                success: downLoadSuccess
+                
+            });
+        }
         this.downloadFile = function (downloadFile,key,downLoadSuccess){
             
             var data ={};

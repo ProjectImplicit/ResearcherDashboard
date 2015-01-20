@@ -131,6 +131,8 @@ define(['api'], function (API) {
 			this.addCheck('Virtual')+
 			'<label id="Virtual_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
 			'</br>'+
+			'<h4>Did you use a realstart and lastpage task?</h4>'+this.addCheck('realstart')+
+			'<br/><label id="realstart_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label><br/>'+
 			'<a id="addFinalComments" href="#" style="display: inline;" onclick="$(\'#CommentFinalModal\').modal(\'show\')">Add comments</a>'+
 			'<br/><br/>'+
 			'<button type="button" class="btn btn-primary" id="processForm">Submit</button>'+
@@ -168,15 +170,7 @@ define(['api'], function (API) {
 				$('#approved_error').css("visibility","visible");
 
 			}
-			// var button = $('#approved').find('button'); 
-			// selection = this.takespaces($(button).text());
-			// if (selection==='Select'){
-
-			// 	notfilled  = "Name of experiment file is not filled";
-			// 	mistake=true;
-			// 	$('#approved_error').css("visibility","visible");
-
-			// }
+		
 			if (!($('#studyComplete').is(':checked'))){
 
 				notfilled  = "Name of experiment file is not filled";
@@ -198,32 +192,15 @@ define(['api'], function (API) {
 				$('#Virtual_error').css("visibility","visible");
 
 			}
-			// selection = this.takespaces($('#studyComplete').find('button').text());
+			if (!($('#realstart').is(':checked'))){
 
-			// if (selection==='Select'){
+				notfilled  = "Name of experiment file is not filled";
+				mistake=true;
+				$('#realstart_error').css("visibility","visible");
 
-			// 	notfilled  = "Name of experiment file is not filled";
-			// 	mistake=true;
-			// 	$('#studyComplete_error').css("visibility","visible");
-
-			// }
-			// selection = this.takespaces($('#necessary').find('button').text());
-			// if (selection==='Select'){
-
-			// 	notfilled  = "Name of experiment file is not filled";
-			// 	mistake=true;
-			// 	$('#necessary_error').css("visibility","visible");
-
-			// }
-
-			// selection = this.takespaces($('#Virtual').find('button').text());
-			// if (selection==='Select'){
-
-			// 	notfilled  = "Name of experiment file is not filled";
-			// 	mistake=true;
-			// 	$('#Virtual_error').css("visibility","visible");
-
-			// }
+			}
+			
+		
 			selection = this.takespaces($('#ReviewerYes').find('button').text());
 
 			if (selection==='Select'){
