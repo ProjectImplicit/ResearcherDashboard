@@ -27,34 +27,32 @@ public class Manager implements Serializable{
 	String LOGAGAIN;
 	String LOGIN;
 	Integer userLocation;
-	//private static final long serialVersionUID = 6529685098267757690L;
+	String projectPath;
+	String downloadDir;
 	private static final long serialVersionUID = 1L;
-	//DbAPI api = DbAPI.getInstance(false);
-	
-	//1. get study ids from db
-	//2. go over the folder of that user and get study folders 
+	 
 	public Manager(){
 		
 		//api.setMethod("cloude");
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
+			projectPath = "bgoldenberg/dashBoard/";
+			downloadDir ="ZipFolder";
 			DbAPI api = DbAPI.getInstance(false);
 			api.setMethod("cloude");
 			System.out.println("Using folder:"+folderBase);
 			LOGINURL = "user/bgoldenberg/dashBoard/newlogin.html";
 			REDIRECTLOGIN = "user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
-			//REDIRECTLOGIN = "user/bgoldenberg/dashBoard";
-			//LOGAGAIN = "user/bgoldenberg/dashBoard/login.html";
-			//LOGAGAIN = "http://localhost/implicit/user/bgoldenberg/dashBoard/login.html";
 			LOGAGAIN = "http://localhost/implicit/dashboard";
 			LOGIN = "user/bgoldenberg/dashBoard/login.html";
 			userLocation=6;
 			os="windows";
 		}else{
 			folderBase="//home//dev2//user//";
+			projectPath = "bgoldenberg//dashBoard//";
+			downloadDir ="ZipFolder";
 			LOGINURL = "user/bgoldenberg/dashBoard/newlogin.html";
 			REDIRECTLOGIN="user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
-			//LOGAGAIN = "http://app-dev-01.implicit.harvard.edu/implicit/user/bgoldenberg/dashBoard/login.html";
 			LOGIN = "user/bgoldenberg/dashBoard/login.html";
 			LOGAGAIN = "http://app-dev-01.implicit.harvard.edu/implicit/dashboard";
 			DbAPI api = DbAPI.getInstance(false);
@@ -91,6 +89,22 @@ public class Manager implements Serializable{
 		
 		
 		
+	}
+	protected String getpath(String study,String FileNamepath, Manager mng,User user){
+		
+		String path;
+		String folder = user.getFolderName();
+		if (study.equals("user")){
+			path = mng.getFolderBase()+File.separator+FileNamepath;
+		}else{
+			if (!study.equals("all")){
+				path = mng.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+			}else{
+				path = mng.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+			}
+		}
+		return path;
+			
 	}
 	public void setUserfromDBbyFolder(User user){
 		DbAPI api = DbAPI.getInstance(false);

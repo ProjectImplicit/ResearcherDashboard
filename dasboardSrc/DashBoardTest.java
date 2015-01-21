@@ -1,5 +1,10 @@
 package org.implicit.dasboard;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import junit.framework.TestCase;
 
@@ -19,17 +24,14 @@ public class DashBoardTest extends TestCase {
 	}
 		
 		 
-		
+	@BeforeClass	
 	protected void setUp() throws Exception {
 	
 		super.setUp();
 		user = new User();
 		mng=new Manager();
 		api= new DbAPI();
-		
-	
-	
-	
+
 	}
 	
 	 
@@ -54,6 +56,30 @@ public class DashBoardTest extends TestCase {
 		//mng.setStudyIdFromDB(user);
 		assertEquals("222",key);
 		
+		
+	}
+	/* Test for zipping a folder */
+	
+	protected void testZip(String path){
+		ZipDirectory zipUtil = new ZipDirectory();
+		String DownloadDirctory = mng.folderBase+mng.projectPath+mng.downloadDir;
+		try {
+			zipUtil.zip(path,DownloadDirctory);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
+	@Test
+	public void test() {
+		String pathtoZip = mng.folderBase+"bgoldenberg"+ File.separator+"newTestStudy";
+		String DownloadDirctory = mng.folderBase+mng.projectPath+mng.downloadDir+File.separator+"newTestStudy.zip";
+		testZip(pathtoZip);
+		File test = new File(DownloadDirctory);
+		assertNotNull(test);
 		
 	}
 	

@@ -186,16 +186,17 @@ define([], function () {
             });
 
         }
-        this.downloadFolder = function (downloadPath){
+        this.downloadFolder = function (downloadPath,study,callback){
             var data ={};
-            data.downloadFolder = downloadPath;
+            data.path = downloadPath;
+            data.study = study;
             data.cmd='downloadFolder';
 
             $.ajax({
                 url: '/implicit/dashboard',
                 type: "POST",
                 data: data,
-                success: downLoadSuccess
+                success: callback
                 
             });
         }

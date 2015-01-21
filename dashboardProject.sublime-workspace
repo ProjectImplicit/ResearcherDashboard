@@ -1,0 +1,1218 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"file",
+				"fileSys"
+			],
+			[
+				"active",
+				"activePage"
+			],
+			[
+				"context",
+				"contextmenu"
+			],
+			[
+				"index",
+				"indexOf"
+			],
+			[
+				"height",
+				"min-height"
+			],
+			[
+				"sinc",
+				"sinceI"
+			],
+			[
+				"marg",
+				"margin-top"
+			],
+			[
+				"margin",
+				"margin-bottom"
+			],
+			[
+				"l",
+				"length"
+			],
+			[
+				"drop",
+				"dropdown"
+			],
+			[
+				"Ex",
+				"Exclude"
+			],
+			[
+				"inline",
+				"inline-block"
+			],
+			[
+				"th",
+				"thead	Tag"
+			],
+			[
+				"ma",
+				"manage"
+			],
+			[
+				"hight",
+				"height"
+			],
+			[
+				"bo",
+				"border"
+			],
+			[
+				"mar",
+				"margin-top"
+			],
+			[
+				"bac",
+				"background-color"
+			],
+			[
+				"TR",
+				"TRows"
+			],
+			[
+				"get",
+				"getFile"
+			],
+			[
+				"Aut",
+				"authorize"
+			],
+			[
+				"comp",
+				"compid"
+			],
+			[
+				"br",
+				"browser"
+			],
+			[
+				"se",
+				"session"
+			],
+			[
+				"socket",
+				"sockets"
+			],
+			[
+				"font",
+				"font-size"
+			],
+			[
+				"Reli",
+				"religionID"
+			],
+			[
+				"enter",
+				"enterbinary"
+			],
+			[
+				"study",
+				"changeStudyR"
+			],
+			[
+				"node",
+				"nodeName"
+			],
+			[
+				"File",
+				"FileSaver"
+			],
+			[
+				"ty",
+				"typeR"
+			],
+			[
+				"dr",
+				"dropdownThree"
+			],
+			[
+				"adde",
+				"addEndBoolean"
+			],
+			[
+				"add",
+				"addBoolean"
+			],
+			[
+				"cou",
+				"counter"
+			],
+			[
+				"condi",
+				"conditions"
+			],
+			[
+				"addb",
+				"addButtons"
+			],
+			[
+				"B",
+				"Boolean"
+			],
+			[
+				"ch",
+				"chosenID"
+			],
+			[
+				"label",
+				"label1"
+			],
+			[
+				"tr",
+				"trialsUnder"
+			],
+			[
+				"comput",
+				"computeD"
+			],
+			[
+				"d",
+				"diff"
+			],
+			[
+				"var",
+				"variance"
+			],
+			[
+				"avg",
+				"avgCon1"
+			],
+			[
+				"pro",
+				"prototype"
+			],
+			[
+				"parce",
+				"parcelArray"
+			],
+			[
+				"compute",
+				"computeData"
+			],
+			[
+				"compte",
+				"computeData"
+			],
+			[
+				"D",
+				"dataArray"
+			],
+			[
+				"com",
+				"computeData"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"compu",
+				"computeD"
+			],
+			[
+				"S",
+				"Scorer"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "js/tracker.js",
+			"settings":
+			{
+				"buffer_size": 21469,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/fileSys.js",
+			"settings":
+			{
+				"buffer_size": 3938,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/deploy.js",
+			"settings":
+			{
+				"buffer_size": 22553,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Program Files/apache-tomcat-7.0.42/webapps/ruleGenerator/deploy.js",
+			"settings":
+			{
+				"buffer_size": 14544,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "dashboard5.html",
+			"settings":
+			{
+				"buffer_size": 27444,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "testDashboard.html",
+			"settings":
+			{
+				"buffer_size": 27613,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/testDashboard.js",
+			"settings":
+			{
+				"buffer_size": 264,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Program Files/apache-tomcat-7.0.42/webapps/ruleGenerator/msg.html",
+			"settings":
+			{
+				"buffer_size": 2646,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "js/file.js",
+			"settings":
+			{
+				"buffer_size": 3160,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Program Files/tomcat5.5.15/webapps/notNeeded/dboncloude",
+			"settings":
+			{
+				"buffer_size": 1830,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/api.js",
+			"settings":
+			{
+				"buffer_size": 10063,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/app.js",
+			"settings":
+			{
+				"buffer_size": 83772,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/settings.js",
+			"settings":
+			{
+				"buffer_size": 1367,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Program Files/apache-tomcat-7.0.42/webapps/PItracker/PITracking.html",
+			"settings":
+			{
+				"buffer_size": 11388,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "login.html",
+			"settings":
+			{
+				"buffer_size": 2816,
+				"line_ending": "Windows",
+				"name": "<html>"
+			}
+		},
+		{
+			"file": "newlogin.html",
+			"settings":
+			{
+				"buffer_size": 3051,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+		],
+		"width": 416.0
+	},
+	"console":
+	{
+		"height": 258.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/D/Users/admin/AppData/Local/Temp/scp49461/srv/opt/tomcat8/logs/catalina.out",
+		"/C/all/dashboard/Dashboard.java",
+		"/C/Program Files/apache-tomcat-7.0.42/webapps/PItracker/js/app.js",
+		"/C/all/dashboard/fileWalker.java",
+		"/D/Users/admin/AppData/Local/Temp/scp16267/home/dev1/research/pitracker/PITracking.html",
+		"/D/Users/admin/AppData/Local/Temp/scp54880/home/dev2/forms/checklist.html",
+		"/D/Users/admin/AppData/Local/Temp/scp02388/srv/opt/dev1tomcat/logs/catalina.out",
+		"/D/Users/admin/AppData/Local/Temp/scp45108/home/dev2/forms/checklist.html",
+		"/C/all/trackerfromnewdev1/implicit.xml",
+		"/C/Program Files/tomcat5.5.15/conf/Catalina/localhost/implicit.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/PItracker/PITracking.html",
+		"/D/Users/admin/AppData/Local/Temp/scp52049/srv/opt/dev1tomcat/conf/Catalina/localhost/implicit.xml",
+		"/D/Users/admin/AppData/Local/Temp/scp16285/home/dev1/WEB-INF/web.xml",
+		"/D/Users/admin/AppData/Local/Temp/scp27932/home/dev2users/dev2/WEB-INF/web.xml",
+		"/D/Users/admin/AppData/Local/Temp/scp28764/home/dev2/WEB-INF/web.xml",
+		"/C/all/ruleGenerator/deploy.js",
+		"/D/Users/admin/AppData/Local/Temp/scp26521/home/dev2/forms/checklist.html",
+		"/D/Users/admin/AppData/Local/Temp/scp41514/home/dev1/research/ruleGenerator/deploy.js",
+		"/D/Users/admin/AppData/Local/Temp/scp46735/home/dev2/showfiles.jsp",
+		"/C/projects/workspace/rc5/app/forms/checklist.html",
+		"/C/Program Files/apache-tomcat-7.0.42/webapps/ruleGenerator/deploy.js",
+		"/D/Users/admin/AppData/Local/Temp/scp40976/srv/opt/tomcat8/conf/web.xml",
+		"/D/Users/admin/AppData/Local/Temp/scp30087/srv/opt/tomcat8/logs/catalina.out",
+		"/D/Users/admin/AppData/Local/Temp/scp58794/home/dev2/user/bgoldenberg/newtest10/newtest10.rules.xml",
+		"/D/Users/admin/AppData/Local/Temp/scp49441/home/dev2/research/ruleGenerator/deploy.js",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGeneratorDev/deploy.js",
+		"/D/Users/admin/AppData/Local/Temp/scp19116/home/dev2/research/ruleGenerator/deploy.js",
+		"/D/Users/admin/AppData/Local/Temp/scp56893/home/dev2/user/bgoldenberg/newTestStudy/newTestStudy.rules.xml",
+		"/C/all/ruleGenerator/jshint.js",
+		"/C/all/ruleGenerator/config.js",
+		"/D/Users/admin/AppData/Local/Temp/scp41951/srv/opt/tomcat8/logs/catalina.out",
+		"/D/Users/admin/AppData/Local/Temp/scp30749/home/dev1/WEB-INF/web.xml",
+		"/D/Users/admin/AppData/Local/Temp/scp59512/srv/opt/dev1tomcat/conf/localhost/implicit.xml",
+		"/C/projects/workspace/rc5/app/WEB-INF/classes/org/implicit/dasboard/Manager.class",
+		"/D/Users/admin/AppData/Local/Temp/scp14986/srv/opt/tomcat8/logs/localhost_access_log.2015-01-05.txt",
+		"/D/Users/admin/AppData/Local/Temp/scp14615/srv/opt/tomcat8/logs/catalina.out",
+		"/D/Users/admin/AppData/Local/Temp/scp16340/srv/opt/dev2tomcat/logs/catalina.out",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/dashBoard/register.html",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/js/settings.js",
+		"/D/Users/admin/Downloads/ampp.expt(1).xml",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/loginII.html",
+		"/C/Program Files/eclipseEE/eclipse.ini",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/dboncloude",
+		"/D/Users/admin/Desktop/eclipselog.log",
+		"/D/Users/admin/Desktop/public2.xml",
+		"/C/project",
+		"/D/Users/admin/Downloads/הורד (10)",
+		"/D/Users/admin/Downloads/הורד (4)",
+		"/D/Users/admin/Downloads/הורד (8)",
+		"/D/Users/admin/Downloads/הורד (7)",
+		"/D/Users/admin/Downloads/הורד (6)",
+		"/D/Users/admin/Downloads/הורד (5)",
+		"/C/Program Files/tomcat5.5.15/logs/catalina.2014-10-21.log",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/js/Contextmaster/context.js",
+		"/D/Users/admin/Downloads/ampf.expt (1).xml",
+		"/D/Users/admin/Downloads/ampf.expt.xml",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/lateneg3/d.expt.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/dashboard4.html",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGeneratorDev/config.js",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGeneratorDev/deploy.html",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/css/local.css",
+		"/D/Users/admin/Downloads/epf.expt.xml",
+		"/D/Users/admin/Downloads/lateneg3-ampp.expt.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/css/dashboard.css",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/lateneg3/lateneg3.rules.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/gameOnMobile/js/app.js",
+		"/C/projects/game1/gameServer.js",
+		"/C/projects/gameServerNode/index.html",
+		"/C/projects/game1/gameServer",
+		"/C/projects/eduGame/eduGame.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/gameOnMobile/index.html",
+		"/C/Program Files/tomcat5.5.15/webapps/PItracker/js/app.js",
+		"/D/Users/admin/Downloads/jshint.js",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/newstudy/f.expt.xml",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/newexpt4/d.expt.xml",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/newstudy2/d.expt.xml",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/lateneg3/epf.expt.xml",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/lateneg3/f.expt.xml",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/newexpt5/f.expt.xml",
+		"/C/projects/workspace/rc5/app/user/bgoldenberg/newstudyexpt/d.expt.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/dashboard2.html",
+		"/C/Program Files/tomcat5.5.15/conf/catalina.policy",
+		"/C/Program Files/tomcat5.5.15/conf/server.xml",
+		"/C/Program Files/tomcat5.5.15/conf/servlet.xml",
+		"/C/Program Files/tomcat5.5.15/conf/context.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/clean/js/app.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/clean/js/Baloonc.js",
+		"/C/proje",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/RandomStudiesConfig.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/assets/resources.txt",
+		"/C/projects/gamesServer/config/csrf.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/js/assetfactory.js",
+		"/C/projects/gamesServer/config/controllers.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/js/jumpyApp",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/js/Baloonc.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/js/app.js",
+		"/C/projects/workspace/rc4/app/user/bgoldenberg/lateneg3/ampp.js",
+		"/D/Users/admin/Dropbox/messagefromcard.txt",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/dashboard3.html",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/RDEDatabase",
+		"/C/projects/metupalim/assets/js/app.js",
+		"/C/projects/workspace/rc4/app/user/yba/aamp/aamp.expt.xml",
+		"/D/Users/admin/AppData/Local/Temp/7zOA171.tmp/README.txt",
+		"/C/projects/eduGame/eduGame.html",
+		"/C/projects/workspace/rc4/app/WEB-INF/web.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/js/Baloon.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/assets/sfx/bubbles-pop.htm",
+		"/D/Users/admin/Desktop/data.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/js/easeljs/easeljs-0.7.1.min.js",
+		"/C/Program Files/tomcat5.5.15/webapps/game1/assets/baloon.png",
+		"/C/projects/game1/index.html",
+		"/C/projects/workspace/rc4/app/user/yba/multi2/multi2.expt.xml",
+		"/C/projects/workspace/rc4/app/research/library/randomStudiesConfig/RandomStudiesConfigold.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/elfinder-2.0-rc1/elfinder.html",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGenerator/bootstrap/js/models/project.js",
+		"/C/Program Files/tomcat5.5.15/webapps/dashBoard/dashboard.html",
+		"/C/Program Files/tomcat5.5.15/webapps/CKFinderJava-2.4.1/WEB-INF/config.xml",
+		"/C/projects/nodeProject/map.js",
+		"/C/projects/nodeProject/db.js",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGeneratorDev/msg.html",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/vcv (1).xml",
+		"/C/Program Files/tomcat5.5.15/webapps/notNeeded/test/ff2.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGenerator/deploy.js",
+		"/C/Program Files/tomcat5.5.15/webapps/ruleGenerator/deploy.html",
+		"/C/projects/workspace/rc4/app/showfiles.jsp",
+		"/C/Program Files/tomcat5.5.15/webapps/IdoGame/WEB-INF/web.xml",
+		"/C/Program Files/tomcat5.5.15/webapps/IdoGame/IdoGame.html",
+		"/C/Program Files/tomcat5.5.15/webapps/webfileSystem/install.txt"
+	],
+	"find":
+	{
+		"height": 45.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"C:\\projects\\workspace\\rc2\\database",
+			"C:\\projects\\implicit\\database,C:\\projects\\implicit\\org",
+			"C:\\projects\\implicit\\database",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"    \n",
+			"fileSeperator",
+			"getPathToFile",
+			"getPathto",
+			"fileSeperator",
+			"getPathToFile",
+			"settings",
+			"download",
+			" var hiddenIFrameID = 'hiddenDownloader'",
+			"downloadFile",
+			"var hiddenIFrameID = 'hiddenDownloader'",
+			"downloadFolder",
+			"deleteFile",
+			"#deleteOk",
+			"deleteOk",
+			"delete",
+			"#delete",
+			"downloadFile",
+			"download",
+			"downloadFolder",
+			"downloadFile",
+			"#download",
+			"#downloadFOlder",
+			"getPathToFile",
+			"deleteFile",
+			"#deleteFile",
+			"#deleteOK",
+			"#deleteFolderOK",
+			"#deleteFolder",
+			"model.active",
+			"Researchers should retrieve \"real\"",
+			"model.studyFileSystem",
+			"setStudyTable",
+			"#filesys",
+			"clear",
+			"verify",
+			"Virtual",
+			"studyComplete",
+			"this.value",
+			"studyComplete",
+			"validate",
+			"testStudy",
+			"study test",
+			"test study",
+			"launch",
+			"laulaunch",
+			"lau",
+			"la",
+			"launch",
+			"window.open",
+			"validate",
+			"addCheck",
+			"addDrop = fun",
+			"addDrop",
+			"addrop",
+			"addDrop",
+			"img",
+			"(document)",
+			"fileSeperator",
+			"getPath",
+			"The checklist is available at http://peoplescience.org/node/105",
+			"/br",
+			"small",
+			"The checklist is available",
+			"If you are building this study for another",
+			"addDrop",
+			"getDate",
+			"ctrl",
+			"tr",
+			"sm",
+			"xsm",
+			"xxm",
+			"xs",
+			"btn-",
+			"alert",
+			"process",
+			"alert",
+			"processForm",
+			"this.takespaces",
+			"takespaces",
+			"ttakespaces",
+			"take",
+			"forms",
+			"form",
+			"getRealPath",
+			"application",
+			"checklist",
+			"track",
+			"tracker",
+			"rule",
+			"tr",
+			"trackmenu",
+			"statistics",
+			"statis",
+			"status",
+			"st",
+			"statist",
+			"statistics",
+			"appendTracker",
+			"getExptid",
+			"studyExpt",
+			"getTracker",
+			"push",
+			"old",
+			"setModals",
+			"fileOpSuccess",
+			"uploadFile",
+			"uploadedModal",
+			"upload",
+			"overwriteYes",
+			"setmodals",
+			"dragandrop",
+			"test the",
+			"userFolder",
+			"expt",
+			"deplotDrop",
+			"model.exptFile",
+			"addHTML",
+			"model.exptFile",
+			"user",
+			"model.exptFile",
+			"update",
+			"review",
+			"studyRaw",
+			"tableRaw",
+			"studyRaw",
+			"tableRaw",
+			"studyRaw"
+		],
+		"highlight": false,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"",
+			"piplayer"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 11,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "js/tracker.js",
+					"settings":
+					{
+						"buffer_size": 21469,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1365,
+								1365
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1433.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "js/fileSys.js",
+					"settings":
+					{
+						"buffer_size": 3938,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								299,
+								299
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "js/deploy.js",
+					"settings":
+					{
+						"buffer_size": 22553,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7184,
+								7184
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 705.0,
+						"translation.y": 1472.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/C/Program Files/apache-tomcat-7.0.42/webapps/ruleGenerator/deploy.js",
+					"settings":
+					{
+						"buffer_size": 14544,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6865,
+								7029
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 6477.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "dashboard5.html",
+					"settings":
+					{
+						"buffer_size": 27444,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								776,
+								776
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 9423.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "testDashboard.html",
+					"settings":
+					{
+						"buffer_size": 27613,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1531,
+								1531
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 256.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "js/testDashboard.js",
+					"settings":
+					{
+						"buffer_size": 264,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								144,
+								144
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/C/Program Files/apache-tomcat-7.0.42/webapps/ruleGenerator/msg.html",
+					"settings":
+					{
+						"buffer_size": 2646,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2038,
+								2038
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3360.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "js/file.js",
+					"settings":
+					{
+						"buffer_size": 3160,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								591,
+								591
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1608.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "/C/Program Files/tomcat5.5.15/webapps/notNeeded/dboncloude",
+					"settings":
+					{
+						"buffer_size": 1830,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1602,
+								1602
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 360.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "js/api.js",
+					"settings":
+					{
+						"buffer_size": 10063,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5820,
+								5820
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5870.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "js/app.js",
+					"settings":
+					{
+						"buffer_size": 83772,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11205,
+								11205
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 10111.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "js/settings.js",
+					"settings":
+					{
+						"buffer_size": 1367,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								629,
+								629
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "/C/Program Files/apache-tomcat-7.0.42/webapps/PItracker/PITracking.html",
+					"settings":
+					{
+						"buffer_size": 11388,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1623,
+								1623
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 637.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "login.html",
+					"settings":
+					{
+						"buffer_size": 2816,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								323,
+								323
+							]
+						],
+						"settings":
+						{
+							"auto_name": "<html>",
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "newlogin.html",
+					"settings":
+					{
+						"buffer_size": 3051,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								585,
+								585
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 928.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 38.0
+	},
+	"input":
+	{
+		"height": 50.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 66.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"e",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/eiat.js"
+			],
+			[
+				"prel",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/utils/preloader.js"
+			],
+			[
+				"html",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/utils/html.js"
+			],
+			[
+				"eia",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/eiat.js"
+			],
+			[
+				"eiat",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/eiat.js"
+			],
+			[
+				"prelo",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/utils/preloader.js"
+			],
+			[
+				"api",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/app/API.js"
+			],
+			[
+				"pars",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/app/task/parser.js"
+			],
+			[
+				"",
+				"/C/Program Files/apache-tomcat-7.0.42/webapps/piplayer/js/app/API.js"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 146.0,
+	"status_bar_visible": true
+}

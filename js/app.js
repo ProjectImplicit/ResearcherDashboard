@@ -350,14 +350,55 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
       });
       $(document).on('click','#downloadFolder', function(){
+        var count=0;
         var element =$(this);
         var tr = $(element).parent().parent();
         var td = $(tr).find('.folder').parent().parent();
         var id = $(td).attr("id");
         model.elementID = id;
-        api.downloadFolder(getPathToFile());
+        var path = getPathToFile();
+        var foldername='';
+        api.downloadFolder(path,model.study,function(responce){
+          if (responce==='success'){
+            if (path.indexOf('/')!=-1){
+              var array = path.split('/');
+              var foldername = array[array.length-1];
+              if (foldername==='') foldername = array[array.length-2];
+              foldername=foldername+'.zip';
 
+            }else{
+              var array = path.split('\\');
+              var foldername = array[array.length-1];
+              if (foldername==='') foldername = array[array.length-2];
+              foldername=foldername+'.zip';
+
+            }
+            var settings = new Settings();
+            var zipFolder = settings.getZipFolder();
+            path = zipFolder+'/'+foldername+'/';
+            var url = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study=user';
+            var hiddenIFrameID = 'hiddenDownloader' + count++;
+            var iframe = document.createElement('iframe');
+            iframe.id = hiddenIFrameID;
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            iframe.src = url;
+            setTimeout((function(iframe) {
+               return function() { 
+                 iframe.remove(); 
+               }
+            })(iframe), 2000);
+
+
+           
+
+          }else{
+            alert(responce);
+          }
+
+        });
       });
+
       $(document).on('click','#deleteFolder', function(){
         var element =$(this);
         var tr = $(element).parent().parent();

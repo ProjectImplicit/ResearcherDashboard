@@ -281,7 +281,11 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 						if (cmd.equals(("register"))){
 							register(request,api);
 						}
-						
+						if (cmd.equals("downloadFolder")){
+							res = zipfolder(request,response,mng);
+							
+							
+						}
 						if (cmd.equals("login")){
 							res =login(request,api,res,response);
 						}
@@ -311,17 +315,42 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			}//else
 					
 		}catch(Exception e){
-			System.out.println("error in dashboard "+e.getMessage());
-			out.println("error: "+e.getMessage());
+			System.out.println("error in dashboard "+e.getStackTrace());
+			out.write(res.getBytes("error: "+e.getMessage()));
+			out.flush();
+			out.close();
+			
 		}
 		finally{
 			if (res.equals("redirect")) return;
-				out.write(res.getBytes("UTF8"));
-				out.flush();
-				out.close();
+			out.write(res.getBytes("UTF8"));
+			out.flush();
+			out.close();
 		}
 	}
 	
+	protected String zipfolder(HttpServletRequest request,HttpServletResponse response,Manager mng){
+		
+		String returnPath="";
+		ZipDirectory zipUtil = new ZipDirectory();
+		String directoryToDownload  = request.getParameter("path");
+		String study =  request.getParameter("study");
+		User user = (User) request.getSession().getAttribute("userobject");
+		String path =mng.getpath(study, directoryToDownload, mng, user);
+		String DownloadDirctory = mng.folderBase+mng.projectPath+mng.downloadDir;
+		try {
+			returnPath = zipUtil.zip(path,DownloadDirctory);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "error: "+e.getStackTrace();
+		}
+		
+		return "success";
+		
+		
+		
+	}
 	protected String studyValidator(HttpServletRequest request,DbAPI api,HttpServletResponse response,User user,Manager mng){
 		String path = request.getParameter("path");
 		String study = request.getParameter("study");
@@ -411,6 +440,8 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		Manager mng = new Manager();
 		String username = request.getParameter("username");
 		String pass = request.getParameter("password");
+		username = username.trim();
+		pass = pass.trim();
 		HashMap records = api.findInOracle("Users", "USERNAME", username);
 		if (records.size()>1){
 			res="More then one record returned";

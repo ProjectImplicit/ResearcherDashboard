@@ -33,6 +33,8 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
+
+
 import javax.servlet.ServletContext;
 
 
@@ -53,19 +55,11 @@ public class FileUploadManager {
 	public FileUploadManager(){}
 	public void init() throws ServletException{
 		
-//		
-//	    DiskFileItemFactory fileFactory = new DiskFileItemFactory();
-//	    fileFactory.setRepository(filesDir);
-//	    this.uploader = new ServletFileUpload(fileFactory);
-//		
+	
 	}
 	
 	protected boolean createFolder(String folderUnder,String folderToCreate,User user,String study,Manager mng){
-		//User user = new User();
-		//mng = new Manager();
-		//user.setKey(key);
-		//mng.setUserfromDB(user);
-		//mng.setStudyIdFromDB(user);
+	
 		String userFolder = user.getFolderName();
 		String folder = user.getFolderName();
 		if (study.equals("user")){
@@ -179,7 +173,7 @@ public class FileUploadManager {
 		
 	}
 	protected void downLoadFile(User user,Manager mng,String fileName,ServletContext ctx,HttpServletRequest request,HttpServletResponse response,
-			ServletOutputStream os,boolean download,String study){
+			ServletOutputStream os,boolean download,String study) throws IOException{
 		
 		try {
 			setpath(study,fileName,mng,user);
@@ -204,7 +198,7 @@ public class FileUploadManager {
 				String[] names= fileName.split("\\" +File.separator);
 				
 				response.setHeader("Content-Disposition", "attachment; filename=\"" + names[names.length-1] + "\"");
-				
+				response.setHeader("Content-Length", String.valueOf(new File(path).length()));
 			}
 			//System.out.println("file size: "+file.length());
 			
@@ -223,13 +217,13 @@ public class FileUploadManager {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
-		
-
-		
+	
 		
 	}
 	
@@ -392,7 +386,8 @@ public class FileUploadManager {
         		}
         		 
         	 }else{
-        		 throw new ServletException("Expt file can be uploaded only to a study folder");
+        		 uploaded=false;
+        		 //throw new ServletException("Expt file can be uploaded only to a study folder");
         	 }
          }else{
         	 try {
