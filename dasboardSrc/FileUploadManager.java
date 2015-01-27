@@ -35,6 +35,11 @@ import java.util.List;
 
 
 
+
+
+
+
+
 import javax.servlet.ServletContext;
 
 
@@ -99,7 +104,7 @@ public class FileUploadManager {
 		
 		
 	}
-	protected boolean deleteFile(String filePath,String key,User user,Manager mng,String study){
+	protected boolean deleteFile(String filePath,String key,User user,Manager mng,String study) throws Exception{
 		
 		boolean result=false;
 		try{
@@ -147,7 +152,7 @@ public class FileUploadManager {
     	}catch(Exception e){
  
     		e.printStackTrace();
- 
+    		throw e;
     	}
 		return result;
 	}
@@ -196,6 +201,9 @@ public class FileUploadManager {
 			response.setContentLength((int) file.length());
 			if (download){
 				String[] names= fileName.split("\\" +File.separator);
+				if (names.length==1){
+					names = fileName.split("/");
+				}
 				
 				response.setHeader("Content-Disposition", "attachment; filename=\"" + names[names.length-1] + "\"");
 				response.setHeader("Content-Length", String.valueOf(new File(path).length()));
@@ -212,8 +220,11 @@ public class FileUploadManager {
 			os.flush();
 			os.close();
 			fis.close();
-			System.out.println("File downloaded at client successfully");
-
+			System.out.println("File downloaded at client successfully: "+file.getAbsolutePath());
+			if (file.getAbsolutePath().contains(mng.downloadDir)){
+				System.out.println("Deleting file: "+file.getAbsolutePath());
+				file.delete();
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -227,7 +238,7 @@ public class FileUploadManager {
 		
 	}
 	
-	 protected boolean UploadFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	 protected boolean UploadFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, Exception {
 		 
 		boolean uploaded=false;
 		 if(!ServletFileUpload.isMultipartContent(request)){
@@ -285,9 +296,11 @@ public class FileUploadManager {
 		} catch (FileUploadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		return uploaded; 
 		 
@@ -318,7 +331,7 @@ public class FileUploadManager {
 		 return false;
 		 
 	 }
-	 private boolean processUploadedFile(FileItem fileItem,User user,Manager mng,String study) throws ServletException{
+	 private boolean processUploadedFile(FileItem fileItem,User user,Manager mng,String study) throws Exception{
 		 
 		 boolean uploaded = false;
 		 System.out.println("FieldName="+fileItem.getFieldName());
@@ -383,6 +396,7 @@ public class FileUploadManager {
         		} catch (Exception e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
+        			throw e;
         		}
         		 
         	 }else{
@@ -396,6 +410,7 @@ public class FileUploadManager {
      		} catch (Exception e) {
      			// TODO Auto-generated catch block
      			e.printStackTrace();
+     			throw e;
      		}
          }
          

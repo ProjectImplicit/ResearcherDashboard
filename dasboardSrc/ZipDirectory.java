@@ -12,7 +12,7 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipDirectory {
 
-	public  String zip(String directorytoZip,String tmpDirectory) throws IOException {
+	public  String zip(String directorytoZip,String tmpDirectory) throws Exception {
 		
 		
 		File directoryToZip = new File(directorytoZip);
@@ -44,7 +44,7 @@ public class ZipDirectory {
 		}
 	}
 
-	public static String writeZipFile(File directoryToZip,String tmpfolder, List<File> fileList) {
+	public static String writeZipFile(File directoryToZip,String tmpfolder, List<File> fileList) throws Exception {
 
 		String zippedPath = "";
 		try {
@@ -63,8 +63,10 @@ public class ZipDirectory {
 			fos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			throw e;
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw e;
 		}
 		return zippedPath;
 	}

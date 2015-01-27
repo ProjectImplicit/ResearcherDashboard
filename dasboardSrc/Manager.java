@@ -29,6 +29,7 @@ public class Manager implements Serializable{
 	Integer userLocation;
 	String projectPath;
 	String downloadDir;
+	String REDIRECTTTESTLOGIN;
 	private static final long serialVersionUID = 1L;
 	 
 	public Manager(){
@@ -43,6 +44,7 @@ public class Manager implements Serializable{
 			System.out.println("Using folder:"+folderBase);
 			LOGINURL = "user/bgoldenberg/dashBoard/newlogin.html";
 			REDIRECTLOGIN = "user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
+			REDIRECTTTESTLOGIN = "user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
 			LOGAGAIN = "http://localhost/implicit/dashboard";
 			LOGIN = "user/bgoldenberg/dashBoard/login.html";
 			userLocation=6;
@@ -53,6 +55,7 @@ public class Manager implements Serializable{
 			downloadDir ="ZipFolder";
 			LOGINURL = "user/bgoldenberg/dashBoard/newlogin.html";
 			REDIRECTLOGIN="user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
+			REDIRECTTTESTLOGIN = "user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
 			LOGIN = "user/bgoldenberg/dashBoard/login.html";
 			LOGAGAIN = "http://app-dev-01.implicit.harvard.edu/implicit/dashboard";
 			DbAPI api = DbAPI.getInstance(false);
@@ -72,7 +75,7 @@ public class Manager implements Serializable{
 	public String getFolderBase(){
 		return folderBase;
 	}
-	public void buildUser(User user){
+	public void buildUser(User user) throws Exception{
 		System.out.println("starting buildUser");
 		//setUserfromDB(user);
 		setStudyIdFromDB(user);
@@ -198,7 +201,7 @@ public class Manager implements Serializable{
 		return urlString;
 	
 	}
-	public String getFile(User user,String study,String fileName,String path){
+	public String getFile(User user,String study,String fileName,String path) throws Exception{
 		
 		
 		String folderName=user.getFolderName();
@@ -233,6 +236,7 @@ public class Manager implements Serializable{
 	        
 		}catch(Exception e){
 			System.out.println(e.getMessage());
+			throw e;
 			
 		}finally{
 			try {
@@ -240,6 +244,7 @@ public class Manager implements Serializable{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw e;
 			}
 			
 		}
@@ -399,7 +404,7 @@ public class Manager implements Serializable{
 
 	}
 	
-	public String getSchema(File file){
+	public String getSchema(File file) throws Exception{
 		BufferedReader br =null;
 		String exptID = null;
 		boolean exit=false;
@@ -423,6 +428,7 @@ public class Manager implements Serializable{
 	        return exptID;
 		}catch(Exception e){
 			System.out.println(e.getMessage());
+			throw e;
 			
 		}finally{  
 			try {
@@ -430,12 +436,12 @@ public class Manager implements Serializable{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw e;
 			}
 			
 		}
-		return null;
 	}
-	public String getExptID(File file){
+	public String getExptID(File file) throws Exception{
 		BufferedReader br =null;
 		String exptID = null;
 		boolean exit=false;
@@ -459,6 +465,7 @@ public class Manager implements Serializable{
 	        return exptID;
 		}catch(Exception e){
 			System.out.println(e.getMessage());
+			throw e;
 			
 		}finally{  
 			try {
@@ -466,10 +473,10 @@ public class Manager implements Serializable{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw e;
 			}
 			
 		}
-		return null;
 	}
 	public ArrayList cheackforExpt(File file){
 		ArrayList files = new ArrayList<File>();
@@ -527,7 +534,7 @@ public class Manager implements Serializable{
 	        copyto.put(key, value);
 		}
 	}
-	public HashMap listFilesThreaded(User user,String study){
+	public HashMap listFilesThreaded(User user,String study) throws Exception{
 		
 		HashMap fileMap= new HashMap();
 		HashMap openStruct = new HashMap();
@@ -567,6 +574,7 @@ public class Manager implements Serializable{
 			walkers.clear();
 		}catch(Exception e){
 			System.out.println("error:"+e.getMessage());
+			throw e;
 		}
 		res.put("filesys", fileMap);
 		res.put("openfilesys", openStruct);
@@ -604,7 +612,7 @@ public class Manager implements Serializable{
 		
 		}catch(Exception e){
 			System.out.println("error:"+e.getMessage());
-			
+			throw e;
 		}
 		
 		res.put("filesys", fileMap);
@@ -672,7 +680,7 @@ public class Manager implements Serializable{
 //		
 //	}
 	
-	private void walkFileSystem(File directory,User user){
+	private void walkFileSystem(File directory,User user) throws Exception{
 		
 		try{
 			DbAPI api = DbAPI.getInstance(false);
@@ -727,10 +735,11 @@ public class Manager implements Serializable{
 			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
+			throw e;
 		}
 		
 	}
-	public void setStudyIdfromFileSystem(User user){
+	public void setStudyIdfromFileSystem(User user) throws Exception{
 		System.out.println("starting setStudyIdfromFileSystem");
 		try{
 			String folderName=user.getFolderName();
@@ -739,6 +748,7 @@ public class Manager implements Serializable{
 			
 		}catch(Exception e){
 			System.out.println();
+			throw e;
 		}
 		
 		

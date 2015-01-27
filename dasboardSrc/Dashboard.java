@@ -329,7 +329,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 	}
 	
-	protected String zipfolder(HttpServletRequest request,HttpServletResponse response,Manager mng){
+	protected String zipfolder(HttpServletRequest request,HttpServletResponse response,Manager mng) throws Exception{
 		
 		String returnPath="";
 		ZipDirectory zipUtil = new ZipDirectory();
@@ -343,7 +343,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "error: "+e.getStackTrace();
+			throw e;
 		}
 		
 		return "success";
@@ -367,7 +367,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		api.updateTable("studies", "status", "UR", "studyid", studyID);
 	}
 	
-	protected void createNewPassword(HttpServletRequest request,DbAPI api,HttpServletResponse response){
+	protected void createNewPassword(HttpServletRequest request,DbAPI api,HttpServletResponse response) throws Exception{
 		System.out.println("starting createNewPassword ");
 		String pass = request.getParameter("pass");
 		PasswordHash passHash = new PasswordHash();
@@ -379,10 +379,12 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			// TODO Auto-generated catch block
 			System.out.println("error in createNewPassword "+e.getMessage());
 			e.printStackTrace();
+			throw e;
 		} catch (InvalidKeySpecException e) {
 			System.out.println("error in createNewPassword "+e.getMessage());
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		try {
 			String[] saltedArr = saltedHash.split(":");
@@ -414,10 +416,12 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 			e.printStackTrace();
+			throw e;
 		} catch (ServletException e) {
 			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 			e.printStackTrace();
+			throw e;
 		}
 		
 		
@@ -434,7 +438,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		return name;
 		
 	}
-	protected String login(HttpServletRequest request,DbAPI api,String res,HttpServletResponse response){
+	protected String login(HttpServletRequest request,DbAPI api,String res,HttpServletResponse response) throws Exception{
 		
 		System.out.println("starting  login");
 		Manager mng = new Manager();
@@ -480,9 +484,11 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			} catch (ServletException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw e;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw e;
 			}
 		}else{
 			PasswordHash passHash = new PasswordHash();
@@ -497,7 +503,14 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 					session.setAttribute("mng", mng);
 					System.out.println("set user object"+session.getAttribute("userobject"));
 					res= "success";
-					String url = mng.REDIRECTLOGIN;
+					String url="";
+					if (request.getRequestURI().contains("test")){
+						url = mng.REDIRECTTTESTLOGIN;
+					}else{
+						url = mng.REDIRECTLOGIN;
+						
+					}
+					
 					response.setContentType("text/html");
 					RequestDispatcher rd = request.getRequestDispatcher(url);
 					rd.include(request, response);
@@ -510,17 +523,21 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 				// TODO Auto-generated catch block
 				System.out.println("error  login");
 				e.printStackTrace();
+				throw e;
 			} catch (InvalidKeySpecException e) {
 				// TODO Auto-generated catch block
 				System.out.println("error  login");
 				e.printStackTrace();
+				throw e;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.out.println("error  login");
 				e.printStackTrace();
+				throw e;
 			} catch (ServletException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				throw e;
 			}
 			
 		}
@@ -528,7 +545,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		return res;
 	}
 	
-	protected boolean register(HttpServletRequest request,DbAPI api){
+	protected boolean register(HttpServletRequest request,DbAPI api) throws Exception{
 		
 		try {
 			System.out.println("starting register");
@@ -554,12 +571,12 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			// TODO Auto-generated catch block
 			System.out.println("error in register "+e.getMessage());
 			e.printStackTrace();
-			return false;
+			throw e;
 		} catch (InvalidKeySpecException e) {
 			// TODO Auto-generated catch block
 			System.out.println("error in register "+e.getMessage());
 			e.printStackTrace();
-			return false;
+			throw e;
 		}
 		
 		return true;
@@ -593,7 +610,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 	
 		
 	}
-	private String deleteFile(HttpServletRequest request,HttpServletResponse response,Manager mng,User user){
+	private String deleteFile(HttpServletRequest request,HttpServletResponse response,Manager mng,User user) throws Exception{
 		String key;
 		String path;
 		String study;
@@ -674,7 +691,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 		
 	}
-	private String ManageFiles(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException{
+	private String ManageFiles(HttpServletRequest request,HttpServletResponse response) throws Exception{
 		FileUploadManager fileMng = new FileUploadManager();
 		if (fileMng.UploadFile(request, response)){
 			return "File was uploaded";
@@ -686,7 +703,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 		
 	}
-	private void processValidate(HttpServletRequest request,String key,Manager mng,ServletOutputStream out,User user){
+	private void processValidate(HttpServletRequest request,String key,Manager mng,ServletOutputStream out,User user) throws Exception{
 		
 		try {
 			System.out.println("starting process validate");
@@ -700,13 +717,15 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		
 	}
-	private void processFileSys(String[] arr,String key,Manager mng,ServletOutputStream out,User user){
+	private void processFileSys(String[] arr,String key,Manager mng,ServletOutputStream out,User user) throws Exception{
 		
 		String ukey = (String)arr[6];
 		String study = (String) arr[8];
@@ -725,9 +744,11 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		
 	}

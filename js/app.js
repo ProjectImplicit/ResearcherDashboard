@@ -1,5 +1,6 @@
 
     require.config({
+    urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
         'jQuery': '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min',
         'bootstrap': '//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min',
@@ -71,6 +72,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
             401: requestUnauthorized,
         }
       });
+
+      window.onerror = function(message, uri, line) {
+        var fullMessage = 'erroe: '+location.href + '\n' + uri + '\n' + line;
+        alert(fullMessage);
+        return false;
+      }
       function requestUnauthorized(xhr){
         alert('You are logged out');
         window.location.href = xhr.getResponseHeader("Location");
@@ -171,10 +178,14 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
 
       }
-      function createExistFilesArray(files,path,data,study){
+      function createExistFilesArray(files,path,data,study,callback){
          var existFiles = new Array();
+         var that=this; 
+        for (var i=0;i<files.length;i++){
+          var key = i;
+          var value = files[i];
         
-        $.each(files, function(key, value){
+        //$.each(files, function(key, value){
             console.log(key);
             console.log(value);
           //data.append(key, value);
@@ -194,17 +205,28 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
               }else{
                 data.append(key, value);
               }
+              if (i===files.length-1){
+                var info={};
+                info.index=0;
+                info.visited=0;
+                info.data=data;
+                info.study=study;
+                info.path=path;
+                model.Modalinfo=info;
+                model.exist=existFiles;
+                callback();
+              }
             });
-            
-        });
-        var info={};
-        info.index=0;
-        info.visited=0;
-        info.data=data;
-        info.study=study;
-        info.path=path;
-        model.Modalinfo=info;
-        return existFiles;
+        }    
+        //});
+        // var info={};
+        // info.index=0;
+        // info.visited=0;
+        // info.data=data;
+        // info.study=study;
+        // info.path=path;
+        // model.Modalinfo=info;
+        // return existFiles;
       }
       function prepareUpload(event){
         
@@ -224,23 +246,32 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           for (var i=0;i<pathA.length;i++){
             path+=pathA[i]+fileSeperator();
           }
-          study='all';
+          if (model.study==='user'){
+            study='user';
+          }else{
+            study='all';
+
+          }
         }
        
-        model.exist = createExistFilesArray(event.target.files,path,data,study);
-        
-        if (model.exist.length>0){
-          setModals(model);
-        }else{
+        model.exist = createExistFilesArray(event.target.files,path,data,study,function(){
+          if (model.exist.length>0){
+            setModals(model);
+           }else{
           //if (model.activePage === 'file') model.study='all';
-          data.append('UserKey',model.key);
-          data.append('folder',takespaces(path));
-          data.append('study',model.study);
-          data.append('cmd','UploadFile');
-          $('#uploadedModal').modal('show');
-          api.uploadFile(data,fileOpSuccess);
+            data.append('UserKey',model.key);
+            data.append('folder',takespaces(path));
+            data.append('study',model.study);
+            data.append('cmd','UploadFile');
+            $('#uploadedModal').modal('show');
+            api.uploadFile(data,fileOpSuccess);
 
-        }
+          }
+
+
+        });
+        
+        
       }
 
       function getStudyFromFileSys(fileSystem,info){
@@ -308,6 +339,74 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         api.getFiles(model.key,model.study,setStudyTable);
       });
 
+      $(document).on('click','#multipleDelete', function(){
+        var modelid=[];
+        $( '.check' ).each(function( index ) {
+          var input = $(this);
+          var td  = $(input).parent().parent();
+          var id = $(td).attr("id");
+          var tr = $(td).parent();
+          var span = $(tr).find('.fileNameSpan');
+          var name = $(span).text();
+          var type='file';
+          if (id===undefined){
+            var upTD = $(tr).find('.file');
+            id = $(upTD).attr("id");
+            name= $(upTD).find('.fileNameSpan').text();
+            type='file';
+          }
+          
+          if ($(input).prop('checked')){
+            
+            //model.elementID = id;
+            var obj={};
+            obj.id =id;
+            obj.name=name;
+            obj.type=type;
+            modelid.push(obj);
+            //DeleteFile();
+            //$(this).attr('checked', false);
+
+          } 
+        });
+        var text='';
+        for (var i=0;i<modelid.length;i++){ text=text+modelid[i].name+'<br>';}
+        $('#listOfFiles').html(text);
+        $('#deleteMultipleModal').modal('show');
+        $(document).find('#deleteMultipleOK').one("click",'#deleteMultipleOK',function(){
+          
+          for (var i=0;i<modelid.length;i++){
+            var obj =modelid[i];
+            var input = $('#'+obj.id);
+            model.elementID = id;
+            if (obj.type==='folder'){
+
+              $('#uploadedModal').modal('show');
+              var path = getPathToFile();
+              api.deleteFolder(path,model.key,model.study,function(){
+                if (i===modelid.length){
+                  fileOpSuccess();
+                }
+              });
+              //deleteFolder();
+
+            }else{
+              $('#uploadedModal').modal('show');
+
+              //deleteFile();
+              var path = getPathToFile();
+              api.deleteFolder(path,model.key,model.study,function(){
+                if (i===modelid.length){
+                  fileOpSuccess();
+                }
+              });
+            } 
+            
+          }
+        });
+        
+
+      });
       $(document).on('click','#multiple', function(){
        
         $( '.check' ).each(function( index ) {
@@ -319,7 +418,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
             id = $(upTD).attr("id");
           }
           
-          //var id = $(tr).attr("id");
           if ($(input).prop('checked')){
             
             model.elementID = id;
@@ -1113,9 +1211,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+fileSeperator();
         }
-        //if (model.activePage === 'file') model.study='all';
         api.deleteFolder(path,model.key,model.study,fileOpSuccess);
       }
+
       function deleteSuccess(){
         //alert('folder deleted');
         $('#fileSys').click();
@@ -1355,15 +1453,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
         iframe.src = url;
+        iframe.load = function(){
+           iframe.remove();
+        }
         setTimeout((function(iframe) {
            return function() { 
              iframe.remove(); 
            }
-        })(iframe), 2000);
+        })(iframe), 50000);
         
         
       }
-      
+      // $("iframe").on("load", function () {
+      //   $(this).remove();
+    
+      // });
       function downLoadSuccess(data){
         //alert('download syccesfull');
         
@@ -1845,26 +1949,14 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
          var td = $(document).find('#'+currentFolder.id);
          var tr  = td.parent();
          check = $(tr).find('[type=checkbox]');
-         //if (currentFolder.state==='open'){
-           $(check).prop('checked', true);
-           currentFolder.name = takespaces($(tr).find('.folder').text());
-         //}//else{
-         //   $(check).prop('checked', false);
-         //   currentFolder.name='';
-         // }
+         $(check).prop('checked', true);
+         currentFolder.name = takespaces($(tr).find('.folder').text());
+         
         }
-        // if (currentFolder.state==='open'){
-        //    $(check).prop('checked', true);
-           
-        // }else{
-        //    $(check).prop('checked', false);
-           
-        // }
+        
         $('#currentName').text(currentFolder.name);
       }
-      // function copyToClipboard(text) {
-      //   window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
-      // }
+      
       function getStudyTestlHtml(){
         var html='<div class="dropdown" style="display: inline">'+
                     '<button type="button" id="dropdownTest" style="margin-left:20px;" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">'+
@@ -1909,7 +2001,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         fileTableModel.row = fileTableModel.row+1;
         $('#fileTabale > tbody').append('<tr>'+
           '<td class="file" id="'+v.id+'" >'+
-            '<span style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;"><i class="fa fa-file-text" >'+
+            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;"><i class="fa fa-file-text" >'+
             '</i> '+file+
             '</span>'+
           '</td>'+
@@ -1941,7 +2033,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         fileTableModel.row = fileTableModel.row+1;
         $('#fileTabale > tbody').append('<tr>'+
           '<td class="file" id="'+v.id+'" >'+
-            '<span class="fileRaw" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
+            '<span class="fileRaw fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
               '<i class="fa fa-file-text"  ></i> '+file+
             '</span>'+
           '</td>'+
@@ -2274,17 +2366,20 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         }
         updateDatawithFiles(files,data,cmd,folderpath);
         //if (model.activePage === 'file') model.study='all';
-        model.exist = createExistFilesArray(files,path,data,study);
-        if (model.exist.length>0){
+        createExistFilesArray(files,path,data,study,function(){
+          if (model.exist.length>0){
           setModals(model);
-        }else{
-          data.append('UserKey',model.key);
-          data.append('folder',takespaces(path));
-          data.append('study',model.study);
-          data.append('cmd','UploadFile');
-          $('#uploadedModal').modal('show');
-          api.uploadFile(data,fileOpSuccess);
-        }
+          }else{
+            data.append('UserKey',model.key);
+            data.append('folder',takespaces(path));
+            data.append('study',model.study);
+            data.append('cmd','UploadFile');
+            $('#uploadedModal').modal('show');
+            api.uploadFile(data,fileOpSuccess);
+          }
+
+        });
+        
 
       }
       function errorHandler(data){
@@ -2316,21 +2411,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           }       
         }
 
-        // $.each(files, function(key, value)
-        // {
-        //   var entry = value.webkitGetAsEntry();
-        //   if (entry.isFile){
-        //     var file = value.getAsFile();
-        //     data.append(key, file);
-        //   }else if (entry.isDirectory){
-        //     cmd='uploadFolder';
-        //     var direntry=entry.createReader();
-        //     var entries=direntry.entries();
-            
-
-        //   }
-          
-        // });
+    
       }
       /**
       * Desc: returns the satet of the folder
@@ -2342,30 +2423,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         var state;
         var path=folder['path****'];
         id = folder['id'];
-        // $.each(folder,function(k,v){
-        //   if (k==='id'){
-        //     id=v;
-        //   }
-          
-
-        // });
-        // var pathA = new Array();
-        // var path='';
-        // var info = {};
-        // info.found = false;
-        // getPath(model.fileSystem,id,pathA,info);
-        // for (var i=0;i<pathA.length;i++){
-        //   path+=pathA[i]+'\\';
-        // }
         var obj = model.openStruct;
         return obj[path];
-        // $.each(obj,function(k,v){
-        //   if (k===path){
-        //     state= v;
-        //   }
-
-        // });
-        //return state;
       }
       
       function createTable(){
@@ -2384,6 +2443,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                 '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
                 '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
                 '<button type="button" style="margin-left:20px;" id="multiple" class="btn btn-primary btn-xs">Multiple Download</button>'+
+                '<button type="button" style="margin-left:20px;" id="multipleDelete" class="btn btn-primary btn-xs">Multiple Delete</button>'+
               '</td>'+    
             '</tr>'
           );
