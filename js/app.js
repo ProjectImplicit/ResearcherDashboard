@@ -292,6 +292,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       $(document).on('click','[type=checkbox]',function(){
         var check =$(this);
         var td = $(check).parent().parent();
+        if ($(td).attr("id").indexOf("folder")==-1) return;
         var span = $(td).find('#folderNameR');
         if (span===undefined) return;
         var folderName = $(span).text();
@@ -343,29 +344,23 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         var modelid=[];
         $( '.check' ).each(function( index ) {
           var input = $(this);
-          var td  = $(input).parent().parent();
-          var id = $(td).attr("id");
-          var tr = $(td).parent();
-          var span = $(tr).find('.fileNameSpan');
-          var name = $(span).text();
-          var type='file';
-          if (id===undefined){
-            var upTD = $(tr).find('.file');
-            id = $(upTD).attr("id");
-            name= $(upTD).find('.fileNameSpan').text();
-            type='file';
-          }
-          
           if ($(input).prop('checked')){
-            
-            //model.elementID = id;
+
+            var span  = $(input).parent();
+            var td = $(span).parent();
+            var id = $(td).attr("id");
+            var current = model.currentFolder;
+            var name = $(span).text();
+            var type='file';
             var obj={};
             obj.id =id;
             obj.name=name;
             obj.type=type;
-            modelid.push(obj);
-            //DeleteFile();
-            //$(this).attr('checked', false);
+            if (current.id!=id){
+              modelid.push(obj);  
+            }
+            
+            
 
           } 
         });
@@ -373,12 +368,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         for (var i=0;i<modelid.length;i++){ text=text+modelid[i].name+'<br>';}
         $('#listOfFiles').html(text);
         $('#deleteMultipleModal').modal('show');
-        $(document).find('#deleteMultipleOK').one("click",'#deleteMultipleOK',function(){
-          
+        $(document).one("click",'#deleteMultipleOK',function(){
+          console.log('inside delete dialog');          
           for (var i=0;i<modelid.length;i++){
             var obj =modelid[i];
             var input = $('#'+obj.id);
-            model.elementID = id;
+            model.elementID = obj.id;
             if (obj.type==='folder'){
 
               $('#uploadedModal').modal('show');
@@ -388,7 +383,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                   fileOpSuccess();
                 }
               });
-              //deleteFolder();
+              
 
             }else{
               $('#uploadedModal').modal('show');
@@ -407,8 +402,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         
 
       });
+      
+        
       $(document).on('click','#multiple', function(){
-       
+        var count=0;
         $( '.check' ).each(function( index ) {
           var input = $(this);
           var tr  = $(input).parent().parent();
@@ -421,7 +418,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           if ($(input).prop('checked')){
             
             model.elementID = id;
-            downloadFile();
+            downloadFile(count++);
             $(this).attr('checked', false);
 
           }
@@ -481,11 +478,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
             iframe.style.display = 'none';
             document.body.appendChild(iframe);
             iframe.src = url;
-            setTimeout((function(iframe) {
-               return function() { 
-                 iframe.remove(); 
-               }
-            })(iframe), 2000);
+            // setTimeout((function(iframe) {
+            //    return function() { 
+            //      iframe.remove(); 
+            //    }
+            // })(iframe), 2000);
 
 
            
@@ -525,7 +522,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         var upTD = $(tr).find('.file');
         var id = $(upTD).attr("id");
         model.elementID = id;
-        downloadFile();
+        downloadFile(0);
 
       });
       $(document).on('click','#deleteFile', function(){
@@ -1435,6 +1432,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       }
 
       function downloadFile(count){
+
         var pathA = new Array();
         var path='';
         var info = {};
@@ -1447,7 +1445,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         //if (model.activePage === 'file') model.study='all';
         //window.location.href = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study=all';
         var url = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study='+model.study;
-        var hiddenIFrameID = 'hiddenDownloader' + count++;
+        var time = new Date().getTime();
+        var hiddenIFrameID = 'hiddenDownloader' +time+count;
         var iframe = document.createElement('iframe');
         iframe.id = hiddenIFrameID;
         iframe.style.display = 'none';
@@ -1456,11 +1455,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         iframe.load = function(){
            iframe.remove();
         }
-        setTimeout((function(iframe) {
-           return function() { 
-             iframe.remove(); 
-           }
-        })(iframe), 50000);
+        // setTimeout((function(iframe) {
+        //    return function() { 
+        //      iframe.remove(); 
+        //    }
+        // })(iframe), 50000);
         
         
       }
