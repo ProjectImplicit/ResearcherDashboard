@@ -254,7 +254,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
           }
         }
        
-        model.exist = createExistFilesArray(event.target.files,path,data,study,function(){
+        createExistFilesArray(event.target.files,path,data,study,function(){
           if (model.exist.length>0){
             setModals(model);
            }else{
@@ -874,6 +874,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       
 
       $(document).on("click",'.copyLink',function(){
+
          var button = $(this);
          var span = $(button).parent().parent().parent().parent().parent().find('.fileNameSpan');
          console.log(span);
@@ -916,6 +917,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
       });
       $(document).on("click",'.testStudy',function(){
+         
          console.log($(this));
          //debugger;
          var button = $(this);
@@ -1963,8 +1965,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
                       '<span class="caret"></span>'+
                     '</button>'+
                     '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownTest">'+
-                      '<li><a href="#" class="testStudy">Run Study</a></li>'+
-                      '<li><a href="#" class="copyLink">Copy link</a></li>'+
+                      '<li><a class="testStudy nohref">Run Study</a></li>'+
+                      '<li><a  class="copyLink nohref">Copy link</a></li>'+
                     '</ul>'+
                   '</div>';
         return html;
