@@ -107,16 +107,15 @@ public class FileUploadManager {
 	protected boolean deleteFile(String filePath,String key,User user,Manager mng,String study) throws Exception{
 		
 		boolean result=false;
+		if (filePath=="" || filePath=="/" || filePath==File.separator ) throw new Exception("filepath is empty");
+//		String[] array = filePath.split("//"+File.separator);
+//		if (array.length<2) throw new Exception("Error with filepath");
 		try{
-			
-			//User user = new User();
-			//mng = new Manager();
-			//user.setKey(key);
-			//mng.setUserfromDB(user);
 			if (study.equals("user")){
 				path = mng.getFolderBase()+File.separator+filePath;
 			}else{
 				String folder = user.getFolderName();
+				if (folder.length()<2) throw new Exception ("User folder is empty or too small");
 				path = mng.getFolderBase()+File.separator+folder+File.separator+filePath;
 				
 			}
@@ -136,9 +135,9 @@ public class FileUploadManager {
 						result=true;
 					}
 				}else{// not in the user study list, not a study can delete
-					FileUtils util = new FileUtils();
-					util.deleteDirectory(file);
-					result=true;
+						FileUtils util = new FileUtils();
+						util.deleteDirectory(file);
+						result=true;
 				}
 			}else{// it is a file not a directory
 				if(file.delete()){

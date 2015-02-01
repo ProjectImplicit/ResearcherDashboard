@@ -74,7 +74,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
       });
 
       window.onerror = function(message, uri, line) {
-        var fullMessage = 'erroe: '+location.href + '\n' + uri + '\n' + line;
+        var fullMessage = 'error: '+location.href + '\n' + uri + '\n' + line;
         alert(fullMessage);
         return false;
       }
@@ -356,7 +356,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
             obj.id =id;
             obj.name=name;
             obj.type=type;
-            if (current.id!=id){
+            if (current===undefined || current===null || current.id!=id){
               modelid.push(obj);  
             }
             
