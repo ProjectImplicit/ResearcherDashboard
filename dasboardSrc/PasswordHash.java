@@ -1,4 +1,4 @@
-package org.implicit.dasboard;
+package org.implicit.dashboard;
 
 /* 
  * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).

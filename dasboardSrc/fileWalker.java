@@ -1,4 +1,4 @@
-package org.implicit.dasboard;
+package org.implicit.dashboard;
 
 
 import java.io.File;

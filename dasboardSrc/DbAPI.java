@@ -1,4 +1,4 @@
-package org.implicit.dasboard;
+package org.implicit.dashboard;
 import oracle.jdbc.OracleTypes;
 
 import org.uva.dao.ConnectionPool;

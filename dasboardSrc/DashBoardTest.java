@@ -1,4 +1,4 @@
-package org.implicit.dasboard;
+package org.implicit.dashboard;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class DashBoardTest extends TestCase {
 	}
 	/* Test for zipping a folder */
 	
-	protected void testZip(String path){
+	protected void testZip(String path) throws Exception{
 		ZipDirectory zipUtil = new ZipDirectory();
 		String DownloadDirctory = mng.folderBase+mng.projectPath+mng.downloadDir;
 		try {
@@ -68,13 +68,14 @@ public class DashBoardTest extends TestCase {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw e;
 		}
 		
 		
 		
 	}
 	@Test
-	public void test() {
+	public void test() throws Exception {
 		String pathtoZip = mng.folderBase+"bgoldenberg"+ File.separator+"newTestStudy";
 		String DownloadDirctory = mng.folderBase+mng.projectPath+mng.downloadDir+File.separator+"newTestStudy.zip";
 		testZip(pathtoZip);

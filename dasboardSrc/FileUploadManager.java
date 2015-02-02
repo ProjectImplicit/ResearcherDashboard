@@ -1,4 +1,4 @@
-package org.implicit.dasboard;
+package org.implicit.dashboard;
 
 import javax.servlet.http.HttpServlet;
 
@@ -128,7 +128,7 @@ public class FileUploadManager {
 					String studypath = mng.getFolderBase()+folder+File.separator+studyName;
 					String deleteStudyPath =file.getAbsolutePath(); 
 					if (studypath.equals(deleteStudyPath)){
-						return result;
+						throw new Exception ("Folder is a study folder");
 					}else{// not a study can delete
 						FileUtils util = new FileUtils();
 						util.deleteDirectory(file);
@@ -144,6 +144,7 @@ public class FileUploadManager {
 	    			System.out.println(file.getName() + " is deleted!");
 	    			result=true;
 	    		}else{
+	    			System.out.println(" file was not deleted, path: "+file.getName() );
 	    			result= false;
 	    		}
 			}

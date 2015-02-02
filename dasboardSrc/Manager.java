@@ -1,4 +1,4 @@
-package org.implicit.dasboard;
+package org.implicit.dashboard;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -37,26 +37,26 @@ public class Manager implements Serializable{
 		//api.setMethod("cloude");
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
-			projectPath = "bgoldenberg/dashBoard/";
+			projectPath = "research/dashBoard/";
 			downloadDir ="ZipFolder";
 			DbAPI api = DbAPI.getInstance(false);
 			api.setMethod("cloude");
 			System.out.println("Using folder:"+folderBase);
-			LOGINURL = "user/bgoldenberg/dashBoard/newlogin.html";
-			REDIRECTLOGIN = "user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
-			REDIRECTTTESTLOGIN = "user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
+			LOGINURL = "research/dashBoard/newlogin.html";
+			REDIRECTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
+			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
 			LOGAGAIN = "http://localhost/implicit/dashboard";
-			LOGIN = "user/bgoldenberg/dashBoard/login.html";
+			LOGIN = "research/dashBoard/login.html";
 			userLocation=6;
 			os="windows";
 		}else{
 			folderBase="//home//dev2//user//";
-			projectPath = "bgoldenberg//dashBoard//";
+			projectPath = "research//dashBoard//";
 			downloadDir ="ZipFolder";
-			LOGINURL = "user/bgoldenberg/dashBoard/newlogin.html";
-			REDIRECTLOGIN="user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
-			REDIRECTTTESTLOGIN = "user/bgoldenberg/dashBoard/dashboard5.html?cmd=start";
-			LOGIN = "user/bgoldenberg/dashBoard/login.html";
+			LOGINURL = "research/dashBoard/newlogin.html";
+			REDIRECTLOGIN="research/dashBoard/dashboard5.html?cmd=start";
+			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
+			LOGIN = "research/dashBoard/login.html";
 			LOGAGAIN = "http://app-dev-01.implicit.harvard.edu/implicit/dashboard";
 			DbAPI api = DbAPI.getInstance(false);
 			api.setMethod("oracle");
