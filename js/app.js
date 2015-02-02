@@ -471,7 +471,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
             var settings = new Settings();
             var zipFolder = settings.getZipFolder();
             path = zipFolder+'/'+foldername+'/';
-            var url = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study=user';
+            var downloadURL =  settings.urlDownload;
+            var url = downloadURL+'?path='+path+'&key='+model.key+'&study=user';
             var hiddenIFrameID = 'hiddenDownloader' + count++;
             var iframe = document.createElement('iframe');
             iframe.id = hiddenIFrameID;
@@ -1428,9 +1429,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
       function viewFile(e){
         var path = getPathToFile();
-        //if (model.activePage === 'file') model.study='all';
-        window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key+'&study='+model.study);
-        //window.open('/implicit/dashboard/view/?path='+path+'&key='+model.key);
+        var settings = new Settings();
+        var viewURL = settings.urlView;
+        window.open(viewURL+'?path='+path+'&key='+model.key+'&study='+model.study);
+        
       }
 
       function downloadFile(count){
@@ -1444,9 +1446,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
         for (var i=0;i<pathA.length;i++){
           path+=pathA[i]+fileSeperator();
         }
-        //if (model.activePage === 'file') model.study='all';
-        //window.location.href = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study=all';
-        var url = '/implicit/dashboard/download/?path='+path+'&key='+model.key+'&study='+model.study;
+        
+        var settings = new Settings();
+        var downloadURL = settings.urlDownload;
+        var url = downloadURL+'?path='+path+'&key='+model.key+'&study='+model.study;
         var time = new Date().getTime();
         var hiddenIFrameID = 'hiddenDownloader' +time+count;
         var iframe = document.createElement('iframe');

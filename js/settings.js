@@ -9,8 +9,10 @@ define([], function () {
         //var db = 'Research';
     	//var current = 'Any';
     	var baseURL = 'http://app-dev-01.implicit.harvard.edu/implicit';
-        var uploadDir ='/bgoldenberg//dashBoard/ZipFolder';
-        
+        var uploadDir ='/research/dashBoard/ZipFolder';
+        var urlDownload = '/implicit/dashboard/download/';
+        var urlView = '/implicit/dashboard/view/';
+
         this.getZipFolder=function(){
             return uploadDir;
         }
