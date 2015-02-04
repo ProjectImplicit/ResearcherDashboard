@@ -93,6 +93,33 @@ public class Manager implements Serializable{
 		
 		
 	}
+	protected String getPath(String folderUnder,String folderToCreate,String identifaier,User user,Manager mng ){
+		
+		String path="";
+		String userFolder = user.getFolderName();
+		if (identifaier.equals("user")){
+			path = mng.getFolderBase()+File.separator+folderUnder+File.separator+folderToCreate;
+		}else{
+			if (!identifaier.equals("all")){
+				if (folderUnder.equals(File.separator)){
+					Study s =user.getStudy(identifaier);
+					String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+folderToCreate;
+				}else{
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderUnder+File.separator+folderToCreate;
+				}
+			}else{
+				if (folderUnder.equals(File.separator)){
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderToCreate;
+					
+				}else{
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderUnder+File.separator+folderToCreate;
+				}
+			}
+			
+		}
+		return path;
+	}
 	protected String getpath(String study,String FileNamepath, Manager mng,User user){
 		
 		String path;
@@ -649,6 +676,13 @@ public class Manager implements Serializable{
 		
 	}
 	
+	public void setUserFileSystem(User user,Manager mng,String study){
+		String path = this.getpath(study, "", mng, user);
+		FileUploadManager fileMng = new FileUploadManager();
+		FileComposite filesys = fileMng.getTopLevelFiles(user,path);
+		user.setFileSystem(filesys);
+		
+	}
 	private void walkFiles(File[] files,File basepath,HashMap fileM,HashMap openStruct){
 		
 		for (File file : files) {

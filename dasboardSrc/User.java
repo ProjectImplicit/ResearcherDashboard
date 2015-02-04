@@ -15,12 +15,16 @@ public class User implements Serializable{
 	String pass;
 	String email;
 	String role;
+	FileComposite filesys;
 	
 	
 	public User(){
 		Studies = new ArrayList();
 	} //
 	
+	protected void setFileSystem(FileComposite filesys){
+		this.filesys=filesys;
+	}
 	public String getKey(){ return this.OSFKey;}
 	
 	public void setKey(String key){

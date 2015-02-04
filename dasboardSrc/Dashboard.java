@@ -597,7 +597,8 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			return "ERROR:Study with this name already exists.";
 		}
 		FileUploadManager fileMng = new FileUploadManager();
-		boolean success = fileMng.createFolder("/", studyName, user,"all",mng);
+		String createPath = mng.getPath("/", studyName,"all",user,mng);
+		boolean success = fileMng.createFolder(createPath, user,"all",mng);
 		String path = studyName+File.separator;
 		Integer id = api.createStudy(studyName, "not_set","not_set","not_set", path, user.getID());
 		user.addStudy(mng.createStudy("not_set","not_set",studyName,path,String.valueOf(id)));
@@ -683,7 +684,30 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("userobject");
 		Manager mng = (Manager) session.getAttribute("mng");
-		boolean success =fileMng.createFolder(folderUnder, folderToCreate, user,study,mng);
+		String userFolder = user.getFolderName();
+		String path="";
+		if (study.equals("user")){
+			path = mng.getFolderBase()+File.separator+folderUnder+File.separator+folderToCreate;
+		}else{
+			if (!study.equals("all")){
+				if (folderUnder.equals(File.separator)){
+					Study s =user.getStudy(study);
+					String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+folderToCreate;
+				}else{
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderUnder+File.separator+folderToCreate;
+				}
+			}else{
+				if (folderUnder.equals(File.separator)){
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderToCreate;
+					
+				}else{
+					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderUnder+File.separator+folderToCreate;
+				}
+			}
+			
+		}
+		boolean success =fileMng.createFolder(path, user,study,mng);
 		if(success){
 			return ("Folder was created");
 		}else{

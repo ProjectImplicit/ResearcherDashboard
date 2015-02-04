@@ -8,7 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +42,8 @@ import java.util.List;
 
 
 
+
+
 import javax.servlet.ServletContext;
 
 
@@ -63,37 +67,7 @@ public class FileUploadManager {
 	
 	}
 	
-	protected boolean createFolder(String folderUnder,String folderToCreate,User user,String study,Manager mng){
-	
-		String userFolder = user.getFolderName();
-		String folder = user.getFolderName();
-		if (study.equals("user")){
-			path = mng.getFolderBase()+File.separator+folderUnder+File.separator+folderToCreate;
-		}else{
-			if (!study.equals("all")){
-				if (folderUnder.equals(File.separator)){
-					Study s =user.getStudy(study);
-					String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
-					path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+folderToCreate;
-				}else{
-					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderUnder+File.separator+folderToCreate;
-					
-				}
-				
-				
-				
-			}else{
-				if (folderUnder.equals(File.separator)){
-					path = mng.getFolderBase()+File.separator+folder+File.separator+folderToCreate;
-					
-				}else{
-					path = mng.getFolderBase()+File.separator+folder+File.separator+folderUnder+File.separator+folderToCreate;
-				}
-			}
-			
-		}
-		
-		
+	protected boolean createFolder(String path,User user,String study,Manager mng){
 		
 		Boolean success = new File(path).mkdir();
 		if (success){
@@ -104,12 +78,32 @@ public class FileUploadManager {
 		
 		
 	}
+	protected FileComposite getTopLevelFiles(User user,String path){
+		int index = 0;
+		FileComposite compose = new FileComposite();
+		File directory = new File(path);
+		File[] fList = directory.listFiles();
+		for (File file : fList) {
+	        if (file.isDirectory()) {
+	        	FileUnit f =  new FileUnit("file."+index,file.getAbsolutePath(),file.getName());
+	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	        	f.setLastModified(sdf.format(file.lastModified()));
+	        } else {
+	        	FolderUnit f = new FolderUnit("folder."+index,file.getAbsolutePath(),file.getName());
+	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	        	f.setLastModified(sdf.format(file.lastModified()));
+	        }
+	        index++;
+	    }
+		return compose;
+		
+		
+	}
 	protected boolean deleteFile(String filePath,String key,User user,Manager mng,String study) throws Exception{
 		
 		boolean result=false;
 		if (filePath=="" || filePath=="/" || filePath==File.separator ) throw new Exception("filepath is empty");
-//		String[] array = filePath.split("//"+File.separator);
-//		if (array.length<2) throw new Exception("Error with filepath");
+
 		try{
 			if (study.equals("user")){
 				path = mng.getFolderBase()+File.separator+filePath;
