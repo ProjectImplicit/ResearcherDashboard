@@ -32,9 +32,9 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSys','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings,Deploy) {
+ function (domReady,API,$,Tracker,ChartFX,Settings,Deploy,fileSys) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -720,15 +720,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootst
 
 
       $(document).on("click",'#fileSys', function(){
-        $('#uploadedModal').modal('show');
-        $('#studyTablePanel').hide();
-        $('#instruct').css("display","none");
-        $('#result').html('');
-        $('#studyTable').hide();
-        model.activePage = 'file';
-        model.active='';
-        model.study='all';
-        api.getFiles(model.key,model.study,setStudyTable);
+        var file = new fileSys(model,fileTableModel,2);
+        file.setFileSysTable();
+        // $('#uploadedModal').modal('show');
+        // $('#studyTablePanel').hide();
+        // $('#instruct').css("display","none");
+        // $('#result').html('');
+        // $('#studyTable').hide();
+        // model.activePage = 'file';
+        // model.active='';
+        // model.study='all';
+        // api.getFiles(model.key,model.study,setStudyTable);
 
       });
 

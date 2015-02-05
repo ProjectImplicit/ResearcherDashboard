@@ -685,28 +685,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		User user = (User) session.getAttribute("userobject");
 		Manager mng = (Manager) session.getAttribute("mng");
 		String userFolder = user.getFolderName();
-		String path="";
-		if (study.equals("user")){
-			path = mng.getFolderBase()+File.separator+folderUnder+File.separator+folderToCreate;
-		}else{
-			if (!study.equals("all")){
-				if (folderUnder.equals(File.separator)){
-					Study s =user.getStudy(study);
-					String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
-					path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+folderToCreate;
-				}else{
-					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderUnder+File.separator+folderToCreate;
-				}
-			}else{
-				if (folderUnder.equals(File.separator)){
-					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderToCreate;
-					
-				}else{
-					path = mng.getFolderBase()+File.separator+userFolder+File.separator+folderUnder+File.separator+folderToCreate;
-				}
-			}
-			
-		}
+		String path=mng.getPath(folderUnder, folderToCreate, study, user, mng);
 		boolean success =fileMng.createFolder(path, user,study,mng);
 		if(success){
 			return ("Folder was created");
@@ -755,7 +734,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		String study = (String) arr[8];
 		System.out.println("user and key: "+ukey+"/"+study);
 		HashMap filesPresent = new HashMap();
-		filesPresent = mng.listFiles(user, study);
+		filesPresent = mng.listFiles(user,mng, study);
 		//filesPresent = mng.listFilesThreaded(user, study);
 		System.out.println(String.valueOf(filesPresent.size()));
 		String jsonText = JSONValue.toJSONString(filesPresent);

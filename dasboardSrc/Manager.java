@@ -124,6 +124,11 @@ public class Manager implements Serializable{
 		
 		String path;
 		String folder = user.getFolderName();
+		if (study.indexOf("_")==0){
+			if (study.contains("USER")){
+				path = mng.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+			}
+		}
 		if (study.equals("user")){
 			path = mng.getFolderBase()+File.separator+FileNamepath;
 		}else{
@@ -608,42 +613,53 @@ public class Manager implements Serializable{
 		return res;
 	}
 	
-	public HashMap listFiles(User user,String study){
+	public HashMap listFiles(User user,Manager mng,String study){
 		
 		HashMap fileMap= new HashMap();
 		HashMap openStruct = new HashMap();
 		HashMap res = new HashMap();
 		File directory;
 		try{
-			
-			String folderName=user.getFolderName();
-			if (study.equals("user")){
-				directory = new File(folderBase);
-			}else{
-				if (study.equals("all")){
-					directory = new File(folderBase+File.separator+folderName);
-					//System.out.println("directory"+directory);
-				}else{
-					directory = new File(folderBase+File.separator+folderName);
-					//Study s = user.getStudy(study);
-					//String studyFolder = s.getFolderName();
-					//directory = new File(folderBase+"//"+folderName+"//"+studyFolder);
-					//directory = new File(studyFolder);
-				}
+			String path = this.getpath(study, "", mng, user);
+			directory = new File(path);
+			if (study.indexOf("_")==0){
+				FileUploadManager fileSys = new FileUploadManager();
+				FileComposite topSys = fileSys.getTopLevelFiles(user, path);
+				res.put("filesys", topSys);
 				
+			}else{
+				File[] fList = directory.listFiles();
+				walkFiles(fList,directory,fileMap,openStruct);
+				res.put("filesys", fileMap);
+				res.put("openfilesys", openStruct);
 			}
 			
+//			String folderName=user.getFolderName();
+//			if (study.equals("user")){
+//				directory = new File(folderBase);
+//			}else{
+//				if (study.equals("all")){
+//					directory = new File(folderBase+File.separator+folderName);
+//					//System.out.println("directory"+directory);
+//				}else{
+//					directory = new File(folderBase+File.separator+folderName);
+//					//Study s = user.getStudy(study);
+//					//String studyFolder = s.getFolderName();
+//					//directory = new File(folderBase+"//"+folderName+"//"+studyFolder);
+//					//directory = new File(studyFolder);
+//				}
+//				
+//			}
 			
-			File[] fList = directory.listFiles();
-			walkFiles(fList,directory,fileMap,openStruct);
+			
+			
 		
 		}catch(Exception e){
 			System.out.println("error:"+e.getMessage());
 			throw e;
 		}
 		
-		res.put("filesys", fileMap);
-		res.put("openfilesys", openStruct);
+	
 		return res;
 	}
 	
