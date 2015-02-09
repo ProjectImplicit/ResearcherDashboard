@@ -32,9 +32,9 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSys','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','deploy','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings,Deploy,fileSys) {
+ function (domReady,API,$,Tracker,ChartFX,Settings,Deploy) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -74,7 +74,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       });
 
       window.onerror = function(message, uri, line) {
-        var fullMessage = 'error: '+location.href + '\n' + uri + '\n' + line +'\n'+message;
+        var fullMessage = 'error: '+location.href + '\n' + uri + '\n' + line;
         alert(fullMessage);
         return false;
       }
@@ -435,15 +435,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
 
       });
-      // $(document).on('click','#newFolder', function(){
-      //   var element =$(this);
-      //   var tr = $(element).parent().parent();
-      //   var td = $(tr).find('.folder').parent().parent();
-      //   var id = $(td).attr("id");
-      //   model.elementID = id;
-      //   newFolder();
+      $(document).on('click','#newFolder', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder').parent().parent();
+        var id = $(td).attr("id");
+        model.elementID = id;
+        newFolder();
 
-      // });
+      });
       $(document).on('click','#downloadFolder', function(){
         var count=0;
         var element =$(this);
@@ -720,17 +720,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
 
       $(document).on("click",'#fileSys', function(){
-        var file = new fileSys(model,fileTableModel,2);
-        file.setFileSysTable();
-        // $('#uploadedModal').modal('show');
-        // $('#studyTablePanel').hide();
-        // $('#instruct').css("display","none");
-        // $('#result').html('');
-        // $('#studyTable').hide();
-        // model.activePage = 'file';
-        // model.active='';
-        // model.study='all';
-        // api.getFiles(model.key,model.study,setStudyTable);
+        $('#uploadedModal').modal('show');
+        $('#studyTablePanel').hide();
+        $('#instruct').css("display","none");
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'file';
+        model.active='';
+        model.study='all';
+        api.getFiles(model.key,model.study,setStudyTable);
 
       });
 
@@ -996,34 +994,34 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       *
       */
 
-      // $(document).on("click",'.folder',function(){
-      //   console.log($(this));
-      //   //debugger;
-      //   console.log('in .folder' +model.study);
-      //   var td = $(this).parent().parent();
-      //   var tr = $(td).parent();
-      //   var folderName = takespaces($(this).text());
-      //   var id = $(td).attr("id");
-      //   var state = changeFolderState(takespaces(folderName),id);
-      //   if (state==='open'){
-      //     var currentFolder={};
-      //     currentFolder.name = folderName;
-      //     currentFolder.id = id;
-      //    //currentFolder.state=state;
-      //     model.currentFolder = currentFolder;
-      //   }else{
-      //     var currnetModel = model.currentFolder;
-      //     if (currnetModel != undefined){
-      //       var name = currnetModel.name;
-      //       if (name===folderName){
-      //        model.currentFolder=undefined;
-      //       }
-      //     }
+      $(document).on("click",'.folder',function(){
+        console.log($(this));
+        //debugger;
+        console.log('in .folder' +model.study);
+        var td = $(this).parent().parent();
+        var tr = $(td).parent();
+        var folderName = takespaces($(this).text());
+        var id = $(td).attr("id");
+        var state = changeFolderState(takespaces(folderName),id);
+        if (state==='open'){
+          var currentFolder={};
+          currentFolder.name = folderName;
+          currentFolder.id = id;
+         //currentFolder.state=state;
+          model.currentFolder = currentFolder;
+        }else{
+          var currnetModel = model.currentFolder;
+          if (currnetModel != undefined){
+            var name = currnetModel.name;
+            if (name===folderName){
+             model.currentFolder=undefined;
+            }
+          }
           
-      //   }
-      //   createRaws(model.studyFileSystem,false,fileTableModel.user);
+        }
+        createRaws(model.studyFileSystem,false,fileTableModel.user);
         
-      // });
+      });
 
       $(document).on("click",'.test',function(){
         
@@ -1538,10 +1536,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         console.log('ERRORS: ' + textStatus);
 
       }
-      // function newFolder(e){
-      //   console.log('upload folder: '+model.elementID);
-      //   $('#createFolderModal').modal('show');
-      // }
+      function newFolder(e){
+        console.log('upload folder: '+model.elementID);
+        $('#createFolderModal').modal('show');
+      }
       function uploadFile(e){
         console.log('upload folder: '+model.elementID);
         $("input[name='fileName']" ).click();

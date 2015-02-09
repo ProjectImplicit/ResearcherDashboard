@@ -30,6 +30,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.google.gson.Gson;
+
  
 //UPDATED
 
@@ -184,7 +186,9 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 						}   
 					}else{ 
 						 //System.out.println("5 is: "+arr[5]);
-						 
+						if (cmd.equals("drilldown")){
+							
+						}
 						if (cmd.equals("create")){
 							res = createFolder(arr,request,response);
 	
@@ -310,6 +314,16 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							session.removeAttribute("mng");
 							res=url;
 						}
+						if (cmd.equals("deletestudy")){
+							mng.deleteStudy(request.getParameter("studyname"),user,mng);
+							
+						}
+							
+						if (cmd.equals("renamestudy")){
+							//mng.renameStudy(request.getParameter("studyname"));
+							
+						}
+
 					}//else end
 				}//else end
 			}//else
@@ -732,15 +746,18 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 		String ukey = (String)arr[6];
 		String study = (String) arr[8];
-		System.out.println("user and key: "+ukey+"/"+study);
-		HashMap filesPresent = new HashMap();
-		filesPresent = mng.listFiles(user,mng, study);
-		//filesPresent = mng.listFilesThreaded(user, study);
-		System.out.println(String.valueOf(filesPresent.size()));
-		String jsonText = JSONValue.toJSONString(filesPresent);
-		filesPresent=null;
-		//System.out.println("printing out"+jsonText);
 		try {
+			System.out.println("user and key: "+ukey+"/"+study);
+			HashMap filesPresent = new HashMap();
+			filesPresent = mng.listFiles(user,mng, study);
+			//filesPresent = mng.listFilesThreaded(user, study);
+			//Gson gson = new Gson();
+			//String jsonText = gson.toJson(filesPresent);
+			System.out.println(String.valueOf(filesPresent.size()));
+			String jsonText = JSONValue.toJSONString(filesPresent);
+			filesPresent=null;
+			//System.out.println("printing out"+jsonText);
+		
 			out.write(jsonText.getBytes("UTF8"));
 			out.flush();
 			jsonText =null;
@@ -748,7 +765,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw e;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw e;

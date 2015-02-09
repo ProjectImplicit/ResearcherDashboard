@@ -3,6 +3,7 @@ package org.implicit.dashboard;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ListIterator;
 
 //UPDATED
 public class User implements Serializable{
@@ -94,7 +95,15 @@ public class User implements Serializable{
 		
 		
 	}
-	
+	public void deleteStudy(String studyName){
+		ListIterator iterator = Studies.listIterator();
+		while (iterator.hasNext()){
+			Study s = (Study) iterator.next();
+			if (s.getName().equals(studyName)){
+				iterator.remove();
+			}
+		}
+	}
 	public String getEmail(){
 		return email;
 	}

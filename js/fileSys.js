@@ -1,11 +1,11 @@
 
 
-define(['api'], function (API) {
+define(['api','fileComposer'], function (API,Composer) {
 
 	
 	var fileSys = function(model,fileTableModel,method) {
 		var that=this;	
-
+		var compose = new Composer();
 		this.setFileSysTable = function (){
 			if (method===1){
 				$('#uploadedModal').modal('show');
@@ -17,6 +17,7 @@ define(['api'], function (API) {
 	        	model.active='';
 	        	model.study='all';
 	        	var api = new API();
+	        	this.setListeners();
 	        	api.getFiles(model.key,model.study,this.setStudyTable);
 			}
 			if (method===2){
@@ -26,16 +27,62 @@ define(['api'], function (API) {
 	        	$('#result').html('');
 	        	$('#studyTable').hide();
 	        	model.activePage = 'file';
-	        	var api = new API();
-	        	api.getFiles('','_USER',this.updateView);
+	        	compose.start('result');
+	        	$('#uploadedModal').modal('hide');
 
 			}
 			
 			
 		}
-		this.updateView = function(data){
+		
+		this.setListeners = function(){
+
+			
+			$(document).on('click','#newFolder', function(){
+        		var element =$(this);
+        		var tr = $(element).parent().parent();
+        		var td = $(tr).find('.folder').parent().parent();
+        		var id = $(td).attr("id");
+        		model.elementID = id;
+        		this.newFolder();
+      		});
+      		
+      		$(document).on("click",'.folder',function(){
+		        console.log($(this));
+		        //debugger;
+		        console.log('in .folder' +model.study);
+		        var td = $(this).parent().parent();
+		        var tr = $(td).parent();
+		        var folderName = takespaces($(this).text());
+		        var id = $(td).attr("id");
+		        var state = changeFolderState(takespaces(folderName),id);
+		        if (state==='open'){
+		          var currentFolder={};
+		          currentFolder.name = folderName;
+		          currentFolder.id = id;
+		         //currentFolder.state=state;
+		          model.currentFolder = currentFolder;
+		        }else{
+		          var currnetModel = model.currentFolder;
+		          if (currnetModel != undefined){
+		            var name = currnetModel.name;
+		            if (name===folderName){
+		             model.currentFolder=undefined;
+		            }
+		          }
+		          
+		        }
+		        createRaws(model.studyFileSystem,false,fileTableModel.user);
+		        
+		    });
+		}
+
+		this.newFolder = function(){
+			console.log('upload folder: '+model.elementID);
+        	$('#createFolderModal').modal('show');
 
 		}
+		
 		this.setStudyTable = function(data){
         	debugger; 
 	        $('#uploadedModal').modal('hide');
@@ -242,6 +289,7 @@ define(['api'], function (API) {
 	        //sortArray.sort();
 	        return sortArray;
       	}
+      	
       	this.createRaws = function(filesObj,recursive,user){
 
         

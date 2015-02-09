@@ -250,6 +250,20 @@ define([], function () {
                 
             });
         }
+        this.drillDown = function(id,callback){
+            var data={};
+            data.id=id;
+            data.cmd='drilldown';
+
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
+                success: callback
+                
+            });
+
+        }
         this.uploadFile = function (data,callback){
           $.ajax({
               url: '/implicit/dashboard',

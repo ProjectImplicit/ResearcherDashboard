@@ -84,14 +84,16 @@ public class FileUploadManager {
 		File directory = new File(path);
 		File[] fList = directory.listFiles();
 		for (File file : fList) {
-	        if (file.isDirectory()) {
+	        if (!file.isDirectory()) {
 	        	FileUnit f =  new FileUnit("file."+index,file.getAbsolutePath(),file.getName());
 	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 	        	f.setLastModified(sdf.format(file.lastModified()));
+	        	compose.addFileorFolder(f);
 	        } else {
 	        	FolderUnit f = new FolderUnit("folder."+index,file.getAbsolutePath(),file.getName());
 	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 	        	f.setLastModified(sdf.format(file.lastModified()));
+	        	compose.addFileorFolder(f);
 	        }
 	        index++;
 	    }

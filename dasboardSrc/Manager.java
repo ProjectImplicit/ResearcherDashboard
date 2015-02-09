@@ -625,7 +625,8 @@ public class Manager implements Serializable{
 			if (study.indexOf("_")==0){
 				FileUploadManager fileSys = new FileUploadManager();
 				FileComposite topSys = fileSys.getTopLevelFiles(user, path);
-				res.put("filesys", topSys);
+				HashMap topsysHash = topSys.toHashMap();
+				res.put("filesys", topsysHash);
 				
 			}else{
 				File[] fList = directory.listFiles();
@@ -663,6 +664,26 @@ public class Manager implements Serializable{
 		return res;
 	}
 	
+	/*
+	 * 	Delete study by first delete the file system 
+	 *  then delete the database trail and updtae the 
+	 *  User memory object.
+	 * 
+	 */
+	protected void deleteStudy(String studyname,User user,Manager mng) throws Exception{
+		try{
+			FileUploadManager filesys = new FileUploadManager();
+			filesys.deleteFile(filepath);
+			DbAPI api = new DbAPI();
+			Study study = user.getStudy(studyname);
+			String id = study.getID();
+			api.deleteStudy(id);
+			user.deleteStudy(studyname);
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+	}
 	protected boolean migrate(String folderName){
 		
 		File directory = new File(folderBase);
