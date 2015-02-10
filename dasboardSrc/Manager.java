@@ -120,22 +120,22 @@ public class Manager implements Serializable{
 		}
 		return path;
 	}
-	protected String getpath(String study,String FileNamepath, Manager mng,User user){
+	protected String getpath(String study,String FileNamepath, User user){
 		
 		String path;
 		String folder = user.getFolderName();
 		if (study.indexOf("_")==0){
 			if (study.contains("USER")){
-				path = mng.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+				path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
 			}
 		}
 		if (study.equals("user")){
-			path = mng.getFolderBase()+File.separator+FileNamepath;
+			path = this.getFolderBase()+File.separator+FileNamepath;
 		}else{
 			if (!study.equals("all")){
-				path = mng.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+				path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
 			}else{
-				path = mng.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+				path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
 			}
 		}
 		return path;
@@ -612,19 +612,31 @@ public class Manager implements Serializable{
 		res.put("openfilesys", openStruct);
 		return res;
 	}
-	
-	public HashMap listFiles(User user,Manager mng,String study){
+	protected HashMap drillDown (User user,String id){
+		
+		FileComposite composite = user.getComposite();
+		FileUploadManager fileSys = new FileUploadManager();
+		fileSys.drillDown(composite,id);
+		HashMap res = new HashMap();
+		HashMap topsysHash = composite.toHashMap();
+		res.put("filesys", topsysHash);		
+		
+		return res;
+		
+	}
+	public HashMap listFiles(User user,String study){
 		
 		HashMap fileMap= new HashMap();
 		HashMap openStruct = new HashMap();
 		HashMap res = new HashMap();
 		File directory;
 		try{
-			String path = this.getpath(study, "", mng, user);
+			String path = this.getpath(study, "",user);
 			directory = new File(path);
 			if (study.indexOf("_")==0){
 				FileUploadManager fileSys = new FileUploadManager();
-				FileComposite topSys = fileSys.getTopLevelFiles(user, path);
+				FileComposite topSys = fileSys.getTopLevelFiles( path);
+				user.setFileSystem(topSys);
 				HashMap topsysHash = topSys.toHashMap();
 				res.put("filesys", topsysHash);
 				
@@ -672,13 +684,13 @@ public class Manager implements Serializable{
 	 */
 	protected void deleteStudy(String studyname,User user,Manager mng) throws Exception{
 		try{
-			FileUploadManager filesys = new FileUploadManager();
-			filesys.deleteFile(filepath);
-			DbAPI api = new DbAPI();
-			Study study = user.getStudy(studyname);
-			String id = study.getID();
-			api.deleteStudy(id);
-			user.deleteStudy(studyname);
+//			FileUploadManager filesys = new FileUploadManager();
+//			filesys.deleteFile(filepath);
+//			DbAPI api = new DbAPI();
+//			Study study = user.getStudy(studyname);
+//			String id = study.getID();
+//			api.deleteStudy(id);
+//			user.deleteStudy(studyname);
 		}catch(Exception e){
 			System.out.println(e.getStackTrace());
 			throw e;
@@ -714,9 +726,9 @@ public class Manager implements Serializable{
 	}
 	
 	public void setUserFileSystem(User user,Manager mng,String study){
-		String path = this.getpath(study, "", mng, user);
+		String path = this.getpath(study, "",user);
 		FileUploadManager fileMng = new FileUploadManager();
-		FileComposite filesys = fileMng.getTopLevelFiles(user,path);
+		FileComposite filesys = fileMng.getTopLevelFiles(path);
 		user.setFileSystem(filesys);
 		
 	}

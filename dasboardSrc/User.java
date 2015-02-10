@@ -47,17 +47,17 @@ public class User implements Serializable{
 	public String getUserName(){
 		return userName;
 	}
-	public void setUserName(String n ){
+	protected void setUserName(String n ){
 		this.userName=n;
 	}
-	public void setFolderName(String f ){
+	protected void setFolderName(String f ){
 		this.folderName=f;
 	}
 	
-	public String getFolderName(){
+	protected String getFolderName(){
 		return this.folderName;
 	}
-	public boolean existStudy(String studyName){
+	protected boolean existStudy(String studyName){
 		try{
 			
 			for (int i=0;i<Studies.size();i++){
@@ -83,10 +83,10 @@ public class User implements Serializable{
 		
 	}
 	
-	public void addStudy(Study o){
+	protected void addStudy(Study o){
 		Studies.add(o);
 	}
-	public Study getStudy (String studyName){
+	protected Study getStudy (String studyName){
 		for (int i=0;i<Studies.size();i++){
 			Study s = (Study) Studies.get(i);
 			if (s.getName().equals(studyName)) return s;
@@ -95,7 +95,7 @@ public class User implements Serializable{
 		
 		
 	}
-	public void deleteStudy(String studyName){
+	protected void deleteStudy(String studyName){
 		ListIterator iterator = Studies.listIterator();
 		while (iterator.hasNext()){
 			Study s = (Study) iterator.next();
@@ -104,14 +104,17 @@ public class User implements Serializable{
 			}
 		}
 	}
-	public String getEmail(){
+	protected FileComposite getComposite(){
+		return this.filesys;
+	}
+	protected String getEmail(){
 		return email;
 	}
-	public void setEmail(String o){
+	protected void setEmail(String o){
 		email=o;
 	}
 	
-	public HashMap getNames(){
+	protected HashMap getNames(){
 		
 		HashMap studiesMap = new HashMap();
 		for (int index=0;index<this.Studies.size();index++){

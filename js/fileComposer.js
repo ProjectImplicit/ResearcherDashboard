@@ -8,20 +8,24 @@ define(['api'], function (API) {
 		var that=this;	
 		var fileObj;
 		var id;
-		var api = new API();
-
+		var api;
+		var state;
 		this.configure = function (options){
 
 		}
 		this.start = function (id){
 			this.id =id;
+			this.state='root';
 			this.setListeners();
+			this.api = new API();
 	        this.api.getFiles('','_USER',this.updateView);
 
 		}
+		this.takespaces = function(name){ return name.replace(/\s+/g, '');}
+
 		this.setListeners = function(){
 
-			$(document).on('click','#newFolder', function(){
+			$(document).one('click','#newFolder', function(){
         		var element =$(this);
         		var tr = $(element).parent().parent();
         		var td = $(tr).find('.folder').parent().parent();
@@ -30,28 +34,49 @@ define(['api'], function (API) {
         		this.newFolder();
       		});
 
-      		$(document).on("click",'.folder',function(){
-		        var td = $(this).parent().parent();
+      		$(document).one('click','.folder',function(){
+      			var td = $(this).parent().parent();
 		        var tr = $(td).parent();
-		        var folderName = takespaces($(this).text());
+		        var folderName = that.takespaces($(this).text());
 		        var id = $(td).attr("id");
-		        this.api.drillDown(id,this.updateView);
+		        this.state='drillDown';
+		        that.api.drillDown(id,that.updateView);
 		        
 		        
 		    });
 
 		}
 		this.updateView = function(data){
+
 			console.log(data);
+			$('#'+that.id).html('');
 			var dataObj = jQuery.parseJSON( data );
 	        fileObj = dataObj.filesys;
 	        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
 	        that.createRaws(fileObj);
 
 		}
-		this.createTable = function (){
-	    	$('#'+this.id).append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
-	    }
+		this.createTable = function(){
+	        
+	          $('#'+that.id).append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
+	          var html= '<tr>'+
+	              '<td id="0">'+
+	                '<span style="margin-left:0px;">';
+	          if (this.state==='root'){
+	          	html=html+'<i class="fa fa-level-up"></i>';
+		      }      
+		      html=html+'<span class="folder" ></span></span>'+
+	              '</td>'+
+	              '<td>'+
+	                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
+	                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
+	                '<button type="button" style="margin-left:20px;" id="multiple" class="btn btn-primary btn-xs">Multiple Download</button>'+
+	                '<button type="button" style="margin-left:20px;" id="multipleDelete" class="btn btn-primary btn-xs">Multiple Delete</button>'+
+	              '</td>'+    
+	            '</tr>';
+	          $('#fileTabale > tbody').append(html);
+        
+      	}
 		this.createUserButtons = function(){
 	        var user = model.user;
 	        var role = user.role;
@@ -63,33 +88,117 @@ define(['api'], function (API) {
 	  
 	        }
       	}
-      	this.addFolderRaw = function(file,level,id){
+      	this.getStudyTestlHtml = function(){
+        	var html='<div class="dropdown" style="display: inline">'+
+                    '<button type="button" id="dropdownTest" style="margin-left:20px;" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">'+
+                      'Study Tester'+
+                      '<span class="caret"></span>'+
+                    '</button>'+
+                    '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownTest">'+
+                      '<li><a class="testStudy nohref">Run Study</a></li>'+
+                      '<li><a  class="copyLink nohref">Copy link</a></li>'+
+                    '</ul>'+
+                  '</div>';
+        	return html;
 
-	        //fileTableModel.row = fileTableModel.row+1;
-	        //var raw = fileTableModel.row;
-	        $('#fileTabale > tbody').append('<tr>'+
-	            '<td id="'+id+'" >'+
-	              '<span  style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
-	                '<span class="folder" style="cursor:pointer"><i class="fa fa-folder" ></i> <span id="folderNameR">'+file+'</span></span>'+
-	              '</span>'+
+      	}
+      	this.addExptRaw = function(name,level,id){
+        	
+	        var html = '<tr>'+
+	          '<td class="file" id="'+id+'" >'+
+	            '<span class="fileNameSpan" style="margin-left:'+level*50+'px" ><input type="checkbox" class="check" style="margin-right:10px;">'+
+	              '<i class="fa fa-file-text" ></i> '+name+
+	            '</span>'+
+	          '</td>'+
+	          '<td>'+
+	              '<button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button>'+that.getStudyTestlHtml()+
+	              '<!--<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button>'+
+	              '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button>-->'+
+	              '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
+	              '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
+	              '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
+	              '<!--<button type="button" id="deployButton" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
+	              '<button type="button" style="margin-left:20px;" id="statisticsButton" class="btn btn-primary btn-xs ">Statistics</button>'+
+	              '<button type="button" style="margin-left:20px;" id="dataFile" class="btn btn-primary btn-xs ">Data</button>-->'+
 	            '</td>'+
-	            '<td>'+
-	                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
-	                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
-	                '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
-	                '<button type="button" style="margin-left:20px;" id="downloadFolder" class="btn btn-primary btn-xs ">Download Folder</button>'+
-	            '</td>'+
-	          '</tr>');
+	          '</tr>';
+	          
+	          
+        	$('#fileTabale > tbody').append(html);
+      }
+      this.addJspRaw = function(name,level,id){
+
+        
+        $('#fileTabale > tbody').append('<tr>'+
+          '<td class="file" id="'+id+'" >'+
+            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;"><i class="fa fa-file-text" >'+
+            '</i> '+name+
+            '</span>'+
+          '</td>'+
+          '<td>'+
+                '<button type="button" id="viewFile" class="btn btn-primary btn-xs">View File</button>'+
+                '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
+                '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
+          '</td>'+
+        '</tr>');
+      }
+
+      this.addJSRaw = function(name,level,id){
+
+        
+        $('#fileTabale > tbody').append('<tr>'+
+          '<td class="file" id="'+id+'">'+
+            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"> <input type="checkbox" class="check" style="margin-right:10px;">'+
+              '<i class="fa fa-file-text" ></i> '+name+
+            '</span>'+
+          '</td>'+
+          '<td>'+
+            '<button type="button" class="btn btn-primary btn-xs validate">Check js syntax</button>'+
+            '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
+            '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
+            '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+     
+           '</td>'+
+        '</tr>');
+
+      }    
+      this.addFileRaw = function(name,level,id){
+
+        $('#fileTabale > tbody').append('<tr>'+
+          '<td class="file" id="'+id+'" >'+
+            '<span class="fileRaw fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
+              '<i class="fa fa-file-text"  ></i> '+name+
+            '</span>'+
+          '</td>'+
+          '<td>'+
+                '<button type="button" id="viewFile" class="btn btn-primary btn-xs">View File</button>'+
+                '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
+                '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
+          '</td>'+
+        '</tr>');
+      }
+      this.addFolderRaw = function(name,level,id){
+
+        
+        $('#fileTabale > tbody').append('<tr>'+
+            '<td id="'+id+'" >'+
+              '<span  style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
+                '<span class="folder" style="cursor:pointer"><i class="fa fa-folder" ></i> <span id="folderNameR">'+name+'</span></span>'+
+              '</span>'+
+            '</td>'+
+            '<td>'+
+                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
+                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
+                '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
+                '<button type="button" style="margin-left:20px;" id="downloadFolder" class="btn btn-primary btn-xs ">Download Folder</button>'+
+            '</td>'+
+          '</tr>');
 
       }
       this.addEmptyRaw = function(level){
-
-        fileTableModel.row = fileTableModel.row+1;
-        var raw = fileTableModel.row;
+        
         $('#fileTabale > tbody').append('<tr>'+
             '<td class="" id="" >'+
-              '<span style="margin-left:'+level*50+'px;">'+
-                'Folder is Empty'+
+              '<span class="folderup" style="margin-left:'+level*50+'px;"><i class="fa fa-level-up"></i>'+
               '</span>'+
             '</td>'+
             '<td>'+
@@ -113,21 +222,21 @@ define(['api'], function (API) {
 	  	});
    	
 	  }
-	  this.addFile(name,level,id){
+	  this.addFile = function(name,level,id){
 	  	var array = name.split('.');
 	  	if (array[1]==='jsp'){
-	        this.addJspRaw();
+	        that.addJspRaw(name,level,id);
 	        return;
 	    }
 	    if (array[1]==='expt'){
-	    	this.addExptRaw(k,fileTableModel.level,filesObj[k]);
+	    	that.addExptRaw(name,level,id);
 	    	return;
 	    }
 	    if (array[1]==='js'){
-	    	this.addJSRaw(k,fileTableModel.level,filesObj[k]);
+	    	that.addJSRaw(name,level,id);
 	    	return;
 	    }
-	    this.addFileRaw(k,fileTableModel.level,filesObj[k]);
+	    that.addFileRaw(name,level,id);
 	  	
 
 	  }

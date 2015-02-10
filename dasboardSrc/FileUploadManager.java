@@ -78,7 +78,32 @@ public class FileUploadManager {
 		
 		
 	}
-	protected FileComposite getTopLevelFiles(User user,String path){
+	protected void drillDown(FileComposite compose,String id){
+		int index = 0;
+		String path = compose.getPath(id);
+		String topPath= compose.getTopPath();
+		compose.Clear();
+		File directory = new File(path);
+		File[] fList = directory.listFiles();
+		for (File file : fList) {
+	        if (!file.isDirectory()) {
+	        	FileUnit f =  new FileUnit("file."+index,file.getAbsolutePath(),file.getName());
+	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	        	f.setLastModified(sdf.format(file.lastModified()));
+	        	compose.addFileorFolder(f);
+	        } else {
+	        	FolderUnit f = new FolderUnit("folder."+index,file.getAbsolutePath(),file.getName());
+	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	        	f.setLastModified(sdf.format(file.lastModified()));
+	        	compose.addFileorFolder(f);
+	        }
+	        index++;
+	    }
+		compose.setTopPath(topPath+"/"+directory.getName());
+
+		
+	}
+	protected FileComposite getTopLevelFiles(String path){
 		int index = 0;
 		FileComposite compose = new FileComposite();
 		File directory = new File(path);

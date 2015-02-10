@@ -185,8 +185,13 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							out.flush();
 						}   
 					}else{ 
-						 //System.out.println("5 is: "+arr[5]);
+
 						if (cmd.equals("drilldown")){
+							drillDown(request,user,mng,out);
+							
+						}
+						if (cmd.equals("drillup")){
+							//mng.drillUp(user);
 							
 						}
 						if (cmd.equals("create")){
@@ -350,7 +355,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		String directoryToDownload  = request.getParameter("path");
 		String study =  request.getParameter("study");
 		User user = (User) request.getSession().getAttribute("userobject");
-		String path =mng.getpath(study, directoryToDownload, mng, user);
+		String path =mng.getpath(study, directoryToDownload,user);
 		String DownloadDirctory = mng.folderBase+mng.projectPath+mng.downloadDir;
 		try {
 			returnPath = zipUtil.zip(path,DownloadDirctory);
@@ -742,17 +747,29 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 		
 	}
+	protected void drillDown(HttpServletRequest request,User user,Manager mng,ServletOutputStream out) throws Exception{
+		try{
+			String id = request.getParameter("id");
+			HashMap filesPresent  = mng.drillDown(user,id);
+			String jsonText = JSONValue.toJSONString(filesPresent);
+			filesPresent=null;
+			out.write(jsonText.getBytes("UTF8"));
+			out.flush();
+			jsonText =null;
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	}
 	private void processFileSys(String[] arr,String key,Manager mng,ServletOutputStream out,User user) throws Exception{
 		
 		String ukey = (String)arr[6];
 		String study = (String) arr[8];
 		try {
 			System.out.println("user and key: "+ukey+"/"+study);
-			HashMap filesPresent = new HashMap();
-			filesPresent = mng.listFiles(user,mng, study);
+			HashMap filesPresent = mng.listFiles(user,study);
 			//filesPresent = mng.listFilesThreaded(user, study);
-			//Gson gson = new Gson();
-			//String jsonText = gson.toJson(filesPresent);
 			System.out.println(String.valueOf(filesPresent.size()));
 			String jsonText = JSONValue.toJSONString(filesPresent);
 			filesPresent=null;

@@ -20,7 +20,7 @@ public class FileUnit extends FileObj {
 		this.name=name;
 		this.type="file";
 	}
-	
+
 	protected void setLastModified(String timestamp){
 		this.updateDate = timestamp;
 	}
@@ -37,5 +37,16 @@ public class FileUnit extends FileObj {
 		return map;
 		
 		
+	}
+	@Override
+	protected String getPath() {
+		return this.path;
+
+	}
+
+	@Override
+	String getID() {
+		// TODO Auto-generated method stub
+		return this.id;
 	}
 }

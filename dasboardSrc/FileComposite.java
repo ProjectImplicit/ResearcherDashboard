@@ -13,10 +13,36 @@ public class FileComposite {
 		FileObjList = new ArrayList<FileObj>();
 	};
 	public FileComposite(String top){
+		FileObjList = new ArrayList<FileObj>();
 		this.topPath=top;
 	};
 	public void addFileorFolder(FileObj obj){
 		FileObjList.add(obj);
+	}
+	protected void setTopPath(String path){
+		this.topPath = path;
+		
+	}
+	protected String getTopPath(){
+		return this.topPath;
+	}
+	protected void Clear(){
+		topPath="";
+		FileObjList = null;
+		FileObjList = new ArrayList<FileObj>();
+		
+	}
+	protected String getPath(String id){
+
+		for (int i=0;i<FileObjList.size();i++){
+			FileObj obj = FileObjList.get(i);
+			String objID = obj.getID();
+			if (objID.equals(id)){
+				return obj.getPath();
+			}
+		}
+		return "";
+		
 	}
 	protected HashMap toHashMap(){
 		HashMap map = new HashMap();

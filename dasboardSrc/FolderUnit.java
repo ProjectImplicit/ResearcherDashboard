@@ -40,6 +40,15 @@ public class FolderUnit extends FileObj{
 		map.put("files", Hashfiles);
 		return map;
 	}
+	@Override
+	protected String getPath() {
+		return this.path;
+	}
+	@Override
+	String getID() {
+		// TODO Auto-generated method stub
+		return this.id;
+	}
 	
 	
 }
