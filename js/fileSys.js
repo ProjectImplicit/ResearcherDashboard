@@ -6,29 +6,26 @@ define(['api','fileComposer'], function (API,Composer) {
 	var fileSys = function(model,fileTableModel,method) {
 		var that=this;	
 		var compose = new Composer();
+		compose.configure();
 		this.setFileSysTable = function (){
 			if (method===1){
 				$('#uploadedModal').modal('show');
-	        	$('#studyTablePanel').hide();
-	        	$('#instruct').css("display","none");
-	        	$('#result').html('');
-	        	$('#studyTable').hide();
-	        	model.activePage = 'file';
-	        	model.active='';
-	        	model.study='all';
-	        	var api = new API();
-	        	this.setListeners();
-	        	api.getFiles(model.key,model.study,this.setStudyTable);
+				var api = new API();
+				if (model.activePage==='file'){
+					this.setListeners();
+	        		api.getFiles(model.key,model.study,this.setStudyTable);
+				}
+	        	
+	        	
 			}
 			if (method===2){
-				$('#uploadedModal').modal('show');
-	        	$('#studyTablePanel').hide();
-	        	$('#instruct').css("display","none");
-	        	$('#result').html('');
-	        	$('#studyTable').hide();
-	        	model.activePage = 'file';
-	        	compose.start('result');
-	        	$('#uploadedModal').modal('hide');
+				if (model.activePage==='file'){
+					compose.start('result','_USER');
+	      		}
+	      		if (model.activePage==='study'){
+	      			compose.start('result','_ROUTER_'+model.study);
+	      		}
+	        	
 
 			}
 			

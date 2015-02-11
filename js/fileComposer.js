@@ -9,23 +9,29 @@ define(['api'], function (API) {
 		var fileObj;
 		var id;
 		var api;
-		var state;
+		var level;
+    var data;
+
 		this.configure = function (options){
+      api.configureFileModule(options,function(data){
+        that.data = jQuery.parseJSON( data );
+        that.setListeners();  
+      });
+      
 
 		}
-		this.start = function (id){
+		this.start = function (id,base){
 			this.id =id;
-			this.state='root';
-			this.setListeners();
+			this.level=0;
 			this.api = new API();
-	        this.api.getFiles('','_USER',this.updateView);
+	    this.api.getFiles('',base,this.updateView);
 
 		}
 		this.takespaces = function(name){ return name.replace(/\s+/g, '');}
 
 		this.setListeners = function(){
 
-			$(document).one('click','#newFolder', function(){
+			$(document).on('click','#newFolder', function(){
         		var element =$(this);
         		var tr = $(element).parent().parent();
         		var td = $(tr).find('.folder').parent().parent();
@@ -34,15 +40,22 @@ define(['api'], function (API) {
         		this.newFolder();
       		});
 
-      		$(document).one('click','.folder',function(){
+      		$(document).on('click','.folder',function(){
       			var td = $(this).parent().parent();
 		        var tr = $(td).parent();
 		        var folderName = that.takespaces($(this).text());
 		        var id = $(td).attr("id");
-		        this.state='drillDown';
+		        that.level++;
 		        that.api.drillDown(id,that.updateView);
 		        
 		        
+		    });
+
+		    $(document).one('click','#drillUp',function(){
+		    	that.level--;
+		    	that.api.drillUp(that.updateView);
+
+
 		    });
 
 		}
@@ -51,19 +64,19 @@ define(['api'], function (API) {
 			console.log(data);
 			$('#'+that.id).html('');
 			var dataObj = jQuery.parseJSON( data );
-	        fileObj = dataObj.filesys;
-	        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
-	        that.createRaws(fileObj);
+	    fileObj = dataObj.filesys;
+	    $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+	    that.createRaws(fileObj);
 
 		}
 		this.createTable = function(){
 	        
-	          $('#'+that.id).append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
-	          var html= '<tr>'+
-	              '<td id="0">'+
-	                '<span style="margin-left:0px;">';
-	          if (this.state==='root'){
-	          	html=html+'<i class="fa fa-level-up"></i>';
+          $('#'+that.id).append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
+          var html= '<tr>'+
+              '<td id="0">'+
+                '<span style="margin-left:0px;">';
+          if (that.level!=0){
+          	html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';
 		      }      
 		      html=html+'<span class="folder" ></span></span>'+
 	              '</td>'+
@@ -208,18 +221,33 @@ define(['api'], function (API) {
       }
 	  this.createRaws = function(fileObj){
 	  	this.createDandD();
-	  	this.createTable();
-	  	$.each(fileObj, function(key, value){
-	  		console.log(key);
-	  		if (value.type==='folder'){
-  				that.addFolderRaw(value.name,0,value.id);
+      this.createTable();
+      
 
-  			}
-  			if (value.type==='file'){
-  				that.addFile(value.name,0,value.id);
+      for (var key in fileObj) {
+        if (fileObj.hasOwnProperty(key)) {
+            var value = fileObj[key];
+            if (value.type==='folder'){
+              that.addFolderRaw(value.name,0,value.id);
+            }
+            if (value.type==='file'){
+              that.addFile(value.name,0,value.id);
+            }
+        }
+      }
+      
 
-  			}
-	  	});
+	  	// $.each(fileObj, function(key, value){
+	  	// 	console.log(key);
+	  	// 	if (value.type==='folder'){
+  		// 		that.addFolderRaw(value.name,0,value.id);
+
+  		// 	}
+  		// 	if (value.type==='file'){
+  		// 		that.addFile(value.name,0,value.id);
+
+  		// 	}
+	  	// });
    	
 	  }
 	  this.addFile = function(name,level,id){
@@ -287,7 +315,7 @@ define(['api'], function (API) {
             data.append('folder',takespaces(path));
             data.append('study',model.study);
             data.append('cmd','UploadFile');
-            $('#uploadedModal').modal('show');
+            //$('#uploadedModal').modal('show');
             api.uploadFile(data,fileOpSuccess);
           }
 
@@ -318,7 +346,7 @@ define(['api'], function (API) {
 	             var files = e.originalEvent.dataTransfer.items;
 	             //var length = e.originalEvent.dataTransfer.items.length;
 	             //We need to send dropped files to Server
-	             $('#uploadedModal').modal('show');
+	             //$('#uploadedModal').modal('show');
 	             if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
 	              DrophandleFileUpload(filesI,obj);
 

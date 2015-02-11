@@ -185,13 +185,16 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							out.flush();
 						}   
 					}else{ 
-
+						if (cmd.equals("configure")){
+							configureFileModule(request,user,mng,out);
+						}
 						if (cmd.equals("drilldown")){
 							drillDown(request,user,mng,out);
 							
 						}
 						if (cmd.equals("drillup")){
-							//mng.drillUp(user);
+							drillUp(request,user,mng,out);
+
 							
 						}
 						if (cmd.equals("create")){
@@ -746,6 +749,30 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			throw e;
 		}
 		
+	}
+	protected void configureFileModule(HttpServletRequest request,User user,Manager mng,ServletOutputStream out) throws Exception{
+		String options = request.getParameter("options");
+		HashMap data = new HashMap();
+		data.put("role", user.getRole());
+		String jsonText = JSONValue.toJSONString(data);
+		out.write(jsonText.getBytes("UTF8"));
+		out.flush();
+		
+	}
+	protected void drillUp(HttpServletRequest request,User user,Manager mng,ServletOutputStream out) throws Exception{
+		try{
+			
+			HashMap filesPresent  = mng.drillUp(user);
+			String jsonText = JSONValue.toJSONString(filesPresent);
+			filesPresent=null;
+			out.write(jsonText.getBytes("UTF8"));
+			out.flush();
+			jsonText =null;
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	protected void drillDown(HttpServletRequest request,User user,Manager mng,ServletOutputStream out) throws Exception{
 		try{

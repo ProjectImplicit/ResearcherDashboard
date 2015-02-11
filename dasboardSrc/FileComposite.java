@@ -1,5 +1,6 @@
 package org.implicit.dashboard;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 public class FileComposite {
 	private String topPath="";
 	private ArrayList<FileObj> FileObjList;
+	private FolderUnit currentFolder;
 
 	
 	public FileComposite(){
@@ -30,6 +32,14 @@ public class FileComposite {
 		topPath="";
 		FileObjList = null;
 		FileObjList = new ArrayList<FileObj>();
+		
+	}
+	protected FolderUnit getCurrentFolder(){
+		return this.currentFolder;
+	}
+	protected void setCurrentFolder(String id,String path,String name){
+
+		currentFolder = new FolderUnit(id,path,name);
 		
 	}
 	protected String getPath(String id){

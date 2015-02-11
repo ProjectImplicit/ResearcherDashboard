@@ -122,23 +122,35 @@ public class Manager implements Serializable{
 	}
 	protected String getpath(String study,String FileNamepath, User user){
 		
-		String path;
-		String folder = user.getFolderName();
-		if (study.indexOf("_")==0){
-			if (study.contains("USER")){
-				path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
-			}
-		}
-		if (study.equals("user")){
-			path = this.getFolderBase()+File.separator+FileNamepath;
-		}else{
-			if (!study.equals("all")){
-				path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+		try{
+			String path = "";
+			String folder = user.getFolderName();
+			if (study.indexOf("_")==0){
+				if (study.contains("USER")){
+					path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+				}
+				if (study.contains("ROUTER")){
+					String[] array = study.split("_");
+					String studyName = array[2];
+					path = this.getFolderBase()+File.separator+folder+File.separator+studyName;
+				}
 			}else{
-				path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+				if (study.equals("user")){
+					path = this.getFolderBase()+File.separator+FileNamepath;
+				}else{
+					if (!study.equals("all")){
+						path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+					}else{
+						path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+					}
+				}
 			}
+			
+			return path;
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
 		}
-		return path;
 			
 	}
 	public void setUserfromDBbyFolder(User user){
@@ -612,16 +624,36 @@ public class Manager implements Serializable{
 		res.put("openfilesys", openStruct);
 		return res;
 	}
+	protected HashMap drillUp (User user){
+		try{
+			FileComposite composite = user.getComposite();
+			FileUploadManager fileSys = new FileUploadManager();
+			fileSys.drillUp(composite);
+			HashMap res = new HashMap();
+			HashMap topsysHash = composite.toHashMap();
+			res.put("filesys", topsysHash);		
+			
+			return res;
+			
+		}catch(Exception e ){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+	}
 	protected HashMap drillDown (User user,String id){
-		
-		FileComposite composite = user.getComposite();
-		FileUploadManager fileSys = new FileUploadManager();
-		fileSys.drillDown(composite,id);
-		HashMap res = new HashMap();
-		HashMap topsysHash = composite.toHashMap();
-		res.put("filesys", topsysHash);		
-		
-		return res;
+		try{
+			FileComposite composite = user.getComposite();
+			FileUploadManager fileSys = new FileUploadManager();
+			fileSys.drillDown(composite,id);
+			HashMap res = new HashMap();
+			HashMap topsysHash = composite.toHashMap();
+			res.put("filesys", topsysHash);		
+			
+			return res;
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
 		
 	}
 	public HashMap listFiles(User user,String study){
@@ -635,7 +667,7 @@ public class Manager implements Serializable{
 			directory = new File(path);
 			if (study.indexOf("_")==0){
 				FileUploadManager fileSys = new FileUploadManager();
-				FileComposite topSys = fileSys.getTopLevelFiles( path);
+				FileComposite topSys = fileSys.getTopLevelFiles(path);
 				user.setFileSystem(topSys);
 				HashMap topsysHash = topSys.toHashMap();
 				res.put("filesys", topsysHash);

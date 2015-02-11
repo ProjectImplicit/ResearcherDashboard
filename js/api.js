@@ -250,6 +250,18 @@ define([], function () {
                 
             });
         }
+        this.drillUp = function (callback){
+            var data={};
+            data.cmd='drillup';
+
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
+                success: callback
+                
+            });
+        }
         this.drillDown = function(id,callback){
             var data={};
             data.id=id;
@@ -278,6 +290,19 @@ define([], function () {
               
             }).done(callback).fail(callback);
 
+        }
+        this.configureFileModule = function(options,callback){
+            var data={};
+            data.options = JSON.stringify(options);
+            data.cmd='configure';
+
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
+                success: callback
+                
+            });
         }
         this.getFiles = function (user,study,successFunc){
             var url = "/implicit/dashboard/filesys/"+user+"/files/"+study;

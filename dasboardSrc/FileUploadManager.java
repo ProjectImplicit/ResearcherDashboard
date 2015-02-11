@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -34,6 +36,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
+
+
+
 
 
 
@@ -78,28 +83,74 @@ public class FileUploadManager {
 		
 		
 	}
+	protected void drillUp(FileComposite compose){
+		try{
+			int index = 0;
+			FolderUnit folder = compose.getCurrentFolder();
+			String path = folder.getPath();
+			File currentFolder = new File(path);
+			File directory = currentFolder.getParentFile();
+			String topPath= compose.getTopPath();
+			compose.Clear();
+			File[] fList = directory.listFiles();
+			for (File file : fList) {
+		        if (!file.isDirectory()) {
+		        	FileUnit f =  new FileUnit("file."+index++,file.getAbsolutePath(),file.getName());
+		        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		        	f.setLastModified(sdf.format(file.lastModified()));
+		        	compose.addFileorFolder(f);
+		        } else {
+		        	FolderUnit f = new FolderUnit("folder."+index++,file.getAbsolutePath(),file.getName());
+		        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		        	f.setLastModified(sdf.format(file.lastModified()));
+		        	compose.addFileorFolder(f);
+		        }
+
+		    }
+			String[] array = topPath.split("/");
+			
+			ArrayList<String> collectArray = new ArrayList<String>(Arrays.asList(array));
+			collectArray.remove(collectArray.size()-1);
+			array= (String[]) collectArray.toArray(array);
+			String joined = StringUtils.join(array, "/");
+			compose.setTopPath(joined);
+			
+		}catch(Exception e ){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		
+	}
 	protected void drillDown(FileComposite compose,String id){
-		int index = 0;
-		String path = compose.getPath(id);
-		String topPath= compose.getTopPath();
-		compose.Clear();
-		File directory = new File(path);
-		File[] fList = directory.listFiles();
-		for (File file : fList) {
-	        if (!file.isDirectory()) {
-	        	FileUnit f =  new FileUnit("file."+index,file.getAbsolutePath(),file.getName());
-	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-	        	f.setLastModified(sdf.format(file.lastModified()));
-	        	compose.addFileorFolder(f);
-	        } else {
-	        	FolderUnit f = new FolderUnit("folder."+index,file.getAbsolutePath(),file.getName());
-	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-	        	f.setLastModified(sdf.format(file.lastModified()));
-	        	compose.addFileorFolder(f);
-	        }
-	        index++;
-	    }
-		compose.setTopPath(topPath+"/"+directory.getName());
+		try{
+			int index = 0;
+			String path = compose.getPath(id);
+			String topPath= compose.getTopPath();
+			compose.Clear();
+			File directory = new File(path);
+			compose.setCurrentFolder("folder."+index++, path, directory.getName());
+			File[] fList = directory.listFiles();
+			for (File file : fList) {
+		        if (!file.isDirectory()) {
+		        	FileUnit f =  new FileUnit("file."+index++,file.getAbsolutePath(),file.getName());
+		        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		        	f.setLastModified(sdf.format(file.lastModified()));
+		        	compose.addFileorFolder(f);
+		        } else {
+		        	FolderUnit f = new FolderUnit("folder."+index++,file.getAbsolutePath(),file.getName());
+		        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		        	f.setLastModified(sdf.format(file.lastModified()));
+		        	compose.addFileorFolder(f);
+		        }
+
+		    }
+			compose.setTopPath(topPath+"/"+directory.getName());
+			
+		}catch(Exception e ){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		
 
 		
 	}
@@ -107,20 +158,21 @@ public class FileUploadManager {
 		int index = 0;
 		FileComposite compose = new FileComposite();
 		File directory = new File(path);
+		compose.setCurrentFolder("folder."+index++,path,directory.getName());
 		File[] fList = directory.listFiles();
 		for (File file : fList) {
 	        if (!file.isDirectory()) {
-	        	FileUnit f =  new FileUnit("file."+index,file.getAbsolutePath(),file.getName());
+	        	FileUnit f =  new FileUnit("file."+index++,file.getAbsolutePath(),file.getName());
 	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 	        	f.setLastModified(sdf.format(file.lastModified()));
 	        	compose.addFileorFolder(f);
 	        } else {
-	        	FolderUnit f = new FolderUnit("folder."+index,file.getAbsolutePath(),file.getName());
+	        	FolderUnit f = new FolderUnit("folder."+index++,file.getAbsolutePath(),file.getName());
 	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 	        	f.setLastModified(sdf.format(file.lastModified()));
 	        	compose.addFileorFolder(f);
 	        }
-	        index++;
+	        
 	    }
 		return compose;
 		

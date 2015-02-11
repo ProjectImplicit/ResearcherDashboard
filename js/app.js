@@ -43,12 +43,12 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       var api = new API();
       $('#studyModel').modal('show');
       api.init(model,setStudies,SetUser);
-      
       var id=0;
       var fileTableModel ={};
       fileTableModel.user=false;
       var fileObj;
       context.init({preventDoubleContext: false},model);
+      var file = new fileSys(model,fileTableModel,2);
       setLiseners();
       // context.attach('.folder', [
       //   {header: 'Options'},
@@ -593,7 +593,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       });
 
       $(document).on('click','.studyRaw', function(){
-        model.activePage === 'study';
+
+        model.activePage = 'study';
         var tr =$(this).parent();
         var chosenStudy = $(tr).find('.studyRaw').text();
         model.study= chosenStudy;
@@ -602,8 +603,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         //$('#studyTablePanel').html('');
         $('#studyTablePanel').hide();
         $('#studyTable').hide();
+        file.setFileSysTable();
         setSideMenu();
-        populateFileTable();
+        //populateFileTable();
       });
 
       /**
@@ -720,16 +722,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
 
       $(document).on("click",'#fileSys', function(){
-        var file = new fileSys(model,fileTableModel,2);
+        
+        
+        $('#studyTablePanel').hide();
+        $('#instruct').css("display","none");
+        $('#result').html('');
+        $('#studyTable').hide();
+        model.activePage = 'file';
+        model.active='';
+        model.study='all';
         file.setFileSysTable();
-        // $('#uploadedModal').modal('show');
-        // $('#studyTablePanel').hide();
-        // $('#instruct').css("display","none");
-        // $('#result').html('');
-        // $('#studyTable').hide();
-        // model.activePage = 'file';
-        // model.active='';
-        // model.study='all';
         // api.getFiles(model.key,model.study,setStudyTable);
 
       });
