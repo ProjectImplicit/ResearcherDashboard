@@ -72,7 +72,7 @@ public class FileUploadManager {
 	
 	}
 	
-	protected boolean createFolder(String path,User user,String study,Manager mng){
+	protected boolean createFolder(String path){
 		
 		Boolean success = new File(path).mkdir();
 		if (success){
@@ -92,6 +92,7 @@ public class FileUploadManager {
 			File directory = currentFolder.getParentFile();
 			String topPath= compose.getTopPath();
 			compose.Clear();
+			compose.setCurrentFolder("folder."+index++, directory.getAbsolutePath(), directory.getName());
 			File[] fList = directory.listFiles();
 			for (File file : fList) {
 		        if (!file.isDirectory()) {
@@ -107,12 +108,16 @@ public class FileUploadManager {
 		        }
 
 		    }
-			String[] array = topPath.split("/");
+			
+			String[] array = topPath.split("\\"+File.separator);
 			
 			ArrayList<String> collectArray = new ArrayList<String>(Arrays.asList(array));
 			collectArray.remove(collectArray.size()-1);
-			array= (String[]) collectArray.toArray(array);
-			String joined = StringUtils.join(array, "/");
+			String joined = "";
+			for (String s : collectArray)
+			{
+				joined += s + File.separator;
+			}
 			compose.setTopPath(joined);
 			
 		}catch(Exception e ){
@@ -144,7 +149,7 @@ public class FileUploadManager {
 		        }
 
 		    }
-			compose.setTopPath(topPath+"/"+directory.getName());
+			compose.setTopPath(topPath+directory.getName()+File.separator);
 			
 		}catch(Exception e ){
 			System.out.println(e.getStackTrace());
@@ -157,6 +162,7 @@ public class FileUploadManager {
 	protected FileComposite getTopLevelFiles(String path){
 		int index = 0;
 		FileComposite compose = new FileComposite();
+		//compose.load(path)
 		File directory = new File(path);
 		compose.setCurrentFolder("folder."+index++,path,directory.getName());
 		File[] fList = directory.listFiles();
@@ -174,25 +180,18 @@ public class FileUploadManager {
 	        }
 	        
 	    }
+		compose.setTopPath(path);
 		return compose;
 		
 		
 	}
-	protected boolean deleteFile(String filePath,String key,User user,Manager mng,String study) throws Exception{
+	protected boolean deleteFile(User user,Manager mng,String path) throws Exception{
 		
 		boolean result=false;
-		if (filePath=="" || filePath=="/" || filePath==File.separator ) throw new Exception("filepath is empty");
+
 
 		try{
-			if (study.equals("user")){
-				path = mng.getFolderBase()+File.separator+filePath;
-			}else{
-				String folder = user.getFolderName();
-				if (folder.length()<2) throw new Exception ("User folder is empty or too small");
-				path = mng.getFolderBase()+File.separator+folder+File.separator+filePath;
-				
-			}
-			
+		
 			File file = new File(path);
 			if (file.isDirectory()){
 				String studyName = file.getName();

@@ -1,6 +1,7 @@
 package org.implicit.dashboard;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,11 +63,52 @@ public class FileComposite {
 			map.put(i, obj.toMap());
 			
 		}
+		this.currentFolder.setType("currentFolder");
+		map.put("current", this.currentFolder.toMap());
 		return map;
 	}
-	protected FileUnit getFileUnit(String id){
+	protected void refresh(){
 		
-		return null;
+		int index=0;
+		String path = this.currentFolder.getPath();
+		this.Clear();
+		File directory = new File(path);
+		setCurrentFolder("folder."+index++,path,directory.getName());
+		File[] fList = directory.listFiles();
+		for (File file : fList) {
+	        if (!file.isDirectory()) {
+	        	FileUnit f =  new FileUnit("file."+index++,file.getAbsolutePath(),file.getName());
+	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	        	f.setLastModified(sdf.format(file.lastModified()));
+	        	addFileorFolder(f);
+	        } else {
+	        	FolderUnit f = new FolderUnit("folder."+index++,file.getAbsolutePath(),file.getName());
+	        	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	        	f.setLastModified(sdf.format(file.lastModified()));
+	        	addFileorFolder(f);
+	        }
+	        
+	    }
+		this.setTopPath(path);
+		
+	}
+	protected FileObj getUnit(String id) throws Exception{
+		
+		try{
+			if (id.equals(this.currentFolder.getID())) return this.currentFolder;
+			for (int i=0;i<FileObjList.size();i++){
+				FileObj obj = FileObjList.get(i);
+				String objID = obj.getID();
+				if (objID.equals(id)){
+					return obj;
+				}
+			}
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		
+		throw new Exception("No Unit Found");
 		
 	}
 }

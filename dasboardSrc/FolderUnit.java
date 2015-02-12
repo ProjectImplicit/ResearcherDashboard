@@ -22,6 +22,10 @@ public class FolderUnit extends FileObj{
 		files = new ArrayList<FileObj>();
 		
 	}
+	protected void setType(String type){
+		this.type=type;
+		
+	}
 	protected void setLastModified(String time){
 		this.updateDate = time;
 	}

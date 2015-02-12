@@ -120,28 +120,59 @@ public class Manager implements Serializable{
 		}
 		return path;
 	}
-	protected String getpath(String study,String FileNamepath, User user){
+	protected boolean createFolder(String folderToCreate,String study,String id,User user) throws Exception{
+		String path = this.getpath(study, id, user);
+		path=path+folderToCreate;
+		FileUploadManager fileMng = new FileUploadManager();
+		boolean result  = fileMng.createFolder(path);
+		user.getComposite().refresh();
+		return result;
+		
+	}
+	protected boolean deleteFile(String id,String key,User user,String study) throws Exception{
+		try{
+			String pathToFile = this.getpath(study, id, user);
+			FileUploadManager fileMng = new FileUploadManager();
+			boolean result =fileMng.deleteFile(user,this,pathToFile);
+			user.getComposite().refresh();
+			return result;
+			
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		
+		
+		
+	}
+	protected String getpath(String study,String FileNamepathorID, User user) throws Exception{
 		
 		try{
 			String path = "";
 			String folder = user.getFolderName();
 			if (study.indexOf("_")==0){
 				if (study.contains("USER")){
-					path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+					path = this.getFolderBase()+folder+File.separator+FileNamepathorID;
 				}
 				if (study.contains("ROUTER")){
 					String[] array = study.split("_");
 					String studyName = array[2];
-					path = this.getFolderBase()+File.separator+folder+File.separator+studyName;
+					path = this.getFolderBase()+folder+File.separator+studyName;
+				}
+				if (study.contains("ID")){
+					FileComposite compose = user.getComposite();
+					FileObj obj = compose.getUnit(FileNamepathorID);
+					path = obj.getPath();
+		
 				}
 			}else{
 				if (study.equals("user")){
-					path = this.getFolderBase()+File.separator+FileNamepath;
+					path = this.getFolderBase()+FileNamepathorID;
 				}else{
 					if (!study.equals("all")){
-						path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+						path = this.getFolderBase()+folder+File.separator+FileNamepathorID;
 					}else{
-						path = this.getFolderBase()+File.separator+folder+File.separator+FileNamepath;
+						path = this.getFolderBase()+folder+File.separator+FileNamepathorID;
 					}
 				}
 			}
@@ -656,7 +687,7 @@ public class Manager implements Serializable{
 		}
 		
 	}
-	public HashMap listFiles(User user,String study){
+	public HashMap listFiles(User user,String study) throws Exception{
 		
 		HashMap fileMap= new HashMap();
 		HashMap openStruct = new HashMap();
@@ -757,7 +788,7 @@ public class Manager implements Serializable{
 		
 	}
 	
-	public void setUserFileSystem(User user,Manager mng,String study){
+	public void setUserFileSystem(User user,Manager mng,String study) throws Exception{
 		String path = this.getpath(study, "",user);
 		FileUploadManager fileMng = new FileUploadManager();
 		FileComposite filesys = fileMng.getTopLevelFiles(path);

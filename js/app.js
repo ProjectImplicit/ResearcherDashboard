@@ -106,43 +106,43 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
       });
       
-      $(document).on("click",'#createFolderOK', function(){
-        var pathA = new Array();
-        var path='';
-        var study;
-        var info = {};
-        info.found = false;
-        $('#uploadedModal').modal('show');
-        var folderToCreate = $('#folderName').val();
-        $('#folderName').val('');
-        if (model.elementID==='0'){
-          path=fileSeperator();
+      // $(document).on("click",'#createFolderOK', function(){
+      //   var pathA = new Array();
+      //   var path='';
+      //   var study;
+      //   var info = {};
+      //   info.found = false;
+      //   $('#uploadedModal').modal('show');
+      //   var folderToCreate = $('#folderName').val();
+      //   $('#folderName').val('');
+      //   if (model.elementID==='0'){
+      //     path=fileSeperator();
           
-          if (model.study==='all' || model.study===undefined){
-            study='all';
-            model.tempFolder = takespaces(folderToCreate)+fileSeperator();
-          }else{
-            model.tempFolder=model.study+fileSeperator()+takespaces(folderToCreate)+fileSeperator();
-            study=model.study;
-          }
-          
-          
-        }else{// if the folder is not a root folder
-          getPath(model.fileSystem,model.elementID,pathA,info);
-          for (var i=0;i<pathA.length;i++){
-            path+=pathA[i]+fileSeperator();
-          }
-          study='all';
-          model.tempFolder = path+takespaces(folderToCreate)+fileSeperator();
+      //     if (model.study==='all' || model.study===undefined){
+      //       study='all';
+      //       model.tempFolder = takespaces(folderToCreate)+fileSeperator();
+      //     }else{
+      //       model.tempFolder=model.study+fileSeperator()+takespaces(folderToCreate)+fileSeperator();
+      //       study=model.study;
+      //     }
           
           
+      //   }else{// if the folder is not a root folder
+      //     getPath(model.fileSystem,model.elementID,pathA,info);
+      //     for (var i=0;i<pathA.length;i++){
+      //       path+=pathA[i]+fileSeperator();
+      //     }
+      //     study='all';
+      //     model.tempFolder = path+takespaces(folderToCreate)+fileSeperator();
           
-        }
+          
+          
+      //   }
        
-        //if (model.activePage === 'file') model.study='all';
-        api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),model.study,folderCreated);
+      //   //if (model.activePage === 'file') model.study='all';
+      //   api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),model.study,folderCreated);
 
-      });
+      // });
       
       function getStudyPath(study){
         var study = findStudy(study);
@@ -495,17 +495,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         });
       });
 
-      $(document).on('click','#deleteFolder', function(){
-        var element =$(this);
-        var tr = $(element).parent().parent();
-        var td = $(tr).find('.folder').parent().parent();
-        var id = $(td).attr("id");
-        model.elementID = id;
-        model.deleteAction='folder';
-        $('#deleteModal').modal('show');
+      // $(document).on('click','#deleteFolder', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.folder').parent().parent();
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   model.deleteAction='folder';
+      //   $('#deleteModal').modal('show');
         
 
-      });
+      // });
 
       $(document).on('click','#viewFile', function(){
         var element =$(this);
@@ -526,29 +526,29 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         downloadFile(0);
 
       });
-      $(document).on('click','#deleteFile', function(){
-        var element =$(this);
-        var tr = $(element).parent().parent();
-        var td = $(tr).find('.file');
-        var id = $(td).attr("id");
-        model.elementID = id;
-        $('#deleteModal').modal('show');
+      // $(document).on('click','#deleteFile', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.file');
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   $('#deleteModal').modal('show');
         
 
-      });
+      // });
       
-      $(document).on('click','#deleteOK', function(){
+      // $(document).on('click','#deleteOK', function(){
 
-        if (model.deleteAction==='folder'){
-          $('#uploadedModal').modal('show');
-          deleteFolder();
-        }else{
-          $('#uploadedModal').modal('show');
-          deleteFile();
-        }
+      //   if (model.deleteAction==='folder'){
+      //     $('#uploadedModal').modal('show');
+      //     deleteFolder();
+      //   }else{
+      //     $('#uploadedModal').modal('show');
+      //     deleteFile();
+      //   }
         
 
-      });
+      // });
       $(document).on('click','#newStudy', function(){
         $('#NewStudyModal').modal('show');
 
@@ -1424,11 +1424,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         return path;
       }
 
-      function deleteFile(e){
-        var path = getPathToFile();
-        //if (model.activePage === 'file') model.study='all';
-        api.deleteFile(path,model.key,model.study,fileOpSuccess);
-      }
+      // function deleteFile(e){
+      //   var path = getPathToFile();
+      //   //if (model.activePage === 'file') model.study='all';
+      //   api.deleteFile(path,model.key,model.study,fileOpSuccess);
+      // }
 
 
       function viewFile(e){

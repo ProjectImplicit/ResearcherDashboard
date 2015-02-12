@@ -164,7 +164,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 				}
 				
 				if (APIcmd!=null){
-					res = processAPICalls(request,api);
+					//res = processAPICalls(request,api);
 				}else{
 					if (key!=null){
 						
@@ -620,7 +620,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 		FileUploadManager fileMng = new FileUploadManager();
 		String createPath = mng.getPath("/", studyName,"all",user,mng);
-		boolean success = fileMng.createFolder(createPath, user,"all",mng);
+		boolean success = fileMng.createFolder(createPath);
 		String path = studyName+File.separator;
 		Integer id = api.createStudy(studyName, "not_set","not_set","not_set", path, user.getID());
 		user.addStudy(mng.createStudy("not_set","not_set",studyName,path,String.valueOf(id)));
@@ -644,7 +644,8 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 		FileUploadManager fileMng = new FileUploadManager();
 		ServletContext ctx = getServletContext();
-		result = fileMng.deleteFile(path,key,user,mng,study);
+		result = mng.deleteFile(path,key,user,study);
+		//result = fileMng.deleteFile(path,key,user,mng,study);
 		if (result){
 			if (path.contains(".expt")){
 				String[] splits = path.split("\\"+File.separator);
@@ -665,13 +666,17 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			}
 		}
 		if (result){
-			return "File was deleted";
+			HashMap res = new HashMap();
+			res.put("filesys", user.getComposite().toHashMap());
+			String jsonText = JSONValue.toJSONString(res);
+			return jsonText;
+			
 		}else{
-			return "ERROR:The file or folder was not deleted. Possible causes the folder is a study folder.";
+			Exception e = new Exception("error: file was not deleted");
+			System.out.println(e.getMessage());
+			throw e;
 		}
-		
-		
-		
+	
 	}
 	private void downLoadFile(String[] arr,HttpServletRequest request,HttpServletResponse response,String cmd,ServletOutputStream out,boolean download) throws Exception{
 		//PrintWriter out = response.getWriter();
@@ -696,7 +701,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		fileMng.downLoadFile(user,mng,mng.trim(fileName),ctx,request,response,out,download,study);
 	}
 	
-	private String createFolder(String[] arr,HttpServletRequest request,HttpServletResponse response) throws IOException{
+	private String createFolder(String[] arr,HttpServletRequest request,HttpServletResponse response) throws Exception{
 		ServletOutputStream out = response.getOutputStream();
 		String key = request.getParameter("key");
 		String folderUnder = request.getParameter("uploadFolder");
@@ -707,12 +712,18 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		User user = (User) session.getAttribute("userobject");
 		Manager mng = (Manager) session.getAttribute("mng");
 		String userFolder = user.getFolderName();
-		String path=mng.getPath(folderUnder, folderToCreate, study, user, mng);
-		boolean success =fileMng.createFolder(path, user,study,mng);
+		//String path=mng.getPath(folderUnder, folderToCreate, study, user, mng);
+		boolean success = mng.createFolder(folderToCreate, study,folderUnder, user);
+		//boolean success =fileMng.createFolder(path, user,study);
 		if(success){
-			return ("Folder was created");
+			HashMap res = new HashMap();
+			res.put("filesys", user.getComposite().toHashMap());
+			String jsonText = JSONValue.toJSONString(res);
+			return jsonText;
 		}else{
-			return ("Error creating folder");
+			Exception e = new Exception("Error creating folder");
+			System.out.println(e.getMessage());
+			throw e;
 		}
 		
 	}
@@ -817,71 +828,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 	}
 	
-	/**
-	 * 
-	 * Process a set of API that query the Database.
-	 * 
-	 * Returns the Data requested as a JSON object.
-	 * 
-	 * 	 
-	 * @param 
-	 * 			request and response sevlet objects.
-	 *            
-	 * 
-	 * @return JSON object
-	 * 
-	 */
-	private String processAPICalls(HttpServletRequest req,DbAPI api){
-		
-		HashMap resHash=null;
-		String res="";
-		
-		String cmd  = req.getParameter("api");
-		String table = null;
-		String name = null;
-		String key =null;
-		String folder =null;
-		String col=null;
-		String val=null;
-		String base=null;
-		String expt=null;
-		String userID=null;
-		
-		if (cmd.equals("find")){
-			table = req.getParameter("table");
-			col = req.getParameter("col");
-			val = req.getParameter("value");
-			resHash = api.find(table, col, val);
-			res = JSONValue.toJSONString(resHash);
-						
-		}
-		if (cmd.equals("create")){
-			table = req.getParameter("table");
-			name = req.getParameter("name");
-			key = req.getParameter("key");
-			folder = req.getParameter("folder");
-			userID = req.getParameter("userid");
-			expt = req.getParameter("exptid");
-			if (table.equals("Users")){
-				api.createUser(name,key,folder);
-				res="table: User was updates";
-			}
-			if (table.equals("Studies")){
-				//api.createStudy(name, expt,"", folder, userID);
-				res="table: Studies was updates";
-				
-			}
-		}
-		if (cmd.equals("origin")){
-			base = req.getParameter("base");
-			if (base.equals("cloude")){
-				res=api.setMethod(base);
-			}
-		}
-		
-		return res;
-		
-	}
+	
 	
 	
 	

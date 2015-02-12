@@ -11,9 +11,11 @@ define(['api'], function (API) {
 		var api;
 		var level;
     var data;
+    var topPath;
 
 		this.configure = function (options){
-      api.configureFileModule(options,function(data){
+      that.api = new API();
+      that.api.configureFileModule(options,function(data){
         that.data = jQuery.parseJSON( data );
         that.setListeners();  
       });
@@ -23,7 +25,6 @@ define(['api'], function (API) {
 		this.start = function (id,base){
 			this.id =id;
 			this.level=0;
-			this.api = new API();
 	    this.api.getFiles('',base,this.updateView);
 
 		}
@@ -32,12 +33,13 @@ define(['api'], function (API) {
 		this.setListeners = function(){
 
 			$(document).on('click','#newFolder', function(){
+            debugger;
         		var element =$(this);
         		var tr = $(element).parent().parent();
         		var td = $(tr).find('.folder').parent().parent();
         		var id = $(td).attr("id");
-        		model.elementID = id;
-        		this.newFolder();
+        		that.data.elementID = id;
+        		that.newFolder();
       		});
 
       		$(document).on('click','.folder',function(){
@@ -51,31 +53,82 @@ define(['api'], function (API) {
 		        
 		    });
 
-		    $(document).one('click','#drillUp',function(){
+		    $(document).on('click','#drillUp',function(){
 		    	that.level--;
 		    	that.api.drillUp(that.updateView);
 
 
 		    });
 
-		}
-		this.updateView = function(data){
+        $(document).on('click','#deleteFile', function(){
+          var element =$(this);
+          var tr = $(element).parent().parent();
+          var td = $(tr).find('.file');
+          var id = $(td).attr("id");
+          that.data.elementID = id;
+          that.data.deleteAction='file';
+          $('#deleteModal').modal('show');
+        });
 
+        $(document).on('click','#deleteOK', function(){
+
+          if (that.data.deleteAction==='folder'){
+            that.deleteFolder();
+          }else{
+            that.deleteFile();
+          }
+        });
+
+        $(document).on('click','#deleteFolder', function(){
+          var element =$(this);
+          var tr = $(element).parent().parent();
+          var td = $(tr).find('.folder').parent().parent();
+          var id = $(td).attr("id");
+          that.data.elementID = id;
+          that.data.deleteAction='folder';
+          $('#deleteModal').modal('show');
+        
+
+      });
+      $(document).on("click",'#createFolderOK', function(){
+        
+        var folderToCreate = $('#folderName').val();
+        $('#folderName').val('');
+        that.api.createFolder('',that.data.elementID,that.takespaces(folderToCreate),'_ID',that.updateView);
+
+      });
+
+		}
+    this.newFolder = function(){
+      $('#createFolderModal').modal('show');
+
+    }
+    this.deleteFolder = function(){
+        
+        that.api.deleteFolder(that.data.elementID,'','_ID',that.updateView);
+    }
+    this.deleteFile = function(e){
+        
+        that.api.deleteFile(that.data.elementID,'','_ID',that.updateView);
+    }
+		this.updateView = function(data){
+      debugger;
 			console.log(data);
 			$('#'+that.id).html('');
 			var dataObj = jQuery.parseJSON( data );
 	    fileObj = dataObj.filesys;
+      that.topPath = fileObj.toppath;
 	    $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
 	    that.createRaws(fileObj);
 
 		}
-		this.createTable = function(){
+		this.createTable = function(id){
 	        
           $('#'+that.id).append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
           var html= '<tr>'+
-              '<td id="0">'+
+              '<td id="'+id+'">'+
                 '<span style="margin-left:0px;">';
-          if (that.level!=0){
+          if (that.level!=0 || that.data.role==='SU'){
           	html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';
 		      }      
 		      html=html+'<span class="folder" ></span></span>'+
@@ -90,17 +143,17 @@ define(['api'], function (API) {
 	          $('#fileTabale > tbody').append(html);
         
       	}
-		this.createUserButtons = function(){
-	        var user = model.user;
-	        var role = user.role;
-	        if (role==='SU'){
-	          if (model.study==='all' || model.study==='user'){
-	            $('#'+this.id).append('<div><button class="btn btn-success btn-sm" type="button" id="userFolder" type="button">User</button>'+
-	            '<button class="btn btn-success btn-sm" type="button" id="personalFolder" type="button" style="margin-left:10px;">Personal</button></div>');
-	          }
+		// this.createUserButtons = function(){
+	 //        var user = model.user;
+	 //        var role = user.role;
+	 //        if (that.data.role==='SU'){
+	 //          if (model.study==='all' || model.study==='user'){
+	 //            $('#'+this.id).append('<div><button class="btn btn-success btn-sm" type="button" id="userFolder" type="button">User</button>'+
+	 //            '<button class="btn btn-success btn-sm" type="button" id="personalFolder" type="button" style="margin-left:10px;">Personal</button></div>');
+	 //          }
 	  
-	        }
-      	}
+	 //        }
+  //     	}
       	this.getStudyTestlHtml = function(){
         	var html='<div class="dropdown" style="display: inline">'+
                     '<button type="button" id="dropdownTest" style="margin-left:20px;" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">'+
@@ -199,9 +252,9 @@ define(['api'], function (API) {
               '</span>'+
             '</td>'+
             '<td>'+
-                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
-                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
-                '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
+                '<!--<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
+                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>-->'+
+                '<button type="button" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
                 '<button type="button" style="margin-left:20px;" id="downloadFolder" class="btn btn-primary btn-xs ">Download Folder</button>'+
             '</td>'+
           '</tr>');
@@ -219,22 +272,26 @@ define(['api'], function (API) {
           '</tr>');
 
       }
-	  this.createRaws = function(fileObj){
-	  	this.createDandD();
-      this.createTable();
-      
-
-      for (var key in fileObj) {
-        if (fileObj.hasOwnProperty(key)) {
-            var value = fileObj[key];
-            if (value.type==='folder'){
-              that.addFolderRaw(value.name,0,value.id);
-            }
-            if (value.type==='file'){
-              that.addFile(value.name,0,value.id);
-            }
-        }
+      this.setToPath = function(){
+        $('#'+that.id).append('<div>'+that.topPath+'</div>');
       }
+  	  this.createRaws = function(fileObj){
+  	  	this.createDandD();
+        this.setToPath();
+        this.createTable(fileObj.current.id);
+        
+
+        for (var key in fileObj) {
+          if (fileObj.hasOwnProperty(key)) {
+              var value = fileObj[key];
+              if (value.type==='folder'){
+                that.addFolderRaw(value.name,0,value.id);
+              }
+              if (value.type==='file'){
+                that.addFile(value.name,0,value.id);
+              }
+          }
+        }
       
 
 	  	// $.each(fileObj, function(key, value){

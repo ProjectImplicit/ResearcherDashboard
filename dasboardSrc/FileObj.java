@@ -7,6 +7,7 @@ public abstract class FileObj {
 	abstract HashMap toMap();
 	abstract String getPath();
 	abstract String getID();
+
 	
 
 }
