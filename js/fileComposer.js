@@ -1,5 +1,5 @@
 
-define(['api'], function (API) {
+define(['api','settings'], function (API,Settings) {
 
 
 	
@@ -90,6 +90,15 @@ define(['api'], function (API) {
         
 
       });
+      $(document).on('click','#uploadFile', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder').parent().parent();
+        var id = $(td).attr("id");
+        that.data.elementID = id;
+        that.uploadFile();
+
+      });
       $(document).on("click",'#createFolderOK', function(){
         
         var folderToCreate = $('#folderName').val();
@@ -97,8 +106,232 @@ define(['api'], function (API) {
         that.api.createFolder('',that.data.elementID,that.takespaces(folderToCreate),'_ID',that.updateView);
 
       });
+      $(document).on('click','#downloadFile', function(){
+        var element =$(this);
+        var td = $(element).parent();
+        var tr = $(td).parent();
+        var upTD = $(tr).find('.file');
+        var id = $(upTD).attr("id");
+        that.data.elementID = id;
+        that.downloadFile(0);
+
+      });
+       $(document).on('click','#viewFile', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.file');
+        var id = $(td).attr("id");
+        that.data.elementID = id;
+        that.viewFile();
+
+      });
+      $(document).find('input[type=file]').on('click',function(){
+        this.value = null;
+
+      })
+      
+      $(document).find('input[type=file]').bind("change", function (e) {
+           var file = this.files[0];
+
+           if (file) {
+               // if file selected, do something
+               //S$('#uploadedModal').modal('show');
+               that.prepareUpload(e);
+          } else {
+              // if user clicks 'Cancel', do something
+          }
+      });
+      $(document).on('click','#downloadFolder', function(){
+        debugger;
+        var count=0;
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder').parent().parent();
+        var id = $(td).attr("id");
+        that.data.elementID = id;
+        that.api.downloadFolder(id,'_ID',function(responce){
+          if (responce.indexOf('error')===-1){
+            if (responce.indexOf('/')!=-1){
+              var array = responce.split('/');
+              var foldername = array[array.length-1];
+              if (foldername==='') foldername = array[array.length-2];
+              
+
+            }else{
+              var array = responce.split('\\');
+              var foldername = array[array.length-1];
+              if (foldername==='') foldername = array[array.length-2];
+            }
+            var settings = new Settings();
+            var zipFolder = settings.getZipFolder();
+            var path = foldername;
+            var downloadURL = settings.getUrlDownload();
+            var url = downloadURL+'?path='+path+'&key='+'&study=_PATH';
+            var hiddenIFrameID = 'hiddenDownloader' + count++;
+            var iframe = document.createElement('iframe');
+            iframe.id = hiddenIFrameID;
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            iframe.src = url;
+            // setTimeout((function(iframe) {
+            //    return function() { 
+            //      iframe.remove(); 
+            //    }
+            // })(iframe), 2000);
+
+
+           
+
+          }else{
+            alert(responce);
+          }
+
+        });
+      });
+      
+      $(document).on('hidden.bs.modal','#overwrite', function () {
+        //alert('hidden event fired!');
+        if (that.data.clickedYes){
+           var info = that.data.Modalinfo;
+           var data= info.data;
+           var study = info.study;
+           var path = info.path;
+           info.visited++;
+           var existFiles = that.data.exist;
+           if (info.visited>existFiles.length) return;
+           var all = $('#applytoall').prop('checked');
+           var fileText = $('#overwriteFileName').text();
+           var words = fileText.split(' ');
+           var name = words[5];
+           for (var x=0;x<existFiles.length;x++){
+             var file  = existFiles[x];
+             if (file.key===name){
+               file.overwrite=true;
+             }
+           }
+
+          $('#overwrite').modal('hide');
+          info.index++;
+          if (!all){
+            that.setModals(model);  
+          }else{
+            that.data.done=true;
+            that.data.all=true;
+          }
+          
+          if (that.data.done===true){
+            if (that.data.all===true){
+            for (var z=0;z<existFiles.length;z++){
+              var file = existFiles[z];
+              data.append(file.key, file.val);
+            }
+            }else{
+              for (var t=0;t<existFiles.length;t++){
+                var file = existFiles[t];
+                if (file.overwrite=true){
+                  data.append(file.formkey, file.formvalue);  
+                }
+              }
+            }
+            data.append('UserKey','');
+            data.append('folder',takespaces(path));
+            data.append('study','_CURRENT');
+            data.append('cmd','UploadFile');
+            that.api.uploadFile(data,that.updateView);
+          }
+
+        }
+        that.data.clickedYes=false;
+      });
 
 		}
+    this.prepareUpload = function(event){
+      var data =new FormData();
+       
+      that.createExistFilesArray(event.target.files,'',data,'',function(){
+        if (that.data.exist.length>0){
+          that.setModals();
+         }else{
+        //if (model.activePage === 'file') model.study='all';
+          data.append('UserKey','');
+          data.append('folder','');
+          data.append('study','_CURRENT');
+          data.append('cmd','UploadFile');
+          that.api.uploadFile(data,that.updateView);
+
+        }
+      });
+
+    }
+    this.createExistFilesArray = function(files,path,data,study,callback){
+       var existFiles = new Array();
+       //var that=that; 
+      for (var i=0;i<files.length;i++){
+        var key = i;
+        var value = files[i];
+      
+          that.api.fileExist(key,'','','_CURRENT',value.name,function(resdata){
+            var res;
+            if (resdata=='yes'){
+              res=true;
+            }else{
+              res=false;
+            }
+            if (res){
+              var file={};
+              file.key =value.name;
+              file.formkey = key;
+              file.formvalue = value;
+              existFiles.push(file);
+            }else{
+              data.append(key, value);
+            }
+            if (i===files.length-1){
+              var info={};
+              info.index=0;
+              info.visited=0;
+              info.data=data;
+              info.study=study;
+              info.path=path;
+              that.data.Modalinfo=info;
+              that.data.exist=existFiles;
+              callback();
+            }
+          });
+      }    
+  
+    }
+    this.uploadFile = function(){
+
+      console.log('upload folder: '+that.data.elementID);
+      $("input[name='fileName']" ).click();
+        
+      
+    }
+    this.viewFile = function(){
+      var settings = new Settings();
+      var viewURL = settings.getUrlView();
+      window.open(viewURL+'?path='+that.data.elementID+'&key=&study=_ID');
+
+    }
+    this.downloadFile = function(count){
+
+        var settings = new Settings();
+        var downloadURL = settings.getUrlDownload();
+        var url = downloadURL+'?path='+that.data.elementID+'&key=&study=_ID';
+        var time = new Date().getTime();
+        var hiddenIFrameID = 'hiddenDownloader' +time+count;
+        var iframe = document.createElement('iframe');
+        iframe.id = hiddenIFrameID;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        iframe.src = url;
+        iframe.load = function(){
+           iframe.remove();
+        }
+    }
+
+
     this.newFolder = function(){
       $('#createFolderModal').modal('show');
 
@@ -307,6 +540,23 @@ define(['api'], function (API) {
 	  	// });
    	
 	  }
+    this.setModals = function(){
+        var existFiles = that.data.exist;
+        var info = that.data.Modalinfo;
+        
+        if (info.index >= existFiles.length){
+            that.data.done=true;
+            console.log('done');
+            return;
+          }
+        var participant = existFiles[info.index];
+        console.log(participant.key);
+        $('#overwriteFileName').text('A file with the name '+participant.key+' already exist, overwrite?');
+        $('#uploadedModal').modal('hide');
+        $('#overwrite').modal('show');
+
+
+    }
 	  this.addFile = function(name,level,id){
 	  	var array = name.split('.');
 	  	if (array[1]==='jsp'){

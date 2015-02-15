@@ -82,22 +82,22 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         alert('You are logged out');
         window.location.href = xhr.getResponseHeader("Location");
       }
-      $(document).find('input[type=file]').on('click',function(){
-        this.value = null;
+      // $(document).find('input[type=file]').on('click',function(){
+      //   this.value = null;
 
-      })
+      // })
       
-      $(document).find('input[type=file]').bind("change", function (e) {
-           var file = this.files[0];
+      // $(document).find('input[type=file]').bind("change", function (e) {
+      //      var file = this.files[0];
 
-           if (file) {
-               // if file selected, do something
-               //S$('#uploadedModal').modal('show');
-               prepareUpload(e);
-          } else {
-              // if user clicks 'Cancel', do something
-          }
-      });
+      //      if (file) {
+      //          // if file selected, do something
+      //          //S$('#uploadedModal').modal('show');
+      //          prepareUpload(e);
+      //     } else {
+      //         // if user clicks 'Cancel', do something
+      //     }
+      // });
 
 
 
@@ -161,73 +161,73 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         }
         return res;
       }
-      function setModals(model){
-        var existFiles = model.exist;
-        var info = model.Modalinfo;
+      // function setModals(model){
+      //   var existFiles = model.exist;
+      //   var info = model.Modalinfo;
         
-        if (info.index >= existFiles.length){
-            model.done=true;
-            console.log('done');
-            return;
-          }
-        var participant = existFiles[info.index];
-        console.log(participant.key);
-        $('#overwriteFileName').text('A file with the name '+participant.key+' already exist, overwrite?');
-        $('#uploadedModal').modal('hide');
-        $('#overwrite').modal('show');
+      //   if (info.index >= existFiles.length){
+      //       model.done=true;
+      //       console.log('done');
+      //       return;
+      //     }
+      //   var participant = existFiles[info.index];
+      //   console.log(participant.key);
+      //   $('#overwriteFileName').text('A file with the name '+participant.key+' already exist, overwrite?');
+      //   $('#uploadedModal').modal('hide');
+      //   $('#overwrite').modal('show');
 
 
-      }
-      function createExistFilesArray(files,path,data,study,callback){
-         var existFiles = new Array();
-         var that=this; 
-        for (var i=0;i<files.length;i++){
-          var key = i;
-          var value = files[i];
+      // }
+      // function createExistFilesArray(files,path,data,study,callback){
+      //    var existFiles = new Array();
+      //    var that=this; 
+      //   for (var i=0;i<files.length;i++){
+      //     var key = i;
+      //     var value = files[i];
         
-        //$.each(files, function(key, value){
-            console.log(key);
-            console.log(value);
-          //data.append(key, value);
-            api.fileExist(key,model.key,takespaces(path),study,value.name,function(resdata){
-              var res;
-              if (resdata=='yes'){
-                res=true;
-              }else{
-                res=false;
-              }
-              if (res){
-                var file={};
-                file.key =value.name;
-                file.formkey = key;
-                file.formvalue = value;
-                existFiles.push(file);
-              }else{
-                data.append(key, value);
-              }
-              if (i===files.length-1){
-                var info={};
-                info.index=0;
-                info.visited=0;
-                info.data=data;
-                info.study=study;
-                info.path=path;
-                model.Modalinfo=info;
-                model.exist=existFiles;
-                callback();
-              }
-            });
-        }    
-        //});
-        // var info={};
-        // info.index=0;
-        // info.visited=0;
-        // info.data=data;
-        // info.study=study;
-        // info.path=path;
-        // model.Modalinfo=info;
-        // return existFiles;
-      }
+      //   //$.each(files, function(key, value){
+      //       console.log(key);
+      //       console.log(value);
+      //     //data.append(key, value);
+      //       api.fileExist(key,model.key,takespaces(path),study,value.name,function(resdata){
+      //         var res;
+      //         if (resdata=='yes'){
+      //           res=true;
+      //         }else{
+      //           res=false;
+      //         }
+      //         if (res){
+      //           var file={};
+      //           file.key =value.name;
+      //           file.formkey = key;
+      //           file.formvalue = value;
+      //           existFiles.push(file);
+      //         }else{
+      //           data.append(key, value);
+      //         }
+      //         if (i===files.length-1){
+      //           var info={};
+      //           info.index=0;
+      //           info.visited=0;
+      //           info.data=data;
+      //           info.study=study;
+      //           info.path=path;
+      //           model.Modalinfo=info;
+      //           model.exist=existFiles;
+      //           callback();
+      //         }
+      //       });
+      //   }    
+      //   //});
+      //   // var info={};
+      //   // info.index=0;
+      //   // info.visited=0;
+      //   // info.data=data;
+      //   // info.study=study;
+      //   // info.path=path;
+      //   // model.Modalinfo=info;
+      //   // return existFiles;
+      // }
       function prepareUpload(event){
         
         //$('#uploadedModal').modal('show');
@@ -425,16 +425,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         });
       });
 
-      $(document).on('click','#uploadFile', function(){
-        var element =$(this);
-        var tr = $(element).parent().parent();
-        var td = $(tr).find('.folder').parent().parent();
-        var id = $(td).attr("id");
-        model.elementID = id;
-        uploadFile();
+      // $(document).on('click','#uploadFile', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.folder').parent().parent();
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   uploadFile();
 
 
-      });
+      // });
       // $(document).on('click','#newFolder', function(){
       //   var element =$(this);
       //   var tr = $(element).parent().parent();
@@ -444,56 +444,56 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       //   newFolder();
 
       // });
-      $(document).on('click','#downloadFolder', function(){
-        var count=0;
-        var element =$(this);
-        var tr = $(element).parent().parent();
-        var td = $(tr).find('.folder').parent().parent();
-        var id = $(td).attr("id");
-        model.elementID = id;
-        var path = getPathToFile();
-        var foldername='';
-        api.downloadFolder(path,model.study,function(responce){
-          if (responce==='success'){
-            if (path.indexOf('/')!=-1){
-              var array = path.split('/');
-              var foldername = array[array.length-1];
-              if (foldername==='') foldername = array[array.length-2];
-              foldername=foldername+'.zip';
+      // $(document).on('click','#downloadFolder', function(){
+      //   var count=0;
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.folder').parent().parent();
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   var path = getPathToFile();
+      //   var foldername='';
+      //   api.downloadFolder(path,model.study,function(responce){
+      //     if (responce==='success'){
+      //       if (path.indexOf('/')!=-1){
+      //         var array = path.split('/');
+      //         var foldername = array[array.length-1];
+      //         if (foldername==='') foldername = array[array.length-2];
+      //         foldername=foldername+'.zip';
 
-            }else{
-              var array = path.split('\\');
-              var foldername = array[array.length-1];
-              if (foldername==='') foldername = array[array.length-2];
-              foldername=foldername+'.zip';
+      //       }else{
+      //         var array = path.split('\\');
+      //         var foldername = array[array.length-1];
+      //         if (foldername==='') foldername = array[array.length-2];
+      //         foldername=foldername+'.zip';
 
-            }
-            var settings = new Settings();
-            var zipFolder = settings.getZipFolder();
-            path = zipFolder+'/'+foldername+'/';
-            var downloadURL =  settings.urlDownload;
-            var url = downloadURL+'?path='+path+'&key='+model.key+'&study=user';
-            var hiddenIFrameID = 'hiddenDownloader' + count++;
-            var iframe = document.createElement('iframe');
-            iframe.id = hiddenIFrameID;
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-            iframe.src = url;
-            // setTimeout((function(iframe) {
-            //    return function() { 
-            //      iframe.remove(); 
-            //    }
-            // })(iframe), 2000);
+      //       }
+      //       var settings = new Settings();
+      //       var zipFolder = settings.getZipFolder();
+      //       path = zipFolder+'/'+foldername+'/';
+      //       var downloadURL =  settings.urlDownload;
+      //       var url = downloadURL+'?path='+path+'&key='+model.key+'&study=user';
+      //       var hiddenIFrameID = 'hiddenDownloader' + count++;
+      //       var iframe = document.createElement('iframe');
+      //       iframe.id = hiddenIFrameID;
+      //       iframe.style.display = 'none';
+      //       document.body.appendChild(iframe);
+      //       iframe.src = url;
+      //       // setTimeout((function(iframe) {
+      //       //    return function() { 
+      //       //      iframe.remove(); 
+      //       //    }
+      //       // })(iframe), 2000);
 
 
            
 
-          }else{
-            alert(responce);
-          }
+      //     }else{
+      //       alert(responce);
+      //     }
 
-        });
-      });
+      //   });
+      // });
 
       // $(document).on('click','#deleteFolder', function(){
       //   var element =$(this);
@@ -507,25 +507,25 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
       // });
 
-      $(document).on('click','#viewFile', function(){
-        var element =$(this);
-        var tr = $(element).parent().parent();
-        var td = $(tr).find('.file');
-        var id = $(td).attr("id");
-        model.elementID = id;
-        viewFile();
+      // $(document).on('click','#viewFile', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.file');
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   viewFile();
 
-      });
-      $(document).on('click','#downloadFile', function(){
-        var element =$(this);
-        var td = $(element).parent();
-        var tr = $(td).parent();
-        var upTD = $(tr).find('.file');
-        var id = $(upTD).attr("id");
-        model.elementID = id;
-        downloadFile(0);
+      // });
+      // $(document).on('click','#downloadFile', function(){
+      //   var element =$(this);
+      //   var td = $(element).parent();
+      //   var tr = $(td).parent();
+      //   var upTD = $(tr).find('.file');
+      //   var id = $(upTD).attr("id");
+      //   model.elementID = id;
+      //   downloadFile(0);
 
-      });
+      // });
       // $(document).on('click','#deleteFile', function(){
       //   var element =$(this);
       //   var tr = $(element).parent().parent();
@@ -737,67 +737,67 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       });
 
 
-      $(document).on('hidden.bs.modal','#overwrite', function () {
-        //alert('hidden event fired!');
-        if (model.clickedYes){
-          var info = model.Modalinfo;
-           var data= info.data;
-           var study = info.study;
-           var path = info.path;
-           info.visited++;
-           var existFiles = model.exist;
-           if (info.visited>existFiles.length) return;
-           var all = $('#applytoall').prop('checked');
-           var fileText = $('#overwriteFileName').text();
-           var words = fileText.split(' ');
-           var name = words[5];
-           for (var x=0;x<existFiles.length;x++){
-             var file  = existFiles[x];
-             if (file.key===name){
-               file.overwrite=true;
-             }
-           }
+      // $(document).on('hidden.bs.modal','#overwrite', function () {
+      //   //alert('hidden event fired!');
+      //   if (model.clickedYes){
+      //     var info = model.Modalinfo;
+      //      var data= info.data;
+      //      var study = info.study;
+      //      var path = info.path;
+      //      info.visited++;
+      //      var existFiles = model.exist;
+      //      if (info.visited>existFiles.length) return;
+      //      var all = $('#applytoall').prop('checked');
+      //      var fileText = $('#overwriteFileName').text();
+      //      var words = fileText.split(' ');
+      //      var name = words[5];
+      //      for (var x=0;x<existFiles.length;x++){
+      //        var file  = existFiles[x];
+      //        if (file.key===name){
+      //          file.overwrite=true;
+      //        }
+      //      }
 
-          $('#overwrite').modal('hide');
-          //$('#FileoverwriteYes').unbind();
-          //$('#FileoverwriteYes').remove();
-          //$('body').removeClass('modal-open');
-          //$('.modal-backdrop').remove();
-          //setTimeout(doNothing,10000);
-          info.index++;
-          if (!all){
-            setModals(model);  
-          }else{
-            model.done=true;
-            model.all=true;
-          }
+      //     $('#overwrite').modal('hide');
+      //     //$('#FileoverwriteYes').unbind();
+      //     //$('#FileoverwriteYes').remove();
+      //     //$('body').removeClass('modal-open');
+      //     //$('.modal-backdrop').remove();
+      //     //setTimeout(doNothing,10000);
+      //     info.index++;
+      //     if (!all){
+      //       setModals(model);  
+      //     }else{
+      //       model.done=true;
+      //       model.all=true;
+      //     }
           
-          if (model.done===true){
-            if (model.all===true){
-            for (var z=0;z<existFiles.length;z++){
-              var file = existFiles[z];
-              data.append(file.key, file.val);
-            }
-            }else{
-              for (var t=0;t<existFiles.length;t++){
-                var file = existFiles[t];
-                if (file.overwrite=true){
-                  data.append(file.formkey, file.formvalue);  
-                }
-              }
-            }
-            if (model.activePage === 'file' && model.study!='user') model.study='all';
-            data.append('UserKey',model.key);
-            data.append('folder',takespaces(path));
-            data.append('study',model.study);
-            data.append('cmd','UploadFile');
-            $('#uploadedModal').modal('show');
-            api.uploadFile(data,fileOpSuccess);
-          }
+      //     if (model.done===true){
+      //       if (model.all===true){
+      //       for (var z=0;z<existFiles.length;z++){
+      //         var file = existFiles[z];
+      //         data.append(file.key, file.val);
+      //       }
+      //       }else{
+      //         for (var t=0;t<existFiles.length;t++){
+      //           var file = existFiles[t];
+      //           if (file.overwrite=true){
+      //             data.append(file.formkey, file.formvalue);  
+      //           }
+      //         }
+      //       }
+      //       if (model.activePage === 'file' && model.study!='user') model.study='all';
+      //       data.append('UserKey',model.key);
+      //       data.append('folder',takespaces(path));
+      //       data.append('study',model.study);
+      //       data.append('cmd','UploadFile');
+      //       $('#uploadedModal').modal('show');
+      //       api.uploadFile(data,fileOpSuccess);
+      //     }
 
-        }
-        model.clickedYes=false;
-      })
+      //   }
+      //   model.clickedYes=false;
+      // })
       $(document).on('click','#FileoverwriteYes',function(e){
         model.clickedYes=true;
         $('#overwrite').modal('hide');
@@ -1431,47 +1431,47 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       // }
 
 
-      function viewFile(e){
-        var path = getPathToFile();
-        var settings = new Settings();
-        var viewURL = settings.urlView;
-        window.open(viewURL+'?path='+path+'&key='+model.key+'&study='+model.study);
+      // function viewFile(e){
+      //   var path = getPathToFile();
+      //   var settings = new Settings();
+      //   var viewURL = settings.urlView;
+      //   window.open(viewURL+'?path='+path+'&key='+model.key+'&study='+model.study);
         
-      }
+    //  }
 
-      function downloadFile(count){
+      // function downloadFile(count){
 
-        var pathA = new Array();
-        var path='';
-        var info = {};
-        info.found = false;
-        var study;
-        getPath(model.fileSystem,model.elementID,pathA,info);
-        for (var i=0;i<pathA.length;i++){
-          path+=pathA[i]+fileSeperator();
-        }
+      //   var pathA = new Array();
+      //   var path='';
+      //   var info = {};
+      //   info.found = false;
+      //   var study;
+      //   getPath(model.fileSystem,model.elementID,pathA,info);
+      //   for (var i=0;i<pathA.length;i++){
+      //     path+=pathA[i]+fileSeperator();
+      //   }
         
-        var settings = new Settings();
-        var downloadURL = settings.urlDownload;
-        var url = downloadURL+'?path='+path+'&key='+model.key+'&study='+model.study;
-        var time = new Date().getTime();
-        var hiddenIFrameID = 'hiddenDownloader' +time+count;
-        var iframe = document.createElement('iframe');
-        iframe.id = hiddenIFrameID;
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        iframe.src = url;
-        iframe.load = function(){
-           iframe.remove();
-        }
-        // setTimeout((function(iframe) {
-        //    return function() { 
-        //      iframe.remove(); 
-        //    }
-        // })(iframe), 50000);
+      //   var settings = new Settings();
+      //   var downloadURL = settings.urlDownload;
+      //   var url = downloadURL+'?path='+path+'&key='+model.key+'&study='+model.study;
+      //   var time = new Date().getTime();
+      //   var hiddenIFrameID = 'hiddenDownloader' +time+count;
+      //   var iframe = document.createElement('iframe');
+      //   iframe.id = hiddenIFrameID;
+      //   iframe.style.display = 'none';
+      //   document.body.appendChild(iframe);
+      //   iframe.src = url;
+      //   iframe.load = function(){
+      //      iframe.remove();
+      //   }
+      //   // setTimeout((function(iframe) {
+      //   //    return function() { 
+      //   //      iframe.remove(); 
+      //   //    }
+      //   // })(iframe), 50000);
         
         
-      }
+      // }
       // $("iframe").on("load", function () {
       //   $(this).remove();
     
@@ -1544,11 +1544,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       //   console.log('upload folder: '+model.elementID);
       //   $('#createFolderModal').modal('show');
       // }
-      function uploadFile(e){
-        console.log('upload folder: '+model.elementID);
-        $("input[name='fileName']" ).click();
+      // function uploadFile(e){
+      //   console.log('upload folder: '+model.elementID);
+      //   $("input[name='fileName']" ).click();
         
-      }
+      // }
       
       function setChartData(study){
          var data = {};

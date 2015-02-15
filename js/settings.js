@@ -10,9 +10,15 @@ define([], function () {
     	//var current = 'Any';
     	var baseURL = 'http://app-dev-01.implicit.harvard.edu/implicit';
         var uploadDir ='/research/dashBoard/ZipFolder';
-        var urlDownload = '/implicit/dashboard/download/';
+        var urlDownload = '/implicit/dashboard/download';
         var urlView = '/implicit/dashboard/view/';
 
+        this.getUrlView = function(){
+            return urlView;
+        }
+        this.getUrlDownload = function(){
+            return urlDownload;
+        }
         this.getZipFolder=function(){
             return uploadDir;
         }

@@ -49,6 +49,8 @@ import java.util.List;
 
 
 
+
+
 import javax.servlet.ServletContext;
 
 
@@ -250,12 +252,12 @@ public class FileUploadManager {
 		
 	}
 	protected void downLoadFile(User user,Manager mng,String fileName,ServletContext ctx,HttpServletRequest request,HttpServletResponse response,
-			ServletOutputStream os,boolean download,String study) throws IOException{
+			ServletOutputStream os,boolean download,String study) throws Exception{
 		
 		try {
-			setpath(study,fileName,mng,user);
-			
-			//path = mng.getFolderBase()+File.separator+folder+File.separator+fileName;
+			//setpath(study,fileName,mng,user);
+			path = mng.getpath(study, fileName, user);
+			//path = mng.downloadDir+File.separator+fileName;
 			File file = new File(path);
 			if(!file.exists()){
 				System.out.println("File doesn't exists on server.");
@@ -272,12 +274,9 @@ public class FileUploadManager {
 			//response.setContentType(mimeType != null? mimeType:"application/octet-stream");
 			response.setContentLength((int) file.length());
 			if (download){
-				String[] names= fileName.split("\\" +File.separator);
-				if (names.length==1){
-					names = fileName.split("/");
-				}
-				
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + names[names.length-1] + "\"");
+				String[] names= path.split("\\" +File.separator);
+				String name = names[names.length-1];
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + name+ "\"");
 				response.setHeader("Content-Length", String.valueOf(new File(path).length()));
 			}
 			//System.out.println("file size: "+file.length());
@@ -285,7 +284,7 @@ public class FileUploadManager {
 			//ServletOutputStream os = response.getOutputStream();
 			
 			byte[] bufferData = new byte[1024];
-			int read=0;
+			int read=0; 
 			while((read = fis.read(bufferData))!= -1){
 				os.write(bufferData, 0, read);
 			}
@@ -318,10 +317,7 @@ public class FileUploadManager {
 		 }
 		 try {
      		response.setContentType("text/html");
-		    //PrintWriter out = response.getWriter();
-     		//ServletOutputStream out = response.getOutputStream();
-            //out.write("<html><head></head><body>".getBytes("UTF8"));
-            DiskFileItemFactory fileFactory = new DiskFileItemFactory();
+		    DiskFileItemFactory fileFactory = new DiskFileItemFactory();
             this.uploader = new ServletFileUpload(fileFactory);
 			List <FileItem> fileItemsList = uploader.parseRequest(request);
 			Iterator<FileItem> fileItemsIterator = fileItemsList.iterator();
@@ -337,23 +333,7 @@ public class FileUploadManager {
 			User user = (User) session.getAttribute("userobject");
 			Manager mng = (Manager) session.getAttribute("mng");
    			String userFolder = user.getFolderName();
-   			if (study.equals("user")){
-   				path = mng.getFolderBase()+File.separator+uploadFolder;
-   			}else{
-   				if (!study.equals("all")){
-   					if (uploadFolder.equals(File.separator)){
-   						Study s =user.getStudy(study);
-   	   					String relativePath = mng.getStudyRelativePath(s.getFolderName(),user.getFolderName());
-   	   					path = mng.getFolderBase()+File.separator+userFolder+File.separator+relativePath+File.separator+uploadFolder;
-   					}else{
-   						path = mng.getFolderBase()+File.separator+userFolder+File.separator+File.separator+uploadFolder;
-   					}
-   				}else{
-   					path = mng.getFolderBase()+File.separator+userFolder+File.separator+uploadFolder;
-   				}
-   				
-   			}
-   			
+   			path = mng.getpath(study, "", user);
    			File filesDir = new File(path);
    			fileFactory.setRepository(filesDir);
    			fileItemsIterator = fileItemsList.iterator();

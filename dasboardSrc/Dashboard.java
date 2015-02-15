@@ -256,39 +256,14 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							String uploadFolder = request.getParameter("path");
 							String name = request.getParameter("file");
 							String study = request.getParameter("study");
-							if (study.equals("user")){
-								String path = mng.getFolderBase()+File.separator+uploadFolder+File.separator+name;
-								File file = new File(path);
-								if (file.exists()) {
-									res="yes";
-								}else{
-									res="no";
-								}
-								
+     						String path = mng.getpath(study, "", user);
+     						path =path + File.separator+name;
+							File file = new File(path);
+							if (file.exists()) {
+								res="yes";
 							}else{
-								if (study.equals("all")){
-									String path = mng.getFolderBase()+userFolder+File.separator+uploadFolder+File.separator+name;
-									File file = new File(path);
-									if (file.exists()) {
-										res="yes";
-									}else{
-										res="no";
-									}
-								}else{
-									Study s = user.getStudy(study);
-									String studyFolder = s.getFolderName();
-									String path = mng.getFolderBase()+userFolder+File.separator+studyFolder+uploadFolder+File.separator+name;
-									File file = new File(path);
-									if (file.exists()) {
-										res="yes";
-									}else{
-										res="no";
-									}
-								}
+								res="no";
 							}
-							
-							
-							
 						}
 						if (cmd.equals(("register"))){
 							register(request,api);
@@ -355,11 +330,14 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 		String returnPath="";
 		ZipDirectory zipUtil = new ZipDirectory();
-		String directoryToDownload  = request.getParameter("path");
+		String id  = request.getParameter("path");
 		String study =  request.getParameter("study");
 		User user = (User) request.getSession().getAttribute("userobject");
-		String path =mng.getpath(study, directoryToDownload,user);
-		String DownloadDirctory = mng.folderBase+mng.projectPath+mng.downloadDir;
+		FileComposite composite = user.getComposite();
+		FileObj obj =composite.getUnit(id);
+		String path = obj.getPath();
+		//String path =mng.getpath(study, directoryToDownload,user);
+		String DownloadDirctory = mng.downloadDir;
 		try {
 			returnPath = zipUtil.zip(path,DownloadDirctory);
 		} catch (IOException e) {
@@ -368,7 +346,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			throw e;
 		}
 		
-		return "success";
+		return returnPath;
 		
 		
 		
@@ -698,7 +676,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("userobject");
 		Manager mng = (Manager) session.getAttribute("mng");
-		fileMng.downLoadFile(user,mng,mng.trim(fileName),ctx,request,response,out,download,study);
+		fileMng.downLoadFile(user,mng,fileName,ctx,request,response,out,download,study);
 	}
 	
 	private String createFolder(String[] arr,HttpServletRequest request,HttpServletResponse response) throws Exception{
@@ -717,6 +695,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		//boolean success =fileMng.createFolder(path, user,study);
 		if(success){
 			HashMap res = new HashMap();
+			user.getComposite().refresh();
 			res.put("filesys", user.getComposite().toHashMap());
 			String jsonText = JSONValue.toJSONString(res);
 			return jsonText;
@@ -730,9 +709,17 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 	private String ManageFiles(HttpServletRequest request,HttpServletResponse response) throws Exception{
 		FileUploadManager fileMng = new FileUploadManager();
 		if (fileMng.UploadFile(request, response)){
-			return "File was uploaded";
+			HashMap res = new HashMap();
+			HttpSession session = request.getSession();
+			User user = (User) session.getAttribute("userobject");
+			user.getComposite().refresh();
+			res.put("filesys", user.getComposite().toHashMap());
+			String jsonText = JSONValue.toJSONString(res);
+			return jsonText;
 		}else{
-			return "File was not uploaded";
+			Exception e = new Exception("error:File was not uploaded");
+			System.out.println(e.getMessage());
+			throw e;
 		}
 		
 		

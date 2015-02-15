@@ -32,7 +32,7 @@ public class FolderUnit extends FileObj{
 	protected HashMap toMap(){
 		HashMap map = new HashMap();
 		map.put("id", id);
-		map.put("path", path);
+		//map.put("path", path);
 		map.put("name", name);
 		map.put("type", type);
 		map.put("creationDate", creationDate);

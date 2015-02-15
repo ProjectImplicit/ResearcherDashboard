@@ -38,7 +38,7 @@ public class Manager implements Serializable{
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
 			projectPath = "research/dashBoard/";
-			downloadDir ="ZipFolder";
+			downloadDir ="C:\\projects\\workspace\\rc5\\app\\research\\dashBoard\\ZipFolder";
 			DbAPI api = DbAPI.getInstance(false);
 			api.setMethod("cloude");
 			System.out.println("Using folder:"+folderBase);
@@ -52,7 +52,7 @@ public class Manager implements Serializable{
 		}else{
 			folderBase="//home//dev2//user//";
 			projectPath = "research//dashBoard//";
-			downloadDir ="ZipFolder";
+			downloadDir ="//home//dev2//app//research//dashBoard//ZipFolder";
 			LOGINURL = "research/dashBoard/newlogin.html";
 			REDIRECTLOGIN="research/dashBoard/dashboard5.html?cmd=start";
 			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
@@ -125,7 +125,6 @@ public class Manager implements Serializable{
 		path=path+folderToCreate;
 		FileUploadManager fileMng = new FileUploadManager();
 		boolean result  = fileMng.createFolder(path);
-		user.getComposite().refresh();
 		return result;
 		
 	}
@@ -164,6 +163,14 @@ public class Manager implements Serializable{
 					FileObj obj = compose.getUnit(FileNamepathorID);
 					path = obj.getPath();
 		
+				}
+				if (study.contains("PATH")){
+					return downloadDir+File.separator+FileNamepathorID;
+				}
+				if (study.contains("CURRENT")){
+					FileComposite compose = user.getComposite();
+					FileObj obj=compose.getCurrentFolder();
+					path = obj.getPath();
 				}
 			}else{
 				if (study.equals("user")){
