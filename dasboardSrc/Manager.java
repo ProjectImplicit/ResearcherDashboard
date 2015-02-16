@@ -82,7 +82,7 @@ public class Manager implements Serializable{
 		setStudyIdfromFileSystem(user);
 		
 	};
-	public boolean AuthUser(User u){
+	public boolean AuthUser(User u) throws Exception{
 		String key = u.getKey();
 		HashMap userHash = new HashMap();
 		DbAPI api = DbAPI.getInstance(false);
@@ -191,7 +191,7 @@ public class Manager implements Serializable{
 		}
 			
 	}
-	public void setUserfromDBbyFolder(User user){
+	public void setUserfromDBbyFolder(User user) throws Exception{
 		DbAPI api = DbAPI.getInstance(false);
 		String name = user.getFolderName();
 		HashMap userHash = api.find("Users","FOLDER_NAME", name);
@@ -209,7 +209,7 @@ public class Manager implements Serializable{
 		
 		
 	}
-	public void setUserfromDB(User user){
+	public void setUserfromDB(User user) throws Exception{
 		DbAPI api = DbAPI.getInstance(false);
 		String key = user.getKey();
 		//api.setMethod("cloude");
@@ -334,7 +334,7 @@ public class Manager implements Serializable{
 		
 	}
 	
-	public void setStudyIdFromDB(User user){
+	public void setStudyIdFromDB(User user) throws Exception{
 		System.out.println("starting setStudyIdFromDB");
 		DbAPI api = DbAPI.getInstance(false);
 		String id = user.getID();
@@ -400,7 +400,7 @@ public class Manager implements Serializable{
 		return trimmed;
 		
 	}
-	public boolean isStudy(String name){
+	public boolean isStudy(String name) throws Exception{
 		//name =trim(name);
 		DbAPI api = DbAPI.getInstance(false);
 		HashMap studys = api.find("Studies", "name",name);
@@ -438,7 +438,7 @@ public class Manager implements Serializable{
 		
 	}
 	//TODO
-	public void updateStudy(String exptid,String exptFileName,String datagroup,String studyName,boolean existEXPT,boolean updateSchema,User user){
+	public void updateStudy(String exptid,String exptFileName,String datagroup,String studyName,boolean existEXPT,boolean updateSchema,User user) throws Exception{
 		
 		DbAPI api = DbAPI.getInstance(false);
 		String id = user.getID();
@@ -906,7 +906,7 @@ public class Manager implements Serializable{
 		
 		
 	}
-	protected boolean deleteExptFromDB(User user,String studyName,String exptFileName){
+	protected boolean deleteExptFromDB(User user,String studyName,String exptFileName) throws Exception{
 		DbAPI api = DbAPI.getInstance(false);
 		String userID = user.getID();
 		String studyID = null;

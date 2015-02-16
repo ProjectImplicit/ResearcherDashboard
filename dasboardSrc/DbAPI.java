@@ -297,7 +297,7 @@ public class DbAPI implements Serializable  {
 		
 		
 	}
-	public HashMap findInOracle(String table,String column,String value){
+	public HashMap findInOracle(String table,String column,String value) throws Exception{
 		
 		HashMap res= new HashMap();
 		Connection connection = null;
@@ -361,11 +361,14 @@ public class DbAPI implements Serializable  {
 			}
 		
 		}catch(Exception e ){
-			System.out.println();
+			System.out.println(e.getStackTrace());
+			throw e;
 		}finally{
 			try{
 			if (connection!=null) connection.close();
 			}catch(Exception e){
+				System.out.println(e.getStackTrace());
+				throw e;
 				
 			}
 		}
@@ -376,7 +379,7 @@ public class DbAPI implements Serializable  {
 	}
 
 	
-	public HashMap find(String table,String column, String value){
+	public HashMap find(String table,String column, String value) throws Exception{
 		
 		if (this.method.equals("memory")){
 			return this.findInMemory(table,column,value);

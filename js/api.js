@@ -168,6 +168,20 @@ define([], function () {
                 
             });
         }
+        this.rename = function (id,study,callback){
+            var url = '/implicit/dashboard';
+            data={};
+            data.cmd="rename";
+            data.identifier=study;
+            data.objid=id;
+            $.ajax({
+                type: "POST",
+                data:data,
+                url: url,
+                success: callback
+                
+            });
+        }
         this.createFolder = function (key,uploadFolder,folderCreate,study,success){
             //var url = "/implicit/dashboard/create/folder/"+key+"/"+uploadFolder+"/"+folderCreate;
             var url = '/implicit/dashboard';

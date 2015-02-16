@@ -141,6 +141,13 @@ define(['api','settings'], function (API,Settings) {
               // if user clicks 'Cancel', do something
           }
       });
+      $(document).on('click','#renameFolder',function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder').parent().parent();
+        var id = $(td).attr("id");
+        that.api.renameFolder(id,'_ID');
+      });
       $(document).on('click','#downloadFolder', function(){
         debugger;
         var count=0;
@@ -188,7 +195,132 @@ define(['api','settings'], function (API,Settings) {
 
         });
       });
+      $(document).on('click','#FileoverwriteYes',function(e){
+        var existfiles = that.data.existfiles;
+        var data = that.data.FormData;
+        $("#overwriteFileName .mycheckbox:checked").each(function(){
+          var filename = $(this).attr("value");
+          for (var i=0;i<existfiles.length;i++){
+            var file = existfiles[i];
+            if (file.key===filename){
+              var key = file.formkey;
+              var value = file.formvalue;
+              data.append(key, value);
+            }
+          }
+          //alert($(this).attr("value"));
+        });
+        $('#overwrite').modal('hide');
+        data.append('study','_CURRENT');
+        data.append('cmd','UploadFile');
+        that.api.uploadFile(data,that.updateView);
+
+      });
       
+      $(document).on('click','[type=checkbox]',function(){
+          // var check =$(this);
+          // var td = $(check).parent().parent();
+          // if ($(td).attr("id").indexOf("folder")==-1) return;
+          // var span = $(td).find('#folderNameR');
+          // if (span===undefined) return;
+          // var folderName = $(span).text();
+          // if ($(check).prop('checked')){
+          //   var currentFolder={};
+          //   currentFolder.name = folderName;
+          //   currentFolder.id = id;
+          //   //currentFolder.state=state;
+          //   model.currentFolder = currentFolder;
+          
+          //   $('#currentName').text(folderName);
+          // }else{
+          //   var current = model.currentFolder;
+          //   var name = current.name;
+          //   if(name===folderName){
+          //     $('#currentName').text('');
+          //     model.currentFolder=undefined;
+
+          //   }
+            
+          // }
+          
+
+      });
+      $(document).on('click','#multiple', function(){
+        var count=0;
+        $( '.check' ).each(function( index ) {
+          var input = $(this);
+          var tr  = $(input).parent().parent();
+          var id = $(tr).attr("id");
+          if (id===undefined){
+            var upTD = $(tr).find('.file');
+            id = $(upTD).attr("id");
+          }
+          
+          if ($(input).prop('checked')){
+            
+            that.data.elementID = id;
+            that.downloadFile(count++);
+            $(this).attr('checked', false);
+
+          }
+        });
+      });
+      $(document).on('click','#multipleDelete', function(){
+        var modelid=[];
+        $( '.check' ).each(function( index ) {
+          var input = $(this);
+          if ($(input).prop('checked')){
+
+            var span  = $(input).parent();
+            var td = $(span).parent();
+            var id = $(td).attr("id");
+            var current = model.currentFolder;
+            var name = $(span).text();
+            var type='file';
+            var obj={};
+            obj.id =id;
+            obj.name=name;
+            obj.type=type;
+            if (current===undefined || current===null || current.id!=id){
+              modelid.push(obj);  
+            }
+            
+            
+
+          } 
+        });
+        var text='';
+        for (var i=0;i<modelid.length;i++){ text=text+modelid[i].name+'<br>';}
+        $('#listOfFiles').html(text);
+        $('#deleteMultipleModal').modal('show');
+        $(document).one("click",'#deleteMultipleOK',function(){
+          console.log('inside delete dialog');          
+          for (var i=0;i<modelid.length;i++){
+            var obj =modelid[i];
+            var input = $('#'+obj.id);
+            that.data.elementID = obj.id;
+            if (obj.type==='folder'){
+              api.deleteFolder(that.data.elementID,'','_ID',function(){
+                if (i===modelid.length){
+                  that.updateView();
+                }
+              });
+              
+
+            }else{
+              
+              api.deleteFolder(that.data.elementID,'','_ID',function(){
+                if (i===modelid.length){
+                  that.updateView();
+                }
+              });
+            } 
+            
+          }
+        });
+        
+
+      });
       $(document).on('hidden.bs.modal','#overwrite', function () {
         //alert('hidden event fired!');
         if (that.data.clickedYes){
@@ -247,58 +379,49 @@ define(['api','settings'], function (API,Settings) {
 		}
     this.prepareUpload = function(event){
       var data =new FormData();
-       
-      that.createExistFilesArray(event.target.files,'',data,'',function(){
-        if (that.data.exist.length>0){
-          that.setModals();
-         }else{
-        //if (model.activePage === 'file') model.study='all';
-          data.append('UserKey','');
-          data.append('folder','');
-          data.append('study','_CURRENT');
-          data.append('cmd','UploadFile');
-          that.api.uploadFile(data,that.updateView);
+      that.data.formdata=data; 
+      that.createExistFilesArray(event.target.files,data);
+      var exist = that.data.existfiles;
+      if (exist.length>0){
+        $('#overwrite').modal('show');
+      }else{
 
-        }
-      });
+        data.append('study','_CURRENT');
+        data.append('cmd','UploadFile');
+        that.api.uploadFile(data,that.updateView);
+
+      }
 
     }
-    this.createExistFilesArray = function(files,path,data,study,callback){
-       var existFiles = new Array();
-       //var that=that; 
+    this.createExistFilesArray = function(files,data){
+      var existFiles = new Array();
+      var thisContext=this; 
       for (var i=0;i<files.length;i++){
         var key = i;
         var value = files[i];
       
-          that.api.fileExist(key,'','','_CURRENT',value.name,function(resdata){
-            var res;
-            if (resdata=='yes'){
-              res=true;
-            }else{
-              res=false;
-            }
-            if (res){
-              var file={};
-              file.key =value.name;
-              file.formkey = key;
-              file.formvalue = value;
-              existFiles.push(file);
-            }else{
-              data.append(key, value);
-            }
-            if (i===files.length-1){
-              var info={};
-              info.index=0;
-              info.visited=0;
-              info.data=data;
-              info.study=study;
-              info.path=path;
-              that.data.Modalinfo=info;
-              that.data.exist=existFiles;
-              callback();
-            }
-          });
-      }    
+        that.api.fileExist(key,'','','_CURRENT',value.name,function(resdata){
+          var res;
+          if (resdata=='yes'){
+            res=true;
+          }else{
+            res=false;
+          }
+          if (res){
+            var file={};
+            file.key =value.name;
+            file.formkey = key;
+            file.formvalue = value;
+            existFiles.push(file);
+            $('#overwriteFileName').append('<input type="checkbox" class="mycheckbox" name="vehicle" value="'+value.name+'"> '+value.name+'<br>');
+          }else{
+            data.append(key, value);
+          }
+          
+          
+        });
+      }
+      that.data.existfiles= existFiles;
   
     }
     this.uploadFile = function(){
@@ -348,8 +471,13 @@ define(['api','settings'], function (API,Settings) {
       debugger;
 			console.log(data);
 			$('#'+that.id).html('');
-			var dataObj = jQuery.parseJSON( data );
-	    fileObj = dataObj.filesys;
+      var dataObj;
+      if (typeof data =='object'){
+        dataObj = data;
+      }else{
+        dataObj = jQuery.parseJSON( data );
+      }
+			fileObj = dataObj.filesys;
       that.topPath = fileObj.toppath;
 	    $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
 	    that.createRaws(fileObj);
@@ -489,6 +617,8 @@ define(['api','settings'], function (API,Settings) {
                 '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>-->'+
                 '<button type="button" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
                 '<button type="button" style="margin-left:20px;" id="downloadFolder" class="btn btn-primary btn-xs ">Download Folder</button>'+
+                '<button type="button" style="margin-left:20px;" id="renameFolder" class="btn btn-primary btn-xs ">Rename Folder</button>'+
+
             '</td>'+
           '</tr>');
 
@@ -540,23 +670,23 @@ define(['api','settings'], function (API,Settings) {
 	  	// });
    	
 	  }
-    this.setModals = function(){
-        var existFiles = that.data.exist;
-        var info = that.data.Modalinfo;
+    // this.setModals = function(){
+    //     var existFiles = that.data.exist;
+    //     var info = that.data.Modalinfo;
         
-        if (info.index >= existFiles.length){
-            that.data.done=true;
-            console.log('done');
-            return;
-          }
-        var participant = existFiles[info.index];
-        console.log(participant.key);
-        $('#overwriteFileName').text('A file with the name '+participant.key+' already exist, overwrite?');
-        $('#uploadedModal').modal('hide');
-        $('#overwrite').modal('show');
+    //     if (info.index >= existFiles.length){
+    //         that.data.done=true;
+    //         console.log('done');
+    //         return;
+    //       }
+    //     var participant = existFiles[info.index];
+    //     console.log(participant.key);
+    //     $('#overwriteFileName').text('A file with the name '+participant.key+' already exist, overwrite?');
+    //     $('#uploadedModal').modal('hide');
+    //     $('#overwrite').modal('show');
 
 
-    }
+    // }
 	  this.addFile = function(name,level,id){
 	  	var array = name.split('.');
 	  	if (array[1]==='jsp'){
@@ -575,94 +705,83 @@ define(['api','settings'], function (API,Settings) {
 	  	
 
 	  }
-  	  this.DrophandleFileUpload = function(files,obj){
+	  this.DrophandleFileUpload = function(files,obj){
 
-        model.elementID=undefined;
-        var cmd='UploadFile';
-        var folderpath='';
+      
+      var data =new FormData();
+      that.updateDatawithFiles(files,data,cmd,folderpath);
+      //if (model.activePage === 'file') model.study='all';
+      that.createExistFilesArray(event.target.files,data);
+      var exist = that.data.existfiles;
+      if (exist.length>0){
+        $('#overwrite').modal('show');
+      }else{
 
-        $( '.check' ).each(function( index ) {
-          var input = $(this);
-          var tr  = $(input).parent().parent();
-          var id = $(tr).attr("id");
-          if (id===undefined){
-            var upTD = $(tr).find('.folder');
-            id = $(upTD).attr("id");
-          }
-          if ($(input).prop('checked')){
-            model.elementID = id;
-            $(this).attr('checked', false);
-          }
-        });
-        if (model.elementID===undefined) model.elementID='0';
-        var data =new FormData();
-        var pathA = new Array();
-        var study;
-        var info={};
-        info.found=false;
-        var path='';
-        if (model.elementID==='0'){
-          path=fileSeperator();
-          study=model.study;
-          if (study===undefined) study='all';
-        }else{//this is not a root file operation so use full path study='all'
-          getPath(model.fileSystem,model.elementID,pathA,info);
-          for (var i=0;i<pathA.length;i++){
-            path+=pathA[i]+fileSeperator();
-          }
-          study='all';
-        }
-        updateDatawithFiles(files,data,cmd,folderpath);
-        //if (model.activePage === 'file') model.study='all';
-        createExistFilesArray(files,path,data,study,function(){
-          if (model.exist.length>0){
-          setModals(model);
-          }else{
-            data.append('UserKey',model.key);
-            data.append('folder',takespaces(path));
-            data.append('study',model.study);
-            data.append('cmd','UploadFile');
-            //$('#uploadedModal').modal('show');
-            api.uploadFile(data,fileOpSuccess);
-          }
-
-        });
-    
+        data.append('study','_CURRENT');
+        data.append('cmd','UploadFile');
+        that.api.uploadFile(data,that.updateView);
 
       }
-      	this.createDandD = function(){
-      		$('#'+this.id).append('<div id="dragandrophandler">Drag & Drop Files Here</div>');
-	        var obj = $("#dragandrophandler");
-	        obj.on('dragenter', function (e) 
-	        {
-	            e.stopPropagation();
-	            e.preventDefault();
-	            $(this).css('border', '2px solid #0B85A1');
-	        });
-	        obj.on('dragover', function (e) 
-	        {
-	             e.stopPropagation();
-	             e.preventDefault();
-	        });
-	        obj.on('drop', function (e) 
-	        {
-	         
-	             $(this).css('border', '2px dotted #0B85A1');
-	             e.preventDefault();
-	             var filesI = e.originalEvent.dataTransfer.files;
-	             var files = e.originalEvent.dataTransfer.items;
-	             //var length = e.originalEvent.dataTransfer.items.length;
-	             //We need to send dropped files to Server
-	             //$('#uploadedModal').modal('show');
-	             if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
-	              DrophandleFileUpload(filesI,obj);
 
-	             }else{
-	              DrophandleFileUpload(files,obj);
-	             }
-	             
-	        });
-      	}
+    }
+
+    this.updateDatawithFiles = function(files,data,cmd){
+
+      if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
+        $.each(files, function(key, value){
+          data.append(key, value);
+        });
+      }else{
+        for (var i=0;i<files.length;i++){
+          var item = files[i];
+          var entry = item.webkitGetAsEntry();
+          if (entry.isFile){
+             var file = item.getAsFile();
+             data.append(i, file);
+          }else{ 
+            if (entry.isDirectory){
+       
+            }
+          }
+    
+        }       
+      }
+
+  
+    }
+  	this.createDandD = function(){
+  		$('#'+this.id).append('<div id="dragandrophandler">Drag & Drop Files Here</div>');
+      var obj = $("#dragandrophandler");
+      obj.on('dragenter', function (e) 
+      {
+          e.stopPropagation();
+          e.preventDefault();
+          $(this).css('border', '2px solid #0B85A1');
+      });
+      obj.on('dragover', function (e) 
+      {
+           e.stopPropagation();
+           e.preventDefault();
+      });
+      obj.on('drop', function (e) 
+      {
+       
+           $(this).css('border', '2px dotted #0B85A1');
+           e.preventDefault();
+           var filesI = e.originalEvent.dataTransfer.files;
+           var files = e.originalEvent.dataTransfer.items;
+           //var length = e.originalEvent.dataTransfer.items.length;
+           //We need to send dropped files to Server
+           //$('#uploadedModal').modal('show');
+           if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
+            that.DrophandleFileUpload(filesI,obj);
+
+           }else{
+            that.DrophandleFileUpload(files,obj);
+           }
+           
+      });
+  	}
 
 
 	};

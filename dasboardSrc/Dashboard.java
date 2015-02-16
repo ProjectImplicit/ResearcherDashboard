@@ -113,7 +113,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
 		try{
 			if (isMultipart){
-				res=ManageFiles(request,response);
+				ManageFiles(request,response);
 			}else{
 				
 				DbAPI api = DbAPI.getInstance(false);
@@ -194,7 +194,8 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 						}
 						if (cmd.equals("drillup")){
 							drillUp(request,user,mng,out);
-
+						}
+						if (cmd.equals("rename")){
 							
 						}
 						if (cmd.equals("create")){
@@ -706,8 +707,9 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 		
 	}
-	private String ManageFiles(HttpServletRequest request,HttpServletResponse response) throws Exception{
+	private void ManageFiles(HttpServletRequest request,HttpServletResponse response) throws Exception{
 		FileUploadManager fileMng = new FileUploadManager();
+		
 		if (fileMng.UploadFile(request, response)){
 			HashMap res = new HashMap();
 			HttpSession session = request.getSession();
@@ -715,7 +717,11 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			user.getComposite().refresh();
 			res.put("filesys", user.getComposite().toHashMap());
 			String jsonText = JSONValue.toJSONString(res);
-			return jsonText;
+			ServletOutputStream out = response.getOutputStream();
+			out.write(jsonText.getBytes("UTF8"));
+			out.flush();
+			jsonText =null;
+			//return jsonText;
 		}else{
 			Exception e = new Exception("error:File was not uploaded");
 			System.out.println(e.getMessage());

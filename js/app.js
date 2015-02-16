@@ -289,34 +289,34 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
 
       }
-      $(document).on('click','[type=checkbox]',function(){
-        var check =$(this);
-        var td = $(check).parent().parent();
-        if ($(td).attr("id").indexOf("folder")==-1) return;
-        var span = $(td).find('#folderNameR');
-        if (span===undefined) return;
-        var folderName = $(span).text();
-        if ($(check).prop('checked')){
-          var currentFolder={};
-          currentFolder.name = folderName;
-          currentFolder.id = id;
-          //currentFolder.state=state;
-          model.currentFolder = currentFolder;
+      // $(document).on('click','[type=checkbox]',function(){
+      //   var check =$(this);
+      //   var td = $(check).parent().parent();
+      //   if ($(td).attr("id").indexOf("folder")==-1) return;
+      //   var span = $(td).find('#folderNameR');
+      //   if (span===undefined) return;
+      //   var folderName = $(span).text();
+      //   if ($(check).prop('checked')){
+      //     var currentFolder={};
+      //     currentFolder.name = folderName;
+      //     currentFolder.id = id;
+      //     //currentFolder.state=state;
+      //     model.currentFolder = currentFolder;
         
-          $('#currentName').text(folderName);
-        }else{
-          var current = model.currentFolder;
-          var name = current.name;
-          if(name===folderName){
-            $('#currentName').text('');
-            model.currentFolder=undefined;
+      //     $('#currentName').text(folderName);
+      //   }else{
+      //     var current = model.currentFolder;
+      //     var name = current.name;
+      //     if(name===folderName){
+      //       $('#currentName').text('');
+      //       model.currentFolder=undefined;
 
-          }
+      //     }
           
-        }
+      //   }
         
 
-      });
+      // });
       $(document).on('click','.review',function(){
         var butt = $(this);
         var tr = $(this).parent();
@@ -340,90 +340,90 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         api.getFiles(model.key,model.study,setStudyTable);
       });
 
-      $(document).on('click','#multipleDelete', function(){
-        var modelid=[];
-        $( '.check' ).each(function( index ) {
-          var input = $(this);
-          if ($(input).prop('checked')){
+      // $(document).on('click','#multipleDelete', function(){
+      //   var modelid=[];
+      //   $( '.check' ).each(function( index ) {
+      //     var input = $(this);
+      //     if ($(input).prop('checked')){
 
-            var span  = $(input).parent();
-            var td = $(span).parent();
-            var id = $(td).attr("id");
-            var current = model.currentFolder;
-            var name = $(span).text();
-            var type='file';
-            var obj={};
-            obj.id =id;
-            obj.name=name;
-            obj.type=type;
-            if (current===undefined || current===null || current.id!=id){
-              modelid.push(obj);  
-            }
+      //       var span  = $(input).parent();
+      //       var td = $(span).parent();
+      //       var id = $(td).attr("id");
+      //       var current = model.currentFolder;
+      //       var name = $(span).text();
+      //       var type='file';
+      //       var obj={};
+      //       obj.id =id;
+      //       obj.name=name;
+      //       obj.type=type;
+      //       if (current===undefined || current===null || current.id!=id){
+      //         modelid.push(obj);  
+      //       }
             
             
 
-          } 
-        });
-        var text='';
-        for (var i=0;i<modelid.length;i++){ text=text+modelid[i].name+'<br>';}
-        $('#listOfFiles').html(text);
-        $('#deleteMultipleModal').modal('show');
-        $(document).one("click",'#deleteMultipleOK',function(){
-          console.log('inside delete dialog');          
-          for (var i=0;i<modelid.length;i++){
-            var obj =modelid[i];
-            var input = $('#'+obj.id);
-            model.elementID = obj.id;
-            if (obj.type==='folder'){
+      //     } 
+      //   });
+      //   var text='';
+      //   for (var i=0;i<modelid.length;i++){ text=text+modelid[i].name+'<br>';}
+      //   $('#listOfFiles').html(text);
+      //   $('#deleteMultipleModal').modal('show');
+      //   $(document).one("click",'#deleteMultipleOK',function(){
+      //     console.log('inside delete dialog');          
+      //     for (var i=0;i<modelid.length;i++){
+      //       var obj =modelid[i];
+      //       var input = $('#'+obj.id);
+      //       model.elementID = obj.id;
+      //       if (obj.type==='folder'){
 
-              $('#uploadedModal').modal('show');
-              var path = getPathToFile();
-              api.deleteFolder(path,model.key,model.study,function(){
-                if (i===modelid.length){
-                  fileOpSuccess();
-                }
-              });
+      //         $('#uploadedModal').modal('show');
+      //         var path = getPathToFile();
+      //         api.deleteFolder(path,model.key,model.study,function(){
+      //           if (i===modelid.length){
+      //             fileOpSuccess();
+      //           }
+      //         });
               
 
-            }else{
-              $('#uploadedModal').modal('show');
+      //       }else{
+      //         $('#uploadedModal').modal('show');
 
-              //deleteFile();
-              var path = getPathToFile();
-              api.deleteFolder(path,model.key,model.study,function(){
-                if (i===modelid.length){
-                  fileOpSuccess();
-                }
-              });
-            } 
+      //         //deleteFile();
+      //         var path = getPathToFile();
+      //         api.deleteFolder(path,model.key,model.study,function(){
+      //           if (i===modelid.length){
+      //             fileOpSuccess();
+      //           }
+      //         });
+      //       } 
             
-          }
-        });
+      //     }
+      //   });
         
 
-      });
+      // });
       
         
-      $(document).on('click','#multiple', function(){
-        var count=0;
-        $( '.check' ).each(function( index ) {
-          var input = $(this);
-          var tr  = $(input).parent().parent();
-          var id = $(tr).attr("id");
-          if (id===undefined){
-            var upTD = $(tr).find('.file');
-            id = $(upTD).attr("id");
-          }
+      // $(document).on('click','#multiple', function(){
+      //   var count=0;
+      //   $( '.check' ).each(function( index ) {
+      //     var input = $(this);
+      //     var tr  = $(input).parent().parent();
+      //     var id = $(tr).attr("id");
+      //     if (id===undefined){
+      //       var upTD = $(tr).find('.file');
+      //       id = $(upTD).attr("id");
+      //     }
           
-          if ($(input).prop('checked')){
+      //     if ($(input).prop('checked')){
             
-            model.elementID = id;
-            downloadFile(count++);
-            $(this).attr('checked', false);
+      //       model.elementID = id;
+      //       downloadFile(count++);
+      //       $(this).attr('checked', false);
 
-          }
-        });
-      });
+      //     }
+      //   });
+      // });
 
       // $(document).on('click','#uploadFile', function(){
       //   var element =$(this);
@@ -798,9 +798,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       //   }
       //   model.clickedYes=false;
       // })
-      $(document).on('click','#FileoverwriteYes',function(e){
-        model.clickedYes=true;
-        $('#overwrite').modal('hide');
+      // $(document).on('click','#FileoverwriteYes',function(e){
+      //   model.clickedYes=true;
+      //   $('#overwrite').modal('hide');
           //  var info = model.Modalinfo;
           //  var data= info.data;
           //  var study = info.study;
@@ -857,7 +857,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
           // }
           
 
-      })
+    //  })
       /**
       * Desc: main listener for the 
       * 'test' top menu navigetaion bar.
@@ -2393,34 +2393,34 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       function errorHandler(data){
         console.log(data);
       }
-      function updateDatawithFiles(files,data,cmd){
+      // function updateDatawithFiles(files,data,cmd){
 
-        if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
-          $.each(files, function(key, value){
-            data.append(key, value);
-          });
-        }else{
-          for (var i=0;i<files.length;i++){
-            var item = files[i];
-            var entry = item.webkitGetAsEntry();
-            if (entry.isFile){
-               var file = item.getAsFile();
-               data.append(i, file);
-            }else{ 
-              if (entry.isDirectory){
-               //cmd='uploadFolder';
-               //var direntry=entry.createReader();
-               // direntry.readEntries(function(results){
-               //    updateDatawithFiles(results,data,cmd);
-               // }, errorHandler);
-              }
-            }
+      //   if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
+      //     $.each(files, function(key, value){
+      //       data.append(key, value);
+      //     });
+      //   }else{
+      //     for (var i=0;i<files.length;i++){
+      //       var item = files[i];
+      //       var entry = item.webkitGetAsEntry();
+      //       if (entry.isFile){
+      //          var file = item.getAsFile();
+      //          data.append(i, file);
+      //       }else{ 
+      //         if (entry.isDirectory){
+      //          //cmd='uploadFolder';
+      //          //var direntry=entry.createReader();
+      //          // direntry.readEntries(function(results){
+      //          //    updateDatawithFiles(results,data,cmd);
+      //          // }, errorHandler);
+      //         }
+      //       }
       
-          }       
-        }
+      //     }       
+      //   }
 
     
-      }
+      // }
       /**
       * Desc: returns the satet of the folder
       * input: folder key/value object
