@@ -118,6 +118,31 @@ public class DbAPI implements Serializable  {
 		}
 	}
 	
+	public void updateExptFileName(String studyID,String exptName,String oldExpt){
+		
+		Connection connection = null;
+		DashBoardConnect.getInstance(false);
+		
+		try{
+			connection = DashBoardConnect.getConnection(db);
+			connection.setAutoCommit(true);
+			String query = "UPDATE EXPT SET EXPT_FILE_NAME = '"+exptName+"' where studyid='"+studyID+"' and EXPT_FILE_NAME='"+oldExpt+"'";
+			PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.executeUpdate();
+			
+		}catch(Exception e){
+			System.out.println("Error in api.updateTable "+e.getMessage()+ e.getStackTrace());
+		}
+		finally{
+			if (connection!=null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
 	public void updateExptTable(String studyID,String exptName,String exptid){
 		
 		Connection connection = null;

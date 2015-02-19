@@ -168,12 +168,13 @@ define([], function () {
                 
             });
         }
-        this.rename = function (id,study,callback){
+        this.rename = function (id,study,newname,callback){
             var url = '/implicit/dashboard';
             data={};
             data.cmd="rename";
             data.identifier=study;
-            data.objid=id;
+            data.id=id;
+            data.newname=newname;
             $.ajax({
                 type: "POST",
                 data:data,
@@ -196,6 +197,20 @@ define([], function () {
                 data:data,
                 url: url,
                 success: success
+                
+            });
+
+        }
+        this.multipleDelete = function(modelid,study,callback){
+            var data ={};
+            data.study = study;
+            data.cmd='multipledelete';
+            data.modelarray = JSON.stringify(modelid);
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
+                success: callback
                 
             });
 

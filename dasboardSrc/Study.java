@@ -72,6 +72,25 @@ public class Study implements Serializable {
 	public String getID(){
 		return this.studyID;
 	}
+	protected EXPT getExpt(String exptName){
+		
+		for (int i=0;i<studyEXPTID.size();i++){
+			EXPT e = studyEXPTID.get(i);
+			if (e.exptFileName.equals(exptName)){
+				return e;
+			}
+		}
+		return null;
+	}
+	protected void updateExpt(String oldExpt,String newExpt){
+		for (int i=0;i<studyEXPTID.size();i++){
+			EXPT e = studyEXPTID.get(i);
+			if (e.exptFileName.equals(oldExpt)){
+				e.exptFileName= newExpt;
+			}
+		}
+		
+	}
 	public void deleteExpt(String exptName){
 		
 		for (int i=0;i<studyEXPTID.size();i++){

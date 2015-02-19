@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.uva.util.StudyValidator;
 
 import static java.nio.file.FileVisitResult.*;
@@ -128,12 +129,33 @@ public class Manager implements Serializable{
 		return result;
 		
 	}
+	protected boolean rename(String id,String newName,Manager mng,User user) throws Exception{
+		try{
+			boolean res=false;
+			FileObj obj = user.getComposite().getUnit(id);
+			String path = obj.getPath();
+			File f = new File(path);
+			String[] array = path.split("\\"+File.separator);
+			array[array.length-1]=newName;
+			String dest = StringUtils.join(array,File.separator);
+			File nf = new File(dest);
+			if (f.exists()){
+				f.renameTo(nf);
+			}
+			return true;
+			
+			
+			
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+	}
 	protected boolean deleteFile(String id,String key,User user,String study) throws Exception{
 		try{
 			String pathToFile = this.getpath(study, id, user);
 			FileUploadManager fileMng = new FileUploadManager();
 			boolean result =fileMng.deleteFile(user,this,pathToFile);
-			user.getComposite().refresh();
 			return result;
 			
 		}catch(Exception e){

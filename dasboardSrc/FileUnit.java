@@ -49,4 +49,17 @@ public class FileUnit extends FileObj {
 		// TODO Auto-generated method stub
 		return this.id;
 	}
+
+	@Override
+	String getType() {
+		// TODO Auto-generated method stub
+		return this.type;
+
+	}
+
+	@Override
+	String getName() {
+		// TODO Auto-generated method stub
+		return this.name;
+	}
 }

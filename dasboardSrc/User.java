@@ -1,5 +1,6 @@
 package org.implicit.dashboard;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,7 +114,37 @@ public class User implements Serializable{
 	protected void setEmail(String o){
 		email=o;
 	}
-	
+	protected void updateExpt(String oldPath,String newName,DbAPI api){
+		try{
+			String[] array = oldPath.split("\\"+File.separator);
+			String Exptname= array[array.length-1];
+			String studyName= array[array.length-2];
+			Study s = this.getStudy(studyName);
+			EXPT e = s.getExpt(Exptname);
+			String EXPTID = e.expt_id;
+			s.updateExpt(Exptname, newName);
+			String studyid = s.getID();
+			api.updateExptFileName(studyid, newName, Exptname);
+		}catch (Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		
+		
+	}
+	protected void updateStudy(String studyName,String newName,DbAPI api){
+		try{
+			Study s = this.getStudy(studyName);
+			s.setStudyName(newName);
+			String studyid = s.getID();
+			api.updateTable("studies", "Name", newName, "studyID", studyid);
+			
+		}catch (Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		
+	}
 	protected HashMap getNames(){
 		
 		HashMap studiesMap = new HashMap();

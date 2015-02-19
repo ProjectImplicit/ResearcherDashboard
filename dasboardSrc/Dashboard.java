@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.util.List;
@@ -188,6 +190,9 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 						if (cmd.equals("configure")){
 							configureFileModule(request,user,mng,out);
 						}
+						if (cmd.equals("multipledelete")){
+							res=multipleDelete(request,user,mng);
+						}
 						if (cmd.equals("drilldown")){
 							drillDown(request,user,mng,out);
 							
@@ -196,6 +201,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							drillUp(request,user,mng,out);
 						}
 						if (cmd.equals("rename")){
+							res = rename(request,user,mng,api);
 							
 						}
 						if (cmd.equals("create")){
@@ -349,6 +355,24 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 		return returnPath;
 		
+		
+		
+	}
+	protected String multipleDelete(HttpServletRequest request,User user,Manager mng) throws Exception{
+		String study = request.getParameter("study");
+		String model = request.getParameter("modelarray");
+		HashMap res= new HashMap();
+		Object obj=JSONValue.parse(model);
+		JSONArray array=(JSONArray)obj;
+		for (int i=0;i<array.size();i++){
+			JSONObject obj1 = (JSONObject)array.get(i);
+			String id = (String) obj1.get("id");
+			mng.deleteFile(id,"", user, study);
+		}
+		user.getComposite().refresh();
+		res.put("filesys", user.getComposite().toHashMap());
+		String jsonText = JSONValue.toJSONString(res);
+		return jsonText;
 		
 		
 	}
@@ -645,6 +669,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			}
 		}
 		if (result){
+			user.getComposite().refresh();
 			HashMap res = new HashMap();
 			res.put("filesys", user.getComposite().toHashMap());
 			String jsonText = JSONValue.toJSONString(res);
@@ -762,6 +787,37 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		out.write(jsonText.getBytes("UTF8"));
 		out.flush();
 		
+	}
+	protected String rename(HttpServletRequest request,User user,Manager mng,DbAPI api) throws Exception{
+		try{
+			String ident = request.getParameter("identifier");
+			String id = request.getParameter("id");
+			String newName = request.getParameter("newname");
+			FileObj obj = user.getComposite().getUnit(id);
+			String oldPath = obj.getPath();
+			boolean success = mng.rename(id,newName,mng,user);
+			if (success){
+				if (oldPath.contains(".expt.xml")){
+					user.updateExpt(oldPath,newName,api);
+				}else{
+					if (obj.getType().equals("folder")){
+						user.updateStudy(obj.getName(),newName,api);
+					}
+				}
+				HashMap res = new HashMap();
+				user.getComposite().refresh();
+				res.put("filesys", user.getComposite().toHashMap());
+				String jsonText = JSONValue.toJSONString(res);
+				return jsonText;
+			}
+			
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		
+	
+		return null;
 	}
 	protected void drillUp(HttpServletRequest request,User user,Manager mng,ServletOutputStream out) throws Exception{
 		try{

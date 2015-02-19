@@ -12,6 +12,9 @@ define(['api','settings'], function (API,Settings) {
 		var level;
     var data;
     var topPath;
+    var DELAY = 500;
+    var clicks = 0;
+    var timer = null;
 
 		this.configure = function (options){
       that.api = new API();
@@ -32,26 +35,56 @@ define(['api','settings'], function (API,Settings) {
 
 		this.setListeners = function(){
 
-			$(document).on('click','#newFolder', function(){
-            debugger;
-        		var element =$(this);
-        		var tr = $(element).parent().parent();
-        		var td = $(tr).find('.folder').parent().parent();
-        		var id = $(td).attr("id");
-        		that.data.elementID = id;
-        		that.newFolder();
-      		});
+		    $(document).on('click','#newFolder', function(){
+          debugger;
+      		var element =$(this);
+      		var tr = $(element).parent().parent();
+      		var td = $(tr).find('.folder').parent().parent();
+      		var id = $(td).attr("id");
+      		that.data.elementID = id;
+      		that.newFolder();
+    		});
 
-      		$(document).on('click','.folder',function(){
-      			var td = $(this).parent().parent();
-		        var tr = $(td).parent();
-		        var folderName = that.takespaces($(this).text());
-		        var id = $(td).attr("id");
-		        that.level++;
-		        that.api.drillDown(id,that.updateView);
-		        
-		        
-		    });
+    		$(document).on('click','.folder',function(){
+          clicks++;  //count clicks
+          var thatII=this;
+          if(clicks === 1) {
+
+              timer = setTimeout(function() {
+
+                  var td = $(thatII).parent().parent();
+                  var tr = $(td).parent();
+                  var folderName = that.takespaces($(thatII).text());
+                  var id = $(td).attr("id");
+                  that.level++;
+                  that.api.drillDown(id,that.updateView);
+                  clicks = 0;             //after action performed, reset counter
+
+              }, DELAY);
+
+          } else {
+
+              clearTimeout(timer);    //prevent single-click action
+                //perform double-click action
+              var element =$(this);
+              var tr = $(element).parent().parent();
+              var id = $(tr).attr("id");
+              that.data.elementID=id;
+              $('#newNameModal').modal('show');
+              $('#newNamePressOK').on('click',function(){
+                var newname = $('#studyName').val();
+                $('#studyName').val('');
+                that.api.rename(that.data.elementID,'_ID',newname,that.updateView);
+              
+              });  
+              clicks = 0;             //after action performed, reset counter
+          }
+
+          
+    			
+	        
+	        
+	    });
 
 		    $(document).on('click','#drillUp',function(){
 		    	that.level--;
@@ -79,6 +112,15 @@ define(['api','settings'], function (API,Settings) {
           }
         });
 
+        $(document).on('click','#uploadFile', function(){
+          var element =$(this);
+          var tr = $(element).parent().parent();
+          var td = $(tr).find('.folder').parent().parent();
+          var id = $(td).attr("id");
+          that.data.elementID = id;
+          that.api.rename(id,'_ID',that.updateView);
+
+        });  
         $(document).on('click','#deleteFolder', function(){
           var element =$(this);
           var tr = $(element).parent().parent();
@@ -141,12 +183,36 @@ define(['api','settings'], function (API,Settings) {
               // if user clicks 'Cancel', do something
           }
       });
-      $(document).on('click','#renameFolder',function(){
+      // $(document).on('dblclick','.folder',function(){
+      //   alert('double');
+      //   // var element =$(this);
+      //   // var tr = $(element).parent().parent();
+      //   // var id = $(tr).attr("id");
+      //   // that.data.elementID=id;
+
+      //   // $('#newNameModal').modal('show');
+      //   // $('#newNamePressOK').on('click',function(){
+      //   //   var newname = $('#studyName').val();
+      //   //   $('#studyName').val('');
+      //   //   that.api.rename(that.data.elementID,'_ID',newname,that.updateView);
+
+      //   // })
+        
+      // });
+      $(document).on('dblclick','.fileNameSpan',function(){
         var element =$(this);
-        var tr = $(element).parent().parent();
-        var td = $(tr).find('.folder').parent().parent();
-        var id = $(td).attr("id");
-        that.api.renameFolder(id,'_ID');
+        var tr = $(element).parent();
+        var id = $(tr).attr("id");
+        that.data.elementID=id;
+
+        $('#newNameModal').modal('show');
+        $('#newNamePressOK').on('click',function(){
+          var newname = $('#studyName').val();
+          $('#studyName').val('');
+          that.api.rename(that.data.elementID,'_ID',newname,that.updateView);
+
+        })
+        
       });
       $(document).on('click','#downloadFolder', function(){
         debugger;
@@ -197,28 +263,53 @@ define(['api','settings'], function (API,Settings) {
       });
       $(document).on('click','#FileoverwriteYes',function(e){
         var existfiles = that.data.existfiles;
-        var data = that.data.FormData;
+        var formdata = that.data.formdata;
+        var checked=0;
         $("#overwriteFileName .mycheckbox:checked").each(function(){
           var filename = $(this).attr("value");
+          checked++;
           for (var i=0;i<existfiles.length;i++){
             var file = existfiles[i];
             if (file.key===filename){
               var key = file.formkey;
               var value = file.formvalue;
-              data.append(key, value);
+              formdata.append(key, value);
             }
           }
           //alert($(this).attr("value"));
         });
         $('#overwrite').modal('hide');
-        data.append('study','_CURRENT');
-        data.append('cmd','UploadFile');
-        that.api.uploadFile(data,that.updateView);
+        if (checked>0){
+          formdata.append('study','_CURRENT');
+          formdata.append('cmd','UploadFile');
+          that.api.uploadFile(formdata,that.updateView);
+        }
+        $('#overwriteFileName').html('');
 
       });
       
+      $(document).on('click','.mycheckbox:checked',function(){
+        var check =$(this);
+        var id = $(check).attr('id');
+        if (id==='applytoall'){
+         $("#overwriteFileName .mycheckbox:not(:checked)").each(function(){
+           $(this).prop('checked', true);
+           
+         });
+        }
+
+      });
       $(document).on('click','[type=checkbox]',function(){
-          // var check =$(this);
+
+           // var check =$(this);
+           // var id = $(check).attb('id');
+           // if (id==='applytoall'){
+           //  $("#overwriteFileName .mycheckbox:checked").each(function(){
+           //    $(this).prop('checked', true);
+              
+           //  });
+
+           // }
           // var td = $(check).parent().parent();
           // if ($(td).attr("id").indexOf("folder")==-1) return;
           // var span = $(td).find('#folderNameR');
@@ -270,23 +361,22 @@ define(['api','settings'], function (API,Settings) {
         $( '.check' ).each(function( index ) {
           var input = $(this);
           if ($(input).prop('checked')){
-
             var span  = $(input).parent();
             var td = $(span).parent();
             var id = $(td).attr("id");
-            var current = model.currentFolder;
             var name = $(span).text();
-            var type='file';
+            var type;
+            if (id.indexOf('folder')===-1){
+              type='file';
+            }else{
+              type='folder';
+            }
+            
             var obj={};
             obj.id =id;
             obj.name=name;
             obj.type=type;
-            if (current===undefined || current===null || current.id!=id){
-              modelid.push(obj);  
-            }
-            
-            
-
+            modelid.push(obj);  
           } 
         });
         var text='';
@@ -294,29 +384,34 @@ define(['api','settings'], function (API,Settings) {
         $('#listOfFiles').html(text);
         $('#deleteMultipleModal').modal('show');
         $(document).one("click",'#deleteMultipleOK',function(){
-          console.log('inside delete dialog');          
-          for (var i=0;i<modelid.length;i++){
-            var obj =modelid[i];
-            var input = $('#'+obj.id);
-            that.data.elementID = obj.id;
-            if (obj.type==='folder'){
-              api.deleteFolder(that.data.elementID,'','_ID',function(){
-                if (i===modelid.length){
-                  that.updateView();
-                }
-              });
+
+          that.api.multipleDelete(modelid,'_ID',that.updateView);
+          // console.log('inside delete dialog');
+          // var count=0;
+          // for (var j=0;j<modelid.length;j++){
+          //   var obj =modelid[j];
+          //   var input = $('#'+obj.id);
+          //   that.data.elementID = obj.id;
+          //   if (obj.type==='folder'){
+          //     that.api.deleteFolder(that.data.elementID,'','_ID',function(data){
+          //       count++;
+          //       if (count===modelid.length){
+          //         that.updateView(data);
+          //       }
+          //     });
               
 
-            }else{
+          //   }else{
               
-              api.deleteFolder(that.data.elementID,'','_ID',function(){
-                if (i===modelid.length){
-                  that.updateView();
-                }
-              });
-            } 
+          //     that.api.deleteFolder(that.data.elementID,'','_ID',function(data){
+          //       count++;
+          //       if (count===modelid.length){
+          //         that.updateView(data);
+          //       }
+          //     });
+          //   } 
             
-          }
+          // }
         });
         
 
@@ -379,7 +474,6 @@ define(['api','settings'], function (API,Settings) {
 		}
     this.prepareUpload = function(event){
       var data =new FormData();
-      that.data.formdata=data; 
       that.createExistFilesArray(event.target.files,data);
       var exist = that.data.existfiles;
       if (exist.length>0){
@@ -422,6 +516,7 @@ define(['api','settings'], function (API,Settings) {
         });
       }
       that.data.existfiles= existFiles;
+      that.data.formdata=data;
   
     }
     this.uploadFile = function(){
@@ -479,7 +574,7 @@ define(['api','settings'], function (API,Settings) {
       }
 			fileObj = dataObj.filesys;
       that.topPath = fileObj.toppath;
-	    $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+	    //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
 	    that.createRaws(fileObj);
 
 		}
@@ -529,11 +624,11 @@ define(['api','settings'], function (API,Settings) {
         	return html;
 
       	}
-      	this.addExptRaw = function(name,level,id){
+      	this.addExptRaw = function(name,level,id,date){
         	
 	        var html = '<tr>'+
 	          '<td class="file" id="'+id+'" >'+
-	            '<span class="fileNameSpan" style="margin-left:'+level*50+'px" ><input type="checkbox" class="check" style="margin-right:10px;">'+
+	            '<span data-toggle="tooltip" data-placement="top" title="'+date+'" class="fileNameSpan" style="margin-left:'+level*50+'px" ><input type="checkbox" class="check" style="margin-right:10px;">'+
 	              '<i class="fa fa-file-text" ></i> '+name+
 	            '</span>'+
 	          '</td>'+
@@ -544,7 +639,7 @@ define(['api','settings'], function (API,Settings) {
 	              '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
 	              '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
 	              '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
-	              '<!--<button type="button" id="deployButton" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
+                '<!--<button type="button" id="deployButton" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
 	              '<button type="button" style="margin-left:20px;" id="statisticsButton" class="btn btn-primary btn-xs ">Statistics</button>'+
 	              '<button type="button" style="margin-left:20px;" id="dataFile" class="btn btn-primary btn-xs ">Data</button>-->'+
 	            '</td>'+
@@ -553,12 +648,12 @@ define(['api','settings'], function (API,Settings) {
 	          
         	$('#fileTabale > tbody').append(html);
       }
-      this.addJspRaw = function(name,level,id){
+      this.addJspRaw = function(name,level,id,date){
 
         
         $('#fileTabale > tbody').append('<tr>'+
           '<td class="file" id="'+id+'" >'+
-            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;"><i class="fa fa-file-text" >'+
+            '<span data-toggle="tooltip" data-placement="top" title="'+date+'" class="fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;"><i class="fa fa-file-text" >'+
             '</i> '+name+
             '</span>'+
           '</td>'+
@@ -570,12 +665,12 @@ define(['api','settings'], function (API,Settings) {
         '</tr>');
       }
 
-      this.addJSRaw = function(name,level,id){
+      this.addJSRaw = function(name,level,id,date){
 
         
         $('#fileTabale > tbody').append('<tr>'+
           '<td class="file" id="'+id+'">'+
-            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"> <input type="checkbox" class="check" style="margin-right:10px;">'+
+            '<span data-toggle="tooltip" data-placement="top" title="'+date+'" class="fileNameSpan" style="margin-left:'+level*50+'px"> <input type="checkbox" class="check" style="margin-right:10px;">'+
               '<i class="fa fa-file-text" ></i> '+name+
             '</span>'+
           '</td>'+
@@ -583,16 +678,16 @@ define(['api','settings'], function (API,Settings) {
             '<button type="button" class="btn btn-primary btn-xs validate">Check js syntax</button>'+
             '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
             '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
-            '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+     
+            '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
            '</td>'+
         '</tr>');
 
       }    
-      this.addFileRaw = function(name,level,id){
+      this.addFileRaw = function(name,level,id,date){
 
         $('#fileTabale > tbody').append('<tr>'+
           '<td class="file" id="'+id+'" >'+
-            '<span class="fileRaw fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
+            '<span data-toggle="tooltip" data-placement="top" title="'+date+'" class="fileRaw fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
               '<i class="fa fa-file-text"  ></i> '+name+
             '</span>'+
           '</td>'+
@@ -603,12 +698,12 @@ define(['api','settings'], function (API,Settings) {
           '</td>'+
         '</tr>');
       }
-      this.addFolderRaw = function(name,level,id){
+      this.addFolderRaw = function(name,level,id,date){
 
         
         $('#fileTabale > tbody').append('<tr>'+
             '<td id="'+id+'" >'+
-              '<span  style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
+              '<span data-toggle="tooltip" data-placement="top" title="'+date+'" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
                 '<span class="folder" style="cursor:pointer"><i class="fa fa-folder" ></i> <span id="folderNameR">'+name+'</span></span>'+
               '</span>'+
             '</td>'+
@@ -617,8 +712,6 @@ define(['api','settings'], function (API,Settings) {
                 '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>-->'+
                 '<button type="button" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
                 '<button type="button" style="margin-left:20px;" id="downloadFolder" class="btn btn-primary btn-xs ">Download Folder</button>'+
-                '<button type="button" style="margin-left:20px;" id="renameFolder" class="btn btn-primary btn-xs ">Rename Folder</button>'+
-
             '</td>'+
           '</tr>');
 
@@ -648,10 +741,10 @@ define(['api','settings'], function (API,Settings) {
           if (fileObj.hasOwnProperty(key)) {
               var value = fileObj[key];
               if (value.type==='folder'){
-                that.addFolderRaw(value.name,0,value.id);
+                that.addFolderRaw(value.name,0,value.id,value.updateDate);
               }
               if (value.type==='file'){
-                that.addFile(value.name,0,value.id);
+                that.addFile(value.name,0,value.id,value.updateDate);
               }
           }
         }
@@ -687,21 +780,21 @@ define(['api','settings'], function (API,Settings) {
 
 
     // }
-	  this.addFile = function(name,level,id){
+	  this.addFile = function(name,level,id,date){
 	  	var array = name.split('.');
 	  	if (array[1]==='jsp'){
-	        that.addJspRaw(name,level,id);
+	        that.addJspRaw(name,level,id,date);
 	        return;
 	    }
 	    if (array[1]==='expt'){
-	    	that.addExptRaw(name,level,id);
+	    	that.addExptRaw(name,level,id,date);
 	    	return;
 	    }
 	    if (array[1]==='js'){
-	    	that.addJSRaw(name,level,id);
+	    	that.addJSRaw(name,level,id,date);
 	    	return;
 	    }
-	    that.addFileRaw(name,level,id);
+	    that.addFileRaw(name,level,id,date);
 	  	
 
 	  }
@@ -709,9 +802,9 @@ define(['api','settings'], function (API,Settings) {
 
       
       var data =new FormData();
-      that.updateDatawithFiles(files,data,cmd,folderpath);
+      that.updateDatawithFiles(files,data);
       //if (model.activePage === 'file') model.study='all';
-      that.createExistFilesArray(event.target.files,data);
+      that.createExistFilesArray(files,data);
       var exist = that.data.existfiles;
       if (exist.length>0){
         $('#overwrite').modal('show');
@@ -725,7 +818,7 @@ define(['api','settings'], function (API,Settings) {
 
     }
 
-    this.updateDatawithFiles = function(files,data,cmd){
+    this.updateDatawithFiles = function(files,data){
 
       if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
         $.each(files, function(key, value){

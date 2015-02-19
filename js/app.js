@@ -2,8 +2,8 @@
     require.config({
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
-        'jQuery': '//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min',
-        'bootstrap': '//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min',
+        'jQuery': 'https://code.jquery.com/jquery-2.1.3.min',
+        'bootstrap': 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min',
         'jshint': 'jshint',
         'csvToTable':'jquery.csvToTable',
         'tablesorter':'tablesorter/jquery.tablesorter',
@@ -50,6 +50,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       context.init({preventDoubleContext: false},model);
       var file = new fileSys(model,fileTableModel,2);
       setLiseners();
+       $("[rel='tooltip']").tooltip();
+       
       // context.attach('.folder', [
       //   {header: 'Options'},
       //   {text: 'Upload File', action: uploadFile},
@@ -228,51 +230,51 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       //   // model.Modalinfo=info;
       //   // return existFiles;
       // }
-      function prepareUpload(event){
+      // function prepareUpload(event){
         
-        //$('#uploadedModal').modal('show');
-        var data =new FormData();
-        var pathA = new Array();
-        var study;
-        var info={};
-        info.found=false;
-        var path='';
-        if (model.elementID==='0'){//if root
-          path=fileSeperator();
-          study=model.study;
+      //   //$('#uploadedModal').modal('show');
+      //   var data =new FormData();
+      //   var pathA = new Array();
+      //   var study;
+      //   var info={};
+      //   info.found=false;
+      //   var path='';
+      //   if (model.elementID==='0'){//if root
+      //     path=fileSeperator();
+      //     study=model.study;
           
-        }else{// not root using all method
-          getPath(model.fileSystem,model.elementID,pathA,info);
-          for (var i=0;i<pathA.length;i++){
-            path+=pathA[i]+fileSeperator();
-          }
-          if (model.study==='user'){
-            study='user';
-          }else{
-            study='all';
+      //   }else{// not root using all method
+      //     getPath(model.fileSystem,model.elementID,pathA,info);
+      //     for (var i=0;i<pathA.length;i++){
+      //       path+=pathA[i]+fileSeperator();
+      //     }
+      //     if (model.study==='user'){
+      //       study='user';
+      //     }else{
+      //       study='all';
 
-          }
-        }
+      //     }
+      //   }
        
-        createExistFilesArray(event.target.files,path,data,study,function(){
-          if (model.exist.length>0){
-            setModals(model);
-           }else{
-          //if (model.activePage === 'file') model.study='all';
-            data.append('UserKey',model.key);
-            data.append('folder',takespaces(path));
-            data.append('study',model.study);
-            data.append('cmd','UploadFile');
-            $('#uploadedModal').modal('show');
-            api.uploadFile(data,fileOpSuccess);
+      //   createExistFilesArray(event.target.files,path,data,study,function(){
+      //     if (model.exist.length>0){
+      //       setModals(model);
+      //      }else{
+      //     //if (model.activePage === 'file') model.study='all';
+      //       data.append('UserKey',model.key);
+      //       data.append('folder',takespaces(path));
+      //       data.append('study',model.study);
+      //       data.append('cmd','UploadFile');
+      //       $('#uploadedModal').modal('show');
+      //       api.uploadFile(data,fileOpSuccess);
 
-          }
+      //     }
 
 
-        });
+      //   });
         
         
-      }
+      // }
 
       function getStudyFromFileSys(fileSystem,info){
         
@@ -585,10 +587,18 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       $(document).on("click",'.tableVal', function(){
 
         console.log($(this).text());
+        model.activePage = 'study';
+        var study = $(this).text();
         model.study = $(this).text();
+
+        $('#instruct').hide();
+        $('#result').html('');
+        //$('#studyTablePanel').html('');
+        $('#studyTablePanel').hide();
+        $('#studyTable').hide();
         $('.studyButt').html(model.study+'<span class="caret"></span>');
         setSideMenu();
-        populateFileTable();
+        file.setFileSysTable();
         
       });
 
@@ -1162,7 +1172,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
                      '<strong>My Studies </strong>'+
                      '<div class="dropdown" style="display: inline">'+
                           '<button class="btn btn-default dropdown-toggle btn-sm studyButt" type="button" id="dropdownMenu1" data-toggle="dropdown">'+
-                            'Studies '+
+                            ''+
                             '<span class="caret"></span>'+
                           '</button>'+
                           '<ul class="dropdown-menu dropdownLI" role="menu" aria-labelledby="dropdownMenu1">'+
@@ -1291,44 +1301,44 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         populateFileTable();
       }
 
-      function folderCreated(){
-       
-        var open =model.openStruct;
-        open[model.tempFolder] = 'close';  
-        model.active='';
-        //if (study===null || study===undefined) study='all';
-        api.getFiles(model.key,model.study,function(data){
+        // function folderCreated(){
+         
+        //   var open =model.openStruct;
+        //   open[model.tempFolder] = 'close';  
+        //   model.active='';
+        //   //if (study===null || study===undefined) study='all';
+        //   api.getFiles(model.key,model.study,function(data){
 
-          $('#uploadedModal').modal('hide');
-          $('#result').html('');
-          $('#studyTablePanel').hide();
-          $('#studyTable').hide();
-          var dataObj = jQuery.parseJSON( data );
-          fileObj = dataObj.filesys;
-          createTable();
-          var index ={};
-          index.index=0;
-          setIds(fileObj,index);
-          model.fileSystem = fileObj;
-          model.studyFileSystem = fileObj;
-          fileTableModel.user = false;
-          if (model.activePage!='file'){
-            var info={};
-            info.study=model.study;
-            getStudyFromFileSys(fileObj,info);
-            model.studyFileSystem=info.studyObj;
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
-            createRaws(model.studyFileSystem,false,fileTableModel.user);
-          }else{
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
-            createRaws(fileObj,false,fileTableModel.user);
+        //     $('#uploadedModal').modal('hide');
+        //     $('#result').html('');
+        //     $('#studyTablePanel').hide();
+        //     $('#studyTable').hide();
+        //     var dataObj = jQuery.parseJSON( data );
+        //     fileObj = dataObj.filesys;
+        //     createTable();
+        //     var index ={};
+        //     index.index=0;
+        //     setIds(fileObj,index);
+        //     model.fileSystem = fileObj;
+        //     model.studyFileSystem = fileObj;
+        //     fileTableModel.user = false;
+        //     if (model.activePage!='file'){
+        //       var info={};
+        //       info.study=model.study;
+        //       getStudyFromFileSys(fileObj,info);
+        //       model.studyFileSystem=info.studyObj;
+        //       $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+        //       createRaws(model.studyFileSystem,false,fileTableModel.user);
+        //     }else{
+        //       $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+        //       createRaws(fileObj,false,fileTableModel.user);
 
-          }
-          
+        //     }
+            
 
-        });
-      }
-      
+        //   });
+        // }
+        
       function folderID(fileSystem){
         var res;
         $.each(fileSystem, function(k, v) {
@@ -1487,55 +1497,55 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       * 
       */
 
-      function fileOpSuccess(data){
+      // function fileOpSuccess(data){
 
         
-        //model.activePage = 'test';
-        if (data!=undefined && (typeof data==='string') && data.indexOf(":")!=-1){
-          var msg = data.split(":")[1];
-          alert(msg);
-        }
-        model.elementID = undefined;
-        model.active='';
-        var study = model.study;
-        model.done=false;
-        $('#applytoall').attr('checked', false);
-        if (study===null || study===undefined) study='all';
-        api.getFiles(model.key,model.study,function(data){
+      //   //model.activePage = 'test';
+      //   if (data!=undefined && (typeof data==='string') && data.indexOf(":")!=-1){
+      //     var msg = data.split(":")[1];
+      //     alert(msg);
+      //   }
+      //   model.elementID = undefined;
+      //   model.active='';
+      //   var study = model.study;
+      //   model.done=false;
+      //   $('#applytoall').attr('checked', false);
+      //   if (study===null || study===undefined) study='all';
+      //   api.getFiles(model.key,model.study,function(data){
 
           
-          $('#result').html('');
-          $('#studyTablePanel').hide();
-          $('#studyTable').hide();
-          var dataObj = jQuery.parseJSON( data );
-          fileObj = dataObj.filesys;
-          createTable();
-          var index ={};
-          index.index=0;
-          setIds(fileObj,index);
-          model.fileSystem = fileObj;
-          model.studyFileSystem = fileObj;
-         // model.openStruct={};
-          //setOpenStruct(fileObj,model.openStruct);
-          fileTableModel.user = false;
-          if (model.activePage!='file'){
-            var info={};
-            info.study=model.study;
-            getStudyFromFileSys(fileObj,info);
-            model.studyFileSystem=info.studyObj;
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
-            createRaws(model.studyFileSystem,false,fileTableModel.user);
-          }else{
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
-            createRaws(fileObj,false,fileTableModel.user);
+      //     $('#result').html('');
+      //     $('#studyTablePanel').hide();
+      //     $('#studyTable').hide();
+      //     var dataObj = jQuery.parseJSON( data );
+      //     fileObj = dataObj.filesys;
+      //     createTable();
+      //     var index ={};
+      //     index.index=0;
+      //     setIds(fileObj,index);
+      //     model.fileSystem = fileObj;
+      //     model.studyFileSystem = fileObj;
+      //    // model.openStruct={};
+      //     //setOpenStruct(fileObj,model.openStruct);
+      //     fileTableModel.user = false;
+      //     if (model.activePage!='file'){
+      //       var info={};
+      //       info.study=model.study;
+      //       getStudyFromFileSys(fileObj,info);
+      //       model.studyFileSystem=info.studyObj;
+      //       $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+      //       createRaws(model.studyFileSystem,false,fileTableModel.user);
+      //     }else{
+      //       $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+      //       createRaws(fileObj,false,fileTableModel.user);
 
-          }
+      //     }
           
-          $('#uploadedModal').modal('hide');
-        });
+      //     $('#uploadedModal').modal('hide');
+      //   });
         
         
-      }
+      // }
       function uploadError(jqXHR, textStatus, errorThrown){
         console.log('ERRORS: ' + textStatus);
 
@@ -2286,7 +2296,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         model.fileSystem = fileObj;
         model.studyFileSystem=fileObj;
         fileTableModel.user = false;
-        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+        //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
         console.log('before createRaws'+model.study);
         createRaws(fileObj,false,fileTableModel.user);
         console.log('in setStudyTable'+model.study);
@@ -2335,61 +2345,61 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         });
       }
 
-      function DrophandleFileUpload(files,obj){
+      // function DrophandleFileUpload(files,obj){
 
-        model.elementID=undefined;
-        var cmd='UploadFile';
-        var folderpath='';
+      //   model.elementID=undefined;
+      //   var cmd='UploadFile';
+      //   var folderpath='';
 
-        $( '.check' ).each(function( index ) {
-          var input = $(this);
-          var tr  = $(input).parent().parent();
-          var id = $(tr).attr("id");
-          if (id===undefined){
-            var upTD = $(tr).find('.folder');
-            id = $(upTD).attr("id");
-          }
-          if ($(input).prop('checked')){
-            model.elementID = id;
-            $(this).attr('checked', false);
-          }
-        });
-        if (model.elementID===undefined) model.elementID='0';
-        var data =new FormData();
-        var pathA = new Array();
-        var study;
-        var info={};
-        info.found=false;
-        var path='';
-        if (model.elementID==='0'){
-          path=fileSeperator();
-          study=model.study;
-          if (study===undefined) study='all';
-        }else{//this is not a root file operation so use full path study='all'
-          getPath(model.fileSystem,model.elementID,pathA,info);
-          for (var i=0;i<pathA.length;i++){
-            path+=pathA[i]+fileSeperator();
-          }
-          study='all';
-        }
-        updateDatawithFiles(files,data,cmd,folderpath);
-        //if (model.activePage === 'file') model.study='all';
-        createExistFilesArray(files,path,data,study,function(){
-          if (model.exist.length>0){
-          setModals(model);
-          }else{
-            data.append('UserKey',model.key);
-            data.append('folder',takespaces(path));
-            data.append('study',model.study);
-            data.append('cmd','UploadFile');
-            $('#uploadedModal').modal('show');
-            api.uploadFile(data,fileOpSuccess);
-          }
+      //   $( '.check' ).each(function( index ) {
+      //     var input = $(this);
+      //     var tr  = $(input).parent().parent();
+      //     var id = $(tr).attr("id");
+      //     if (id===undefined){
+      //       var upTD = $(tr).find('.folder');
+      //       id = $(upTD).attr("id");
+      //     }
+      //     if ($(input).prop('checked')){
+      //       model.elementID = id;
+      //       $(this).attr('checked', false);
+      //     }
+      //   });
+      //   if (model.elementID===undefined) model.elementID='0';
+      //   var data =new FormData();
+      //   var pathA = new Array();
+      //   var study;
+      //   var info={};
+      //   info.found=false;
+      //   var path='';
+      //   if (model.elementID==='0'){
+      //     path=fileSeperator();
+      //     study=model.study;
+      //     if (study===undefined) study='all';
+      //   }else{//this is not a root file operation so use full path study='all'
+      //     getPath(model.fileSystem,model.elementID,pathA,info);
+      //     for (var i=0;i<pathA.length;i++){
+      //       path+=pathA[i]+fileSeperator();
+      //     }
+      //     study='all';
+      //   }
+      //   updateDatawithFiles(files,data,cmd,folderpath);
+      //   //if (model.activePage === 'file') model.study='all';
+      //   createExistFilesArray(files,path,data,study,function(){
+      //     if (model.exist.length>0){
+      //     setModals(model);
+      //     }else{
+      //       data.append('UserKey',model.key);
+      //       data.append('folder',takespaces(path));
+      //       data.append('study',model.study);
+      //       data.append('cmd','UploadFile');
+      //       $('#uploadedModal').modal('show');
+      //       api.uploadFile(data,fileOpSuccess);
+      //     }
 
-        });
+      //   });
         
 
-      }
+      // }
       function errorHandler(data){
         console.log(data);
       }

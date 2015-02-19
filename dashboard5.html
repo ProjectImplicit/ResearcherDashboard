@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard </title>
 
-    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="research/dashBoard/css/local.css" />
     <link rel="stylesheet" type="text/css" href="research/dashBoard/css/dashboard.css" />
@@ -184,102 +184,13 @@
         http://www.shieldui.com/documentation/grid/javascript/getting.started
         http://www.shieldui.com/documentation/datasource/javascript/getting.started
     -->
-    // <script type="text/javascript">
-    //     jQuery(function ($) {
-    //         var performance = [12, 43, 34, 22, 12, 33, 4, 17, 22, 34, 54, 67],
-    //             visits = [123, 323, 443, 32],
-    //             budget = [23, 19, 11, 134, 242, 352, 435, 22, 637, 445, 555, 57],
-    //             sales = [11, 9, 31, 34, 42, 52, 35, 22, 37, 45, 55, 57];
-
-    //         $("#shieldui-chart1").shieldChart({
-    //             primaryHeader: {
-    //                 text: "Visitors"
-    //             },
-    //             exportOptions: {
-    //                 image: false,
-    //                 print: false
-    //             },
-    //             dataSeries: [{
-    //                 seriesType: "area",
-    //                 collectionAlias: "Q Data",
-    //                 data: performance
-    //             }]
-    //         });
-
-    //         $("#shieldui-chart2").shieldChart({
-    //             primaryHeader: {
-    //                 text: "Logins Per week"
-    //             },
-    //             exportOptions: {
-    //                 image: false,
-    //                 print: false
-    //             },
-    //             seriesSettings: {
-    //                 donut: {
-    //                     enablePointSelection: true
-    //                 }
-    //             },
-    //             dataSeries: [{
-    //                 seriesType: "donut",
-    //                 collectionAlias: "logins",
-    //                 data: visits
-    //             }]
-    //         });
-
-    //         $("#shieldui-chart3").shieldChart({
-    //             primaryHeader: {
-    //                 text: "Budget"
-    //             },
-    //             dataSeries: [{
-    //                 seriesType: "line",
-    //                 collectionAlias: "Budget",
-    //                 data: budget
-    //             }]
-    //         });
-
-    //         $("#shieldui-chart4").shieldChart({
-    //             primaryHeader: {
-    //                 text: "Sales"
-    //             },
-    //             dataSeries: [{
-    //                 seriesType: "bar",
-    //                 collectionAlias: "sales",
-    //                 data: sales
-    //             }]
-    //         });
-
-    //         $("#shieldui-grid1").shieldGrid({
-    //             dataSource: {
-    //                 data: gridData
-    //             },
-    //             sorting: {
-    //                 multiple: true
-    //             },
-    //             paging: {
-    //                 pageSize: 12,
-    //                 pageLinksCount: 4
-    //             },
-    //             selection: {
-    //                 type: "row",
-    //                 multiple: true,
-    //                 toggle: false
-    //             },
-    //             columns: [
-    //                 { field: "id", width: "70px", title: "ID" },
-    //                 { field: "name", title: "Person Name" },
-    //                 { field: "company", title: "Company Name" },
-    //                 { field: "email", title: "Email Address", width: "270px" }
-    //             ]
-    //         });
-    //     });
-    // </script>
+    
     <input type="file" name="fileName" style="visibility: hidden" multiple >
     <a href="" id="fileDownload" style="visibility: hidden"></a>
     <input type="hidden" id="rulename" name="Language" value="parent">
     <input type="hidden" id="hide" name="Language" value="parent">
     <input type="hidden" id="restrictionshide" name="Language" value="parent">
-</body>
-</html>
+
  <div class="modal fade" id="deployModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -388,6 +299,27 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="newNameModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                 <h4 class="modal-title">New Name</h4>
+
+            </div>
+            <div class="modal-body">
+                Enter New Name: <input type="text" id="studyName">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="newNamePressOK" data-dismiss="modal">Ok</button>
                 <!--<button type="button" class="btn btn-primary">Save changes</button>-->
             </div>
         </div>
@@ -660,18 +592,18 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class="modal fade" id="overwrite">
+<div class="modal fade" id="overwrite" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
 
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">The Following Files Alreay Exist, Overwrite? </h4>
+        <h4 class="modal-title" id="myModalLabel">The Following Files Alreay Exist, Overwrite? </h4>
       </div>
 
       <div class="modal-body">
         <p><span id="overwriteFileName"></span></p>
-        <p><input type="checkbox" id="applytoall"/> Apply to all?</p>
+        <p><input type="checkbox" class="mycheckbox" id="applytoall"/> Apply to all?</p>
       </div>
 
       <div class="modal-footer">
@@ -709,3 +641,7 @@
     </div>
   </div>
 </div>
+
+
+</body>
+</html>
