@@ -120,6 +120,7 @@ public class FileUploadManager {
 			{
 				joined += s + File.separator;
 			}
+			joined = joined.substring(0,joined.length()-1);
 			compose.setTopPath(joined);
 			
 		}catch(Exception e ){
@@ -151,7 +152,7 @@ public class FileUploadManager {
 		        }
 
 		    }
-			compose.setTopPath(topPath+directory.getName()+File.separator);
+			compose.setTopPath(topPath+File.separator+directory.getName());
 			
 		}catch(Exception e ){
 			System.out.println(e.getStackTrace());
@@ -186,6 +187,24 @@ public class FileUploadManager {
 		return compose;
 		
 		
+	}
+	protected boolean rename(String oldpath,String dest) throws Exception{
+
+		try{
+			File f = new File(oldpath);
+			File nf = new File(dest);
+			if (f.exists()){
+				f.renameTo(nf);
+				return true;
+			}
+		}catch(Exception e ){
+			System.out.println(e.getStackTrace());
+			throw e;
+			
+		}
+		
+		
+	return false;
 	}
 	protected boolean deleteFile(User user,Manager mng,String path) throws Exception{
 		

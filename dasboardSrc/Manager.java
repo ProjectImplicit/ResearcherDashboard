@@ -123,7 +123,7 @@ public class Manager implements Serializable{
 	}
 	protected boolean createFolder(String folderToCreate,String study,String id,User user) throws Exception{
 		String path = this.getpath(study, id, user);
-		path=path+folderToCreate;
+		path=path+File.separator+folderToCreate;
 		FileUploadManager fileMng = new FileUploadManager();
 		boolean result  = fileMng.createFolder(path);
 		return result;
@@ -134,15 +134,11 @@ public class Manager implements Serializable{
 			boolean res=false;
 			FileObj obj = user.getComposite().getUnit(id);
 			String path = obj.getPath();
-			File f = new File(path);
 			String[] array = path.split("\\"+File.separator);
 			array[array.length-1]=newName;
 			String dest = StringUtils.join(array,File.separator);
-			File nf = new File(dest);
-			if (f.exists()){
-				f.renameTo(nf);
-			}
-			return true;
+			FileUploadManager fileMng = new FileUploadManager();
+			return fileMng.rename(path, dest);
 			
 			
 			
@@ -173,7 +169,7 @@ public class Manager implements Serializable{
 			String folder = user.getFolderName();
 			if (study.indexOf("_")==0){
 				if (study.contains("USER")){
-					path = this.getFolderBase()+folder+File.separator+FileNamepathorID;
+					path = this.getFolderBase()+folder;
 				}
 				if (study.contains("ROUTER")){
 					String[] array = study.split("_");
@@ -252,24 +248,25 @@ public class Manager implements Serializable{
 		
 	}
 	
-	public String studyValidator(User user,String study,String path,String filename){
+	public String studyValidator(String path,User user){
 		
-		study = takeOutBraclets(study);
-		String studyKey=""; //= File.separator+"user"+File.separator+user.getFolderName()+File.separator+study+File.separator+filename;
+		//study = takeOutBraclets(study);
+		//String studyKey=""; //= File.separator+"user"+File.separator+user.getFolderName()+File.separator+study+File.separator+filename;
+		String studyKey =  File.separator+"user"+File.separator+user.getFolderName()+File.separator+this.getStudyRelativePath(path, user.getFolderName());
 		String type = "";
 		List errors=new ArrayList();
 		List warnings=new ArrayList();
-		if (study.equals("user")){
-			studyKey = File.separator+"user"+File.separator+path.substring(0, path.length()-1);
-		}else{
-			if (study.equals("all")){
-				studyKey = File.separator+"user"+File.separator+user.getFolderName()+File.separator+path.substring(0, path.length()-1);
-				
-			}else{
-				Study s =user.getStudy(study);
-				studyKey = File.separator+"user"+File.separator+user.getFolderName()+File.separator+s.getFolderName()+filename;
-			}
-		}
+//		if (study.equals("user")){
+//			studyKey = File.separator+"user"+File.separator+path.substring(0, path.length()-1);
+//		}else{
+//			if (study.equals("all")){
+//				studyKey = File.separator+"user"+File.separator+user.getFolderName()+File.separator+path.substring(0, path.length()-1);
+//				
+//			}else{
+//				Study s =user.getStudy(study);
+//				studyKey = File.separator+"user"+File.separator+user.getFolderName()+File.separator+s.getFolderName()+filename;
+//			}
+//		}
 		if(!(type==null)&&type.equals("xml")){
 		StudyValidator.ValidateXml(StudyValidator.studyRealPath+studyKey, errors, warnings, "XML File",true);
 		}
@@ -422,6 +419,51 @@ public class Manager implements Serializable{
 		return trimmed;
 		
 	}
+	public boolean isStudy(User user,File folder){
+		try{
+			String folderPath = folder.getAbsolutePath();
+			String folderName = folder.getName();
+			Study s = user.getStudy(folderName);
+			if (s!=null){
+				String studypath = s.getFolderName();
+				String relativeFolderPath = this.getStudyRelativePath(folderPath, user.getFolderName());
+				if (relativeFolderPath.equals(studypath)){
+					return true;
+				}
+				
+			}else{
+				return false;
+			}
+			
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		return false;
+	}
+	public boolean isStudy(User user,FileObj folder){
+		try{
+			String folderPath = folder.getPath();
+			String folderName = folder.getName();
+			Study s = user.getStudy(folderName);
+			if (s!=null){
+				String studypath = s.getFolderName();
+				String relativeFolderPath = this.getStudyRelativePath(folderPath, user.getFolderName());
+				if (relativeFolderPath.equals(studypath)){
+					return true;
+				}
+				
+			}else{
+				return false;
+			}
+			
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
+			throw e;
+		}
+		return false;
+	}
+	
 	public boolean isStudy(String name) throws Exception{
 		//name =trim(name);
 		DbAPI api = DbAPI.getInstance(false);
@@ -774,15 +816,10 @@ public class Manager implements Serializable{
 	 *  User memory object.
 	 * 
 	 */
-	protected void deleteStudy(String studyname,User user,Manager mng) throws Exception{
+	protected void deleteStudy(String studyname,User user,Manager mng,DbAPI api) throws Exception{
 		try{
-//			FileUploadManager filesys = new FileUploadManager();
-//			filesys.deleteFile(filepath);
-//			DbAPI api = new DbAPI();
-//			Study study = user.getStudy(studyname);
-//			String id = study.getID();
-//			api.deleteStudy(id);
-//			user.deleteStudy(studyname);
+			FileUploadManager fileMng = new FileUploadManager();
+			user.deleteStudy(studyname, api, mng, fileMng);
 		}catch(Exception e){
 			System.out.println(e.getStackTrace());
 			throw e;

@@ -10,13 +10,16 @@ define(['api','settings'], function (API,Settings) {
 		var id;
 		var api;
 		var level;
+    var base;
     var data;
     var topPath;
     var DELAY = 500;
     var clicks = 0;
     var timer = null;
+    var appContext;  
 
 		this.configure = function (options){
+      that.appContext = options.thisContext;
       that.api = new API();
       that.api.configureFileModule(options,function(data){
         that.data = jQuery.parseJSON( data );
@@ -28,6 +31,7 @@ define(['api','settings'], function (API,Settings) {
 		this.start = function (id,base){
 			this.id =id;
 			this.level=0;
+      this.base=base;
 	    this.api.getFiles('',base,this.updateView);
 
 		}
@@ -72,7 +76,7 @@ define(['api','settings'], function (API,Settings) {
               that.data.elementID=id;
               $('#newNameModal').modal('show');
               $('#newNamePressOK').on('click',function(){
-                var newname = $('#studyName').val();
+                var newname = $('#newNameField').val();
                 $('#studyName').val('');
                 that.api.rename(that.data.elementID,'_ID',newname,that.updateView);
               
@@ -112,15 +116,15 @@ define(['api','settings'], function (API,Settings) {
           }
         });
 
-        $(document).on('click','#uploadFile', function(){
-          var element =$(this);
-          var tr = $(element).parent().parent();
-          var td = $(tr).find('.folder').parent().parent();
-          var id = $(td).attr("id");
-          that.data.elementID = id;
-          that.api.rename(id,'_ID',that.updateView);
+        // $(document).on('click','#uploadFile', function(){
+        //   var element =$(this);
+        //   var tr = $(element).parent().parent();
+        //   var td = $(tr).find('.folder').parent().parent();
+        //   var id = $(td).attr("id");
+        //   that.data.elementID = id;
+        //   that.api.rename(id,'_ID',that.updateView);
 
-        });  
+        // });  
         $(document).on('click','#deleteFolder', function(){
           var element =$(this);
           var tr = $(element).parent().parent();
@@ -207,7 +211,7 @@ define(['api','settings'], function (API,Settings) {
 
         $('#newNameModal').modal('show');
         $('#newNamePressOK').on('click',function(){
-          var newname = $('#studyName').val();
+          var newname = $('#newNameField').val();
           $('#studyName').val('');
           that.api.rename(that.data.elementID,'_ID',newname,that.updateView);
 
@@ -562,9 +566,16 @@ define(['api','settings'], function (API,Settings) {
         
         that.api.deleteFile(that.data.elementID,'','_ID',that.updateView);
     }
+
 		this.updateView = function(data){
       debugger;
 			console.log(data);
+      if (typeof data =='string' && data.indexOf('msg:')!=-1){
+        var text = data.split(':')[1];
+        $('#msgspan').text(text);
+        $('#msgModal').modal('show');
+        return;
+      }
 			$('#'+that.id).html('');
       var dataObj;
       if (typeof data =='object'){
@@ -573,6 +584,10 @@ define(['api','settings'], function (API,Settings) {
         dataObj = jQuery.parseJSON( data );
       }
 			fileObj = dataObj.filesys;
+      var updatestudy = dataObj.updatestudy;
+      if (updatestudy!= undefined && updatestudy != null && updatestudy === 'true' ){
+        that.appContext.refreshStudyList();
+      }
       that.topPath = fileObj.toppath;
 	    //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
 	    that.createRaws(fileObj);
@@ -584,18 +599,40 @@ define(['api','settings'], function (API,Settings) {
           var html= '<tr>'+
               '<td id="'+id+'">'+
                 '<span style="margin-left:0px;">';
-          if (that.level!=0 || that.data.role==='SU'){
-          	html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';
-		      }      
+          //if (that.level!=0 || that.data.role==='SU'){
+          if (that.base.indexOf('ROUTER')===-1){//file system
+            if (that.data.role!='SU' ){// if user
+              if (that.level>0){
+                html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
+              }
+            }else{// super user
+              html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
+            }  
+
+          }else{// study
+            if (that.level>0){
+              html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
+            }else{
+              html=html+'<span>..</span>';
+
+            }
+            
+          }
+          
+          	
+		      
 		      html=html+'<span class="folder" ></span></span>'+
 	              '</td>'+
 	              '<td>'+
 	                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
 	                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
 	                '<button type="button" style="margin-left:20px;" id="multiple" class="btn btn-primary btn-xs">Multiple Download</button>'+
-	                '<button type="button" style="margin-left:20px;" id="multipleDelete" class="btn btn-primary btn-xs">Multiple Delete</button>'+
-	              '</td>'+    
-	            '</tr>';
+	                '<button type="button" style="margin-left:20px;" id="multipleDelete" class="btn btn-primary btn-xs">Multiple Delete</button>';
+                  if (that.base.indexOf('ROUTER')!=-1){
+                    html=html+'<button type="button" style="margin-left:20px;" id="renamestudy" class="btn btn-primary btn-xs">Rename Study</button>';
+                  }
+                  html=html+'</td></tr>';
+
 	          $('#fileTabale > tbody').append(html);
         
       	}
@@ -736,18 +773,28 @@ define(['api','settings'], function (API,Settings) {
         this.setToPath();
         this.createTable(fileObj.current.id);
         
-
-        for (var key in fileObj) {
-          if (fileObj.hasOwnProperty(key)) {
-              var value = fileObj[key];
-              if (value.type==='folder'){
-                that.addFolderRaw(value.name,0,value.id,value.updateDate);
-              }
-              if (value.type==='file'){
-                that.addFile(value.name,0,value.id,value.updateDate);
-              }
+        var sortArray = that.sortedKeys(fileObj);
+        for (var x=0;x<sortArray.length;x++){
+          var value = sortArray[x];
+          if (value.type==='folder'){
+              that.addFolderRaw(value.name,0,value.id,value.updateDate);
           }
+          if (value.type==='file'){
+              that.addFile(value.name,0,value.id,value.updateDate);
+          }
+
         }
+        // for (var key in fileObj) {
+        //   if (fileObj.hasOwnProperty(key)) {
+        //       var value = fileObj[key];
+        //       if (value.type==='folder'){
+        //         that.addFolderRaw(value.name,0,value.id,value.updateDate);
+        //       }
+        //       if (value.type==='file'){
+        //         that.addFile(value.name,0,value.id,value.updateDate);
+        //       }
+        //   }
+        // }
       
 
 	  	// $.each(fileObj, function(key, value){
@@ -780,6 +827,32 @@ define(['api','settings'], function (API,Settings) {
 
 
     // }
+    this.sortedKeys = function(filesObj){
+        var sortArray= new Array();
+        for (var key in fileObj) {
+          if (fileObj.hasOwnProperty(key)) {
+              if (key!='current' && key!='toppath'){
+                var value = fileObj[key];
+                sortArray.push(value);
+              }
+          }
+        }
+        // $.each(filesObj, function(key, value) {
+        //     sortArray.push(key);
+        // });
+        sortArray.sort(function (a, b) {
+          var namea= a.name;
+          var nameb = b.name;
+
+          if (namea.toLowerCase() < nameb.toLowerCase()) return -1;
+          if (namea.toLowerCase() > nameb.toLowerCase()) return 1;
+          return 0;
+
+          //return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
+        //sortArray.sort();
+        return sortArray;
+    }
 	  this.addFile = function(name,level,id,date){
 	  	var array = name.split('.');
 	  	if (array[1]==='jsp'){

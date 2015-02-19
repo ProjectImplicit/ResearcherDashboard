@@ -304,15 +304,24 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							session.removeAttribute("mng");
 							res=url;
 						}
-						if (cmd.equals("deletestudy")){
-							mng.deleteStudy(request.getParameter("studyname"),user,mng);
+						if (cmd.equals("deleteStudy")){
+							mng.deleteStudy(request.getParameter("studyname"),user,mng,api);
 							
 						}
 							
 						if (cmd.equals("renamestudy")){
-							//mng.renameStudy(request.getParameter("studyname"));
+							renameStudy(request,user,mng,api);
+						}
+						if (cmd.equals("refreshstudy")){
+							user.refreshStudyFromDB(mng);
+							HashMap result = new HashMap();
+							HashMap studyNames = user.getNames();
+							String names = JSONValue.toJSONString(studyNames);
+							out.write(names.getBytes("UTF8"));
+							out.flush();
 							
 						}
+
 
 					}//else end
 				}//else end
@@ -376,11 +385,12 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 		
 	}
-	protected String studyValidator(HttpServletRequest request,DbAPI api,HttpServletResponse response,User user,Manager mng){
-		String path = request.getParameter("path");
+	protected String studyValidator(HttpServletRequest request,DbAPI api,HttpServletResponse response,User user,Manager mng) throws Exception{
+		String id = request.getParameter("path");
 		String study = request.getParameter("study");
 		String name = request.getParameter("filename");
-		String errors = mng.studyValidator(user,study,path,name);
+		String path = mng.getpath(study, id, user);
+		String errors = mng.studyValidator(path,user);
 		return errors;
 		
 	}
@@ -788,23 +798,49 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		out.flush();
 		
 	}
+	protected String renameStudy(HttpServletRequest request,User user,Manager mng,DbAPI api) throws Exception{
+		
+		HashMap res = new HashMap();
+		String newname = request.getParameter("newname");
+		String studyname = request.getParameter("study");
+		Study s =user.getStudy(studyname);
+		String studyfolder = s.getFolderName();
+		String fullpath = mng.getFolderBase()+user.getFolderName()+File.separator+studyfolder;
+		File f = new File(fullpath);
+		if (mng.isStudy(user, f)){
+			FileUploadManager fileMng = new FileUploadManager();
+			user.renameStudy(studyname,newname,api,mng,fileMng);
+			res.put("updatestudy", "true");
+		}
+
+		return null;
+		
+	}
 	protected String rename(HttpServletRequest request,User user,Manager mng,DbAPI api) throws Exception{
 		try{
+			HashMap res = new HashMap();
 			String ident = request.getParameter("identifier");
 			String id = request.getParameter("id");
 			String newName = request.getParameter("newname");
 			FileObj obj = user.getComposite().getUnit(id);
 			String oldPath = obj.getPath();
+			if (obj.getType().equals("folder")){
+				if (mng.isStudy(user, obj)){
+					return "msg: The folder is a study folder, please use 'Rename Study' from the home page";
+				}
+			}
 			boolean success = mng.rename(id,newName,mng,user);
 			if (success){
 				if (oldPath.contains(".expt.xml")){
 					user.updateExpt(oldPath,newName,api);
-				}else{
-					if (obj.getType().equals("folder")){
-						user.updateStudy(obj.getName(),newName,api);
-					}
+//				}else{
+//					if (obj.getType().equals("folder")){
+//						if (mng.isStudy(user, obj)){
+//							user.updateStudy(obj.getName(),newName,api);
+//							res.put("updatestudy", "true");
+//						}
+//					}
 				}
-				HashMap res = new HashMap();
 				user.getComposite().refresh();
 				res.put("filesys", user.getComposite().toHashMap());
 				String jsonText = JSONValue.toJSONString(res);

@@ -3,10 +3,14 @@
 define(['api','fileComposer'], function (API,Composer) {
 
 	
-	var fileSys = function(model,fileTableModel,method) {
+	var fileSys = function(model,fileTableModel,method,thisContext) {
 		var that=this;	
 		var compose = new Composer();
-		compose.configure();
+		var options={};
+		options.thisContext =thisContext;
+		compose.configure(options);
+
+		
 		this.setFileSysTable = function (){
 			if (method===1){
 				$('#uploadedModal').modal('show');

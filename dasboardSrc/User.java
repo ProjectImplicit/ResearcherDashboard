@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
 
+import org.apache.commons.lang.StringUtils;
+
 //UPDATED
 public class User implements Serializable{
 	
@@ -105,6 +107,10 @@ public class User implements Serializable{
 			}
 		}
 	}
+	protected void refreshStudyFromDB(Manager mng) throws Exception{
+		this.Studies = new ArrayList();
+		mng.setStudyIdFromDB(this);
+	}
 	protected FileComposite getComposite(){
 		return this.filesys;
 	}
@@ -132,12 +138,31 @@ public class User implements Serializable{
 		
 		
 	}
-	protected void updateStudy(String studyName,String newName,DbAPI api){
+	protected boolean deleteStudy(String studyName,DbAPI api,Manager mng,FileUploadManager fileMng) throws Exception{
+		Study s = this.getStudy(studyName);
+		String id = s.getID();
+		String studypath = s.getFolderName();
+		String studyFullPath = mng.getFolderBase()+this.getFolderName()+File.separator+studypath;
+		this.deleteStudy(studyName);
+		api.deleteStudy(id);
+		fileMng.deleteFile(this, mng, studyFullPath);
+		return false;
+	}
+	protected void renameStudy(String studyName,String newName,DbAPI api,Manager mng,FileUploadManager fileMng) throws Exception{
 		try{
 			Study s = this.getStudy(studyName);
+			String studyPath = s.getFolderName();
+			String fullStudyPath = mng.getFolderBase()+this.getFolderName()+File.separator+studyPath;
+			String[] array = studyPath.split("\\" + File.separator);
+			array[array.length-1] = newName;
+			String newpath = StringUtils.join(array,File.separator);
+			String newFullStudyPath = mng.getFolderBase()+this.getFolderName()+File.separator+newpath;
 			s.setStudyName(newName);
+			s.setstudyFolder(newpath+File.separator);
 			String studyid = s.getID();
 			api.updateTable("studies", "Name", newName, "studyID", studyid);
+			api.updateTable("studies", "folder_name", newpath+File.separator, "studyID", studyid);
+			fileMng.rename(fullStudyPath, newFullStudyPath);
 			
 		}catch (Exception e){
 			System.out.println(e.getStackTrace());

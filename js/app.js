@@ -551,21 +551,72 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         
 
       // });
+      // function refreshStudyListInMemory(){
+      //   api.refreshStudy(setStudiesInMemory);  
+        
+
+      // }
+      function refreshStudyList(){
+        //alert('refreshing');
+        // if (data==='renamestudytable'){
+           api.refreshStudy(setStudies);  
+        // }
+        // if (data==='renamestudy'){
+        //   api.refreshStudy(setStudiesInMemory);  
+        // }
+
+      }
+      $(document).on('click','#renamestudytable', function(){
+        var tr = $(this).parent().parent();
+        var chosenStudy = $(tr).find('.studyRaw').text();
+        $('#newStudyNameModal').modal('show');
+        $('#newStudyNamePressOK').on('click',function(){
+          var newname = $('#newstudyName').val();
+          $('#newstudyName').val('');
+          api.renameStudy(chosenStudy,newname,refreshStudyList);
+
+        })
+        
+        
+      })
+      $(document).on('click','#renamestudy', function(){
+        var studyname = model.study;
+        $('#newStudyNameModal').modal('show');
+        $('#newStudyNamePressOK').on('click',function(){
+          var newname = $('#newstudyName').val();
+          $('#newstudyName').val('');
+          model.newname = newname;
+          api.renameStudy(studyname,newname,refreshStudyList);
+
+        })
+      })
+      $(document).on('click','#deleteStudy', function(){
+        var tr =$(this).parent().parent();
+         $('#deleteStudyModal').modal('show');
+         $(document).on('click','#deleteStudyOK', function(){
+           var chosenStudy = $(tr).find('.studyRaw').text();
+           api.deleteStudy(chosenStudy,function(){
+              refreshStudyList();
+           });    
+
+         });
+
+      });
       $(document).on('click','#newStudy', function(){
         $('#NewStudyModal').modal('show');
 
       });
       $(document).on('click','#newStudyOK',function(){
-
+        debugger;
         var studyName = $('#studyName').val();
         $('#studyName').val('');
         model.study=studyName;
-        $('#uploadedModal').modal('show');
+        //$('#uploadedModal').modal('show');
         api.newStudy(takespaces(studyName),model.key,function(data){
           if (data.indexOf(":")!=-1){
             var msg = data.split(":")[1];
             alert(msg);
-            $('#uploadedModal').modal('hide');
+            //$('#uploadedModal').modal('hide');
           }else{
             var studies = model.studyNames;
             var user = model.user;
@@ -577,7 +628,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
             $('#studyTablePanel').hide();
             $('#studyTable').hide();
             setSideMenu();
-            populateFileTable();
+            model.activePage = 'study';
+            file.setFileSysTable();
+            //populateFileTable();
           }
         });
         //api.getStudies(model.key,setStudies);
@@ -974,10 +1027,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
          var td = $(tr).find('.file');
          var id = $(td).attr("id");
          model.elementID = id;
-         var path = getPathToFile();
-         var span = $(element).parent().parent().find('.fileNameSpan');
-         var fname = $(span).text();
-         api.Studyvalidate(model.key,model.study,takespaces(path),takespaces(fname),openStudyValidation);
+         //var span = $(element).parent().parent().find('.fileNameSpan');
+         //var fname = $(span).text();
+         api.Studyvalidate('','_ID',id,'',openStudyValidation);
 
       });
       $(document).on("click",'.validate',function(){
@@ -1216,67 +1268,67 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         return id;
       }
 
-      function deleteFolder(){
-        var pathA = new Array();
-        var path='';
-        var info = {};
-        info.found = false;
-        getPath(model.fileSystem,model.elementID,pathA,info);
-        for (var i=0;i<pathA.length;i++){
-          path+=pathA[i]+fileSeperator();
-        }
-        api.deleteFolder(path,model.key,model.study,fileOpSuccess);
-      }
+      // function deleteFolder(){
+      //   var pathA = new Array();
+      //   var path='';
+      //   var info = {};
+      //   info.found = false;
+      //   getPath(model.fileSystem,model.elementID,pathA,info);
+      //   for (var i=0;i<pathA.length;i++){
+      //     path+=pathA[i]+fileSeperator();
+      //   }
+      //   api.deleteFolder(path,model.key,model.study,fileOpSuccess);
+      // }
 
-      function deleteSuccess(){
-        //alert('folder deleted');
-        $('#fileSys').click();
-      }
+      // function deleteSuccess(){
+      //   //alert('folder deleted');
+      //   $('#fileSys').click();
+      // }
 
       function populateFileTable(){
-        $('#uploadedModal').modal('show');
-        $('#result').html('');
-        $('#studyTablePanel').hide();
-        $('#studyTable').hide();
-        model.activePage = 'test';
-        model.active='';
-        // if (model.study!='all'){
-        //   var filesystem  = new FileSys(model);
-        //   api.getFiles(model.key,model.study,function(data){
+        // $('#uploadedModal').modal('show');
+        // $('#result').html('');
+        // $('#studyTablePanel').hide();
+        // $('#studyTable').hide();
+        // model.activePage = 'test';
+        // model.active='';
+        // // if (model.study!='all'){
+        // //   var filesystem  = new FileSys(model);
+        // //   api.getFiles(model.key,model.study,function(data){
+        // //     $('#uploadedModal').modal('hide');
+        // //     fileObj = jQuery.parseJSON( data );
+        // //     model.openStruct={};
+        // //     model.fileSystem = fileObj;
+        // //     var index ={};
+        // //     index.index=0;
+        // //     filesystem.setIds(model.fileSystem,index);
+        // //     filesystem.setOpenStruct(model.fileSystem);
+        // //     fileTableModel.user = false;
+        // //     createRaws(model.fileSystem,false,fileTableModel.user);
+
+        // //   });
+
+        // // }else{
+        //   api.getFiles(model.key,'all',function(data){
         //     $('#uploadedModal').modal('hide');
-        //     fileObj = jQuery.parseJSON( data );
-        //     model.openStruct={};
-        //     model.fileSystem = fileObj;
+        //     var dataObj = jQuery.parseJSON( data );
+        //     fileObj = dataObj.filesys;
+        //     model.openStruct= dataObj.openfilesys;
+        //     createTable();
         //     var index ={};
         //     index.index=0;
-        //     filesystem.setIds(model.fileSystem,index);
-        //     filesystem.setOpenStruct(model.fileSystem);
+        //     setIds(fileObj,index);
+        //     //model.openStruct={};
+        //     model.fileSystem = fileObj;
+        //     //setOpenStruct(fileObj,model.openStruct);
         //     fileTableModel.user = false;
-        //     createRaws(model.fileSystem,false,fileTableModel.user);
+        //     var info={};
+        //     info.study=model.study;
+        //     getStudyFromFileSys(fileObj,info);
+        //     model.studyFileSystem=info.studyObj;
+        //     createRaws(info.studyObj,false,fileTableModel.user);
 
         //   });
-
-        // }else{
-          api.getFiles(model.key,'all',function(data){
-            $('#uploadedModal').modal('hide');
-            var dataObj = jQuery.parseJSON( data );
-            fileObj = dataObj.filesys;
-            model.openStruct= dataObj.openfilesys;
-            createTable();
-            var index ={};
-            index.index=0;
-            setIds(fileObj,index);
-            //model.openStruct={};
-            model.fileSystem = fileObj;
-            //setOpenStruct(fileObj,model.openStruct);
-            fileTableModel.user = false;
-            var info={};
-            info.study=model.study;
-            getStudyFromFileSys(fileObj,info);
-            model.studyFileSystem=info.studyObj;
-            createRaws(info.studyObj,false,fileTableModel.user);
-
-          });
 
        // }
         
@@ -1298,7 +1350,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         $('#studyTablePanel').hide();
         $('#studyTable').hide();
         setSideMenu();
-        populateFileTable();
+        file.setFileSysTable();
+        //populateFileTable();
       }
 
         // function folderCreated(){
@@ -1708,6 +1761,25 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         sortArray.sort();
         return sortArray;
       }
+      // function setStudiesInMemory(data){
+      //   var obj;
+      //   var studies=[];
+      //   if(typeof data =='object'){
+      //     obj = data;
+      //   }else{
+      //     obj = $.parseJSON( data );
+      //   }
+      //   model.studyNames=obj;
+      //   model.selectedName='';
+      //   $('.dropdownLI').html('');
+      //   var sortArray = sortStudies(obj);
+      //   for (var i=0;i<sortArray.length;i++){
+      //     var key = sortArray[i];
+      //     var value = obj[key];
+      //     $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="0" href="#">'+key+'</a></li>');
+      //   }
+      // }
+
       function setStudies (data){
         
        console.log(data);
@@ -1729,12 +1801,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
           var value = obj[key];
           update(key,value);
         }
+        if (model.newname!=undefined){
+          $('.studyButt').html(model.newname+' <span class="caret"></span>');
+        }
         if (model.activePage === 'file'){
            //$('#fileSys').click();
 
         }
         $('#studyModel').modal('hide');    
       }
+
       function openStudyValidation(data){
         //debugger;
         var errors = data.split("<br/>");
@@ -2483,18 +2559,19 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
           status='NA';
         }
         html+='<tr class="tableRaw" style="cursor:pointer">'+
-              '<td class="studyRaw"><span href="#" data-toggle="modal" data-target="#myModal" class="">'+val+'</span>'+
-              '</td>'+
-              '<td class="">'+status+'</td>'+
-              '<td class="">'+
-                  '<!--<button type="button" class="btn btn-primary btn-xs review">Submit for Review</button>-->'+
-              '</td>'+
-              '<!--<td class="">'+
-                  '<button type="button" class="btn btn-primary btn-xs test" >Test</button>'+
-              '</td>'+
-             '<td class="">'+
-                  '<button type="button" class="btn btn-primary btn-xs" id="1deploy">Deploy</button>'+
-              '</td>-->'+
+                '<td class="studyRaw"><span href="#" data-toggle="modal" data-target="#myModal" class="studyspan">'+val+'</span>'+
+                '</td>'+
+                '<td class=""><button type="button" id="deleteStudy" class="btn btn-primary btn-xs">Delete Study</button>'+
+                '</td>'+
+                '<td class="">'+
+                    '<button type="button" id="renamestudytable" class="btn btn-primary btn-xs">Rename Study</button>'+
+                '</td>'+
+                '<!--<td class="">'+
+                    '<button type="button" class="btn btn-primary btn-xs test" >Test</button>'+
+                '</td>'+
+               '<td class="">'+
+                    '<button type="button" class="btn btn-primary btn-xs" id="1deploy">Deploy</button>'+
+                '</td>-->'+
           '</tr>';
         return html;
       }

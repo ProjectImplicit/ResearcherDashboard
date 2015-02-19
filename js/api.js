@@ -168,6 +168,34 @@ define([], function () {
                 
             });
         }
+        this.refreshStudy = function (callback){
+            var url = '/implicit/dashboard';
+            data={};
+            data.cmd="refreshstudy";
+            
+            $.ajax({
+                type: "POST",
+                data:data,
+                url: url,
+                success: callback
+                
+            });
+        }
+        this.renameStudy = function (studyname,newname,callback){
+            var url = '/implicit/dashboard';
+            data={};
+            data.cmd="renamestudy";
+            data.newname=newname;
+            data.study = studyname;
+            $.ajax({
+                type: "POST",
+                data:data,
+                url: url,
+                success: callback
+                
+            });
+
+        }
         this.rename = function (id,study,newname,callback){
             var url = '/implicit/dashboard';
             data={};
@@ -200,6 +228,18 @@ define([], function () {
                 
             });
 
+        }
+        this.deleteStudy = function(studyname,callback){
+            var data ={};
+            data.studyname = studyname;
+            data.cmd='deleteStudy';
+            $.ajax({
+                url: '/implicit/dashboard',
+                type: "POST",
+                data: data,
+                success: callback
+                
+            });
         }
         this.multipleDelete = function(modelid,study,callback){
             var data ={};
