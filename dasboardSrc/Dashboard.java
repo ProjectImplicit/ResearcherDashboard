@@ -462,15 +462,20 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 	}
 	protected HashMap getName(User user,Manager mng){
-		HashMap name = new HashMap();
-		System.out.println("inside get name");
-		name.put("name", user.getUserName());
-		name.put("email", user.getEmail());
-		name.put("folder",user.getFolderName());
-		name.put("role", user.getRole());
-		name.put("os", mng.getOs());
-		System.out.println("name is: "+name);
-		return name;
+		try{
+			HashMap name = new HashMap();
+			System.out.println("inside get name");
+			name.put("name", user.getUserName());
+			name.put("email", user.getEmail());
+			name.put("folder",user.getFolderName());
+			name.put("role", user.getRole());
+			name.put("os", mng.getOs());
+			System.out.println("name is: "+name);
+			return name;
+		}catch (Exception e){
+			e.printStackTrace();
+			throw e;
+		}
 		
 	}
 	protected String login(HttpServletRequest request,DbAPI api,String res,HttpServletResponse response) throws Exception{
@@ -790,30 +795,43 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 	}
 	protected void configureFileModule(HttpServletRequest request,User user,Manager mng,ServletOutputStream out) throws Exception{
-		String options = request.getParameter("options");
-		HashMap data = new HashMap();
-		data.put("role", user.getRole());
-		String jsonText = JSONValue.toJSONString(data);
-		out.write(jsonText.getBytes("UTF8"));
-		out.flush();
+		try{
+			String options = request.getParameter("options");
+			HashMap data = new HashMap();
+			data.put("role", user.getRole());
+			String jsonText = JSONValue.toJSONString(data);
+			out.write(jsonText.getBytes("UTF8"));
+			out.flush();
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
 		
 	}
 	protected String renameStudy(HttpServletRequest request,User user,Manager mng,DbAPI api) throws Exception{
 		
-		HashMap res = new HashMap();
-		String newname = request.getParameter("newname");
-		String studyname = request.getParameter("study");
-		Study s =user.getStudy(studyname);
-		String studyfolder = s.getFolderName();
-		String fullpath = mng.getFolderBase()+user.getFolderName()+File.separator+studyfolder;
-		File f = new File(fullpath);
-		if (mng.isStudy(user, f)){
-			FileUploadManager fileMng = new FileUploadManager();
-			user.renameStudy(studyname,newname,api,mng,fileMng);
-			res.put("updatestudy", "true");
-		}
+		try{
+			HashMap res = new HashMap();
+			String newname = request.getParameter("newname");
+			String studyname = request.getParameter("study");
+			Study s =user.getStudy(studyname);
+			String studyfolder = s.getFolderName();
+			String fullpath = mng.getFolderBase()+user.getFolderName()+File.separator+studyfolder;
+			File f = new File(fullpath);
+			if (mng.isStudy(user, f)){
+				FileUploadManager fileMng = new FileUploadManager();
+				user.renameStudy(studyname,newname,api,mng,fileMng);
+				res.put("updatestudy", "true");
+			}
 
-		return null;
+			return null;
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+			
+		}
+		
 		
 	}
 	protected String rename(HttpServletRequest request,User user,Manager mng,DbAPI api) throws Exception{
@@ -848,7 +866,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			}
 			
 		}catch(Exception e){
-			System.out.println(e.getStackTrace());
+			e.printStackTrace();
 			throw e;
 		}
 		

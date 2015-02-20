@@ -80,6 +80,7 @@ public class User implements Serializable{
 			
 		}catch(Exception e){
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 			
 		}
 		return false;
@@ -132,40 +133,52 @@ public class User implements Serializable{
 			String studyid = s.getID();
 			api.updateExptFileName(studyid, newName, Exptname);
 		}catch (Exception e){
-			System.out.println(e.getStackTrace());
+			e.printStackTrace();
 			throw e;
 		}
 		
 		
 	}
 	protected boolean deleteStudy(String studyName,DbAPI api,Manager mng,FileUploadManager fileMng) throws Exception{
-		Study s = this.getStudy(studyName);
-		String id = s.getID();
-		String studypath = s.getFolderName();
-		String studyFullPath = mng.getFolderBase()+this.getFolderName()+File.separator+studypath;
-		this.deleteStudy(studyName);
-		api.deleteStudy(id);
-		fileMng.deleteFile(this, mng, studyFullPath);
-		return false;
+		try{
+			Study s = this.getStudy(studyName);
+			String id = s.getID();
+			String studypath = s.getFolderName();
+			if (studypath.equals("") || studypath.equals(File.separator) || studypath==null) throw new Exception ("Cannot delete wrong path");
+			String studyFullPath = mng.getFolderBase()+this.getFolderName()+File.separator+studypath;
+			this.deleteStudy(studyName);
+			api.deleteStudy(id);
+			fileMng.deleteFile(this, mng, studyFullPath);
+			return false;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
 	}
 	protected void renameStudy(String studyName,String newName,DbAPI api,Manager mng,FileUploadManager fileMng) throws Exception{
 		try{
 			Study s = this.getStudy(studyName);
 			String studyPath = s.getFolderName();
+			if (newName.equals("") || newName.equals(File.separator) || newName==null) throw new Exception ("Cannot delete new name not valid: "+newName);
+			if (studyPath.equals("") || studyPath.equals(File.separator) || studyPath==null) throw new Exception ("Cannot delete wrong path: "+studyPath);
 			String fullStudyPath = mng.getFolderBase()+this.getFolderName()+File.separator+studyPath;
 			String[] array = studyPath.split("\\" + File.separator);
 			array[array.length-1] = newName;
 			String newpath = StringUtils.join(array,File.separator);
+			if (newpath.equals("") || newpath.equals(File.separator) || newpath==null) throw new Exception ("Cannot delete new path not valid: "+newpath);
 			String newFullStudyPath = mng.getFolderBase()+this.getFolderName()+File.separator+newpath;
-			s.setStudyName(newName);
-			s.setstudyFolder(newpath+File.separator);
-			String studyid = s.getID();
-			api.updateTable("studies", "Name", newName, "studyID", studyid);
-			api.updateTable("studies", "folder_name", newpath+File.separator, "studyID", studyid);
-			fileMng.rename(fullStudyPath, newFullStudyPath);
+			boolean success =fileMng.rename(fullStudyPath, newFullStudyPath);
+			if (success){
+				s.setStudyName(newName);
+				s.setstudyFolder(newpath+File.separator);
+				String studyid = s.getID();
+				api.updateTable("studies", "Name", newName, "studyID", studyid);
+				api.updateTable("studies", "folder_name", newpath+File.separator, "studyID", studyid);
+			}
+			
 			
 		}catch (Exception e){
-			System.out.println(e.getStackTrace());
+			e.getStackTrace();
 			throw e;
 		}
 		

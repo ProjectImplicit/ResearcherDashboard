@@ -143,7 +143,7 @@ public class Manager implements Serializable{
 			
 			
 		}catch(Exception e){
-			System.out.println(e.getStackTrace());
+			e.printStackTrace();
 			throw e;
 		}
 	}
@@ -155,7 +155,8 @@ public class Manager implements Serializable{
 			return result;
 			
 		}catch(Exception e){
-			System.out.println(e.getStackTrace());
+
+			e.printStackTrace();
 			throw e;
 		}
 		
@@ -204,7 +205,7 @@ public class Manager implements Serializable{
 			
 			return path;
 		}catch(Exception e){
-			System.out.println(e.getStackTrace());
+			e.printStackTrace();
 			throw e;
 		}
 			
@@ -336,7 +337,8 @@ public class Manager implements Serializable{
 	        //String everything = sb.toString();
 	        
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+
+			e.printStackTrace();
 			throw e;
 			
 		}finally{
@@ -436,7 +438,8 @@ public class Manager implements Serializable{
 			}
 			
 		}catch(Exception e){
-			System.out.println(e.getStackTrace());
+
+			e.printStackTrace();
 			throw e;
 		}
 		return false;
@@ -458,7 +461,8 @@ public class Manager implements Serializable{
 			}
 			
 		}catch(Exception e){
-			System.out.println(e.getStackTrace());
+			e.printStackTrace();
+
 			throw e;
 		}
 		return false;
@@ -738,6 +742,7 @@ public class Manager implements Serializable{
 			return res;
 			
 		}catch(Exception e ){
+
 			System.out.println(e.getStackTrace());
 			throw e;
 		}
@@ -753,7 +758,8 @@ public class Manager implements Serializable{
 			
 			return res;
 		}catch(Exception e){
-			System.out.println(e.getStackTrace());
+
+			e.printStackTrace();
 			throw e;
 		}
 		
@@ -821,7 +827,7 @@ public class Manager implements Serializable{
 			FileUploadManager fileMng = new FileUploadManager();
 			user.deleteStudy(studyname, api, mng, fileMng);
 		}catch(Exception e){
-			System.out.println(e.getStackTrace());
+			e.printStackTrace();
 			throw e;
 		}
 	}
@@ -946,7 +952,7 @@ public class Manager implements Serializable{
 			}// for
 			
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 			throw e;
 		}
 		

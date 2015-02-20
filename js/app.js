@@ -580,13 +580,13 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         
       })
       $(document).on('click','#renamestudy', function(){
-        var studyname = model.study;
+        //var studyname = model.study;
         $('#newStudyNameModal').modal('show');
         $('#newStudyNamePressOK').on('click',function(){
           var newname = $('#newstudyName').val();
           $('#newstudyName').val('');
           model.newname = newname;
-          api.renameStudy(studyname,newname,refreshStudyList);
+          api.renameStudy(model.study,newname,refreshStudyList);
 
         })
       })
@@ -638,7 +638,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       });
 
       $(document).on("click",'.tableVal', function(){
-
+         debugger;
         console.log($(this).text());
         model.activePage = 'study';
         var study = $(this).text();

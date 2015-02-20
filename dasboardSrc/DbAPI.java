@@ -43,6 +43,30 @@ public class DbAPI implements Serializable  {
 		}
 		return singleton;
 	}
+	protected boolean resetUser(String userid) throws Exception{
+		try{
+			Connection connection = null;
+			DashBoardConnect.getInstance(false);
+			connection = DashBoardConnect.getConnection(db);
+			connection.setAutoCommit(true);
+			
+			String exptQuery ="delete from usersstudies where userid='"+userid+"'";
+			PreparedStatement ecs = connection.prepareStatement(exptQuery);
+			ecs.execute();
+			exptQuery = "delete from studies where studyid not in (select studyid from usersstudies )";
+			ecs = connection.prepareStatement(exptQuery);
+			ecs.execute();
+			exptQuery ="delete from expt where studyid not in (select studyid from studies)";
+			ecs = connection.prepareStatement(exptQuery);
+			ecs.execute();
+			
+			
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+			throw e;
+		}
+		return true;
+	}
 	protected boolean deleteStudy(String studyid) throws Exception{
 		try{
 			Connection connection = null;
