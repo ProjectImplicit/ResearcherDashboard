@@ -214,25 +214,25 @@ public class FileUploadManager {
 		try{
 		
 			File file = new File(path);
-			if (file.isDirectory()){
-				String studyName = file.getName();
-				if( user.existStudy(studyName) ){// in user study list, but need to check if it is indeed a study
-					String folder = user.getFolderName();
-					String studypath = mng.getFolderBase()+folder+File.separator+studyName;
-					String deleteStudyPath =file.getAbsolutePath(); 
-					if (studypath.equals(deleteStudyPath)){
-						throw new Exception ("Folder is a study folder");
-					}else{// not a study can delete
-						FileUtils util = new FileUtils();
-						util.deleteDirectory(file);
-						result=true;
-					}
-				}else{// not in the user study list, not a study can delete
-						FileUtils util = new FileUtils();
-						util.deleteDirectory(file);
-						result=true;
-				}
-			}else{// it is a file not a directory
+//			if (file.isDirectory()){
+//				String studyName = file.getName();
+//				if( user.existStudy(studyName) ){// in user study list, but need to check if it is indeed a study
+//					String folder = user.getFolderName();
+//					String studypath = mng.getFolderBase()+folder+File.separator+studyName;
+//					String deleteStudyPath =file.getAbsolutePath(); 
+//					if (studypath.equals(deleteStudyPath)){
+//						throw new Exception ("Folder is a study folder");
+//					}else{// not a study can delete
+//						FileUtils util = new FileUtils();
+//						util.deleteDirectory(file);
+//						result=true;
+//					}
+//				}else{// not in the user study list, not a study can delete
+//						FileUtils util = new FileUtils();
+//						util.deleteDirectory(file);
+//						result=true;
+//				}
+//			}else{// it is a file not a directory
 				if(file.delete()){
 	    			System.out.println(file.getName() + " is deleted!");
 	    			result=true;
@@ -240,7 +240,7 @@ public class FileUploadManager {
 	    			System.out.println(" file was not deleted, path: "+file.getName() );
 	    			result= false;
 	    		}
-			}
+		//	}
 			
     	}catch(Exception e){
  

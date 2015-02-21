@@ -557,38 +557,49 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
       // }
       function refreshStudyList(){
-        //alert('refreshing');
-        // if (data==='renamestudytable'){
-           api.refreshStudy(setStudies);  
-        // }
-        // if (data==='renamestudy'){
-        //   api.refreshStudy(setStudiesInMemory);  
-        // }
-
+        
+          api.refreshStudy(setStudies);  
+        
       }
+
+      $('#newStudyNamePressOK').on('click',function(){
+          var newname = $('#newstudyName').val();
+          $('#newstudyName').val('');
+          if(model.chosenStudy){
+             api.renameStudy(model.chosenStudy,newname,refreshStudyList);
+          }else{
+            model.newname = newname;
+            api.renameStudy(model.study,newname,refreshStudyList);
+          }
+          
+
+      })
       $(document).on('click','#renamestudytable', function(){
         var tr = $(this).parent().parent();
         var chosenStudy = $(tr).find('.studyRaw').text();
+        model.chosenStudy=chosenStudy;
         $('#newStudyNameModal').modal('show');
-        $('#newStudyNamePressOK').on('click',function(){
-          var newname = $('#newstudyName').val();
-          $('#newstudyName').val('');
-          api.renameStudy(chosenStudy,newname,refreshStudyList);
+        // $('#newStudyNamePressOK').on('click',function(){
+        //   var newname = $('#newstudyName').val();
+        //   $('#newstudyName').val('');
+        //   api.renameStudy(chosenStudy,newname,refreshStudyList);
 
-        })
+        // })
         
         
       })
+
       $(document).on('click','#renamestudy', function(){
         //var studyname = model.study;
+        model.chosenStudy=false;
         $('#newStudyNameModal').modal('show');
-        $('#newStudyNamePressOK').on('click',function(){
-          var newname = $('#newstudyName').val();
-          $('#newstudyName').val('');
-          model.newname = newname;
-          api.renameStudy(model.study,newname,refreshStudyList);
+        // $('#newStudyNamePressOK').on('click',function(){
+        //   var newname = $('#newstudyName').val();
+        //   $('#newstudyName').val('');
+        //   model.newname = newname;
+        //   api.renameStudy(model.study,newname,refreshStudyList);
 
-        })
+        // })
       })
       $(document).on('click','#deleteStudy', function(){
         var tr =$(this).parent().parent();
@@ -1803,6 +1814,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         }
         if (model.newname!=undefined){
           $('.studyButt').html(model.newname+' <span class="caret"></span>');
+          model.newname=undefined;
         }
         if (model.activePage === 'file'){
            //$('#fileSys').click();

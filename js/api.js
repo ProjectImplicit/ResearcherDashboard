@@ -76,6 +76,26 @@ define([], function () {
             }
         }
 
+        this.checkForError= function(data,callback){
+            if (typeof data =='string'){
+                if (data.indexOf('msg:')!=-1){
+                  var text = data.split(':')[1];
+                  $('#msgspan').text(text);
+                  $('#msgModal').modal('show');
+                  return;
+                }else{
+                  if (data.indexOf('error:')!=-1){
+                    var text = data.split(':')[1];
+                    $('#msgspan').text(text);
+                    $('#msgModal').modal('show');
+                    return;
+                  }
+
+                }
+
+        } 
+
+        }
         this.getStudies = function (key,callback){
             $.ajax({
                     type: "POST",

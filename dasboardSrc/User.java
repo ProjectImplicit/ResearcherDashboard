@@ -146,9 +146,12 @@ public class User implements Serializable{
 			String studypath = s.getFolderName();
 			if (studypath.equals("") || studypath.equals(File.separator) || studypath==null) throw new Exception ("Cannot delete wrong path");
 			String studyFullPath = mng.getFolderBase()+this.getFolderName()+File.separator+studypath;
-			this.deleteStudy(studyName);
-			api.deleteStudy(id);
-			fileMng.deleteFile(this, mng, studyFullPath);
+			File folder = new File(studyFullPath);
+			if (!mng.isStudy(this, folder)) throw new Exception("This is not a study");
+			if (fileMng.deleteFile(this, mng, studyFullPath)){
+				this.deleteStudy(studyName);
+				api.deleteStudy(id);
+			}
 			return false;
 		}catch(Exception e){
 			e.printStackTrace();

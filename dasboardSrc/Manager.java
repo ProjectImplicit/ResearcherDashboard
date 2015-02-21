@@ -151,6 +151,8 @@ public class Manager implements Serializable{
 		try{
 			String pathToFile = this.getpath(study, id, user);
 			FileUploadManager fileMng = new FileUploadManager();
+			File folder = new File(pathToFile);
+			if (isStudy(user, folder)) throw new Exception("Cannot delete study folder" );
 			boolean result =fileMng.deleteFile(user,this,pathToFile);
 			return result;
 			
@@ -421,7 +423,17 @@ public class Manager implements Serializable{
 		return trimmed;
 		
 	}
-	public boolean isStudy(User user,File folder){
+	protected String getUserfolder(String path){
+		String[] array = path.split("\\" + File.separator);
+		for (int i=0;i<array.length;i++){
+			if (array[i].equals("user")){
+				return array[i+1];
+			}
+		}
+		return "";
+		
+	}
+	public boolean isStudy(User user,File folder) throws Exception{
 		try{
 			String folderPath = folder.getAbsolutePath();
 			String folderName = folder.getName();
@@ -431,10 +443,43 @@ public class Manager implements Serializable{
 				String relativeFolderPath = this.getStudyRelativePath(folderPath, user.getFolderName());
 				if (relativeFolderPath.equals(studypath)){
 					return true;
+				}else{
+					return false;
 				}
 				
 			}else{
-				return false;
+				if (user.getRole().equals("SU")){
+					if (!folderPath.contains(user.getFolderName())){
+						String userPathFolder = getUserfolder(folderPath);
+						User regularUser = new User();
+						regularUser.setFolderName(userPathFolder);
+						this.setUserfromDBbyFolder(regularUser);
+						this.setStudyIdFromDB(regularUser);
+						//this.setStudyIdfromFileSystem(regularUser);
+						
+						Study regularS = regularUser.getStudy(folderName);
+						if (regularS!=null){
+							String studypath = regularS.getFolderName();
+							String relativeFolderPath = this.getStudyRelativePath(folderPath, regularUser.getFolderName());
+							if (relativeFolderPath.equals(studypath)){
+								return true;
+							}else{
+								return false;
+							}
+						}else{
+							return false;
+						}
+						//throw new Exception ("Super user cannot modify user folder");
+					}else{
+						return false;
+					}
+					
+					
+				}else{
+					return false;
+					
+				}
+
 			}
 			
 		}catch(Exception e){
@@ -442,9 +487,8 @@ public class Manager implements Serializable{
 			e.printStackTrace();
 			throw e;
 		}
-		return false;
 	}
-	public boolean isStudy(User user,FileObj folder){
+	public boolean isStudy(User user,FileObj folder) throws Exception{
 		try{
 			String folderPath = folder.getPath();
 			String folderName = folder.getName();
@@ -457,7 +501,37 @@ public class Manager implements Serializable{
 				}
 				
 			}else{
-				return false;
+				if (user.getRole().equals("SU")){
+					if (!folderPath.contains(user.getFolderName())){
+						String userPathFolder = getUserfolder(folderPath);
+						User regularUser = new User();
+						regularUser.setFolderName(userPathFolder);
+						this.setUserfromDBbyFolder(regularUser);
+						this.setStudyIdFromDB(regularUser);
+						//this.setStudyIdfromFileSystem(regularUser);
+						Study regularS = regularUser.getStudy(folderName);
+						if (regularS!=null){
+							String studypath = regularS.getFolderName();
+							String relativeFolderPath = this.getStudyRelativePath(folderPath, regularUser.getFolderName());
+							if (relativeFolderPath.equals(studypath)){
+								return true;
+							}else{
+								return false;
+							}
+						}else{
+							return false;
+						}
+						//throw new Exception ("Super user cannot modify user folder");
+					}else{
+						return false;
+					}
+					
+					
+				}else{
+					return false;
+					
+				}
+
 			}
 			
 		}catch(Exception e){

@@ -570,12 +570,25 @@ define(['api','settings'], function (API,Settings) {
 		this.updateView = function(data){
       debugger;
 			console.log(data);
-      if (typeof data =='string' && data.indexOf('msg:')!=-1){
-        var text = data.split(':')[1];
-        $('#msgspan').text(text);
-        $('#msgModal').modal('show');
-        return;
-      }
+      if (typeof data =='string'){
+        if (data.indexOf('msg:')!=-1){
+          var text = data.split(':')[1];
+          $('#msgspan').text(text);
+          $('#msgModal').modal('show');
+          return;
+        }else{
+          if (data.indexOf('error:')!=-1){
+            var text = data.split(':')[1];
+            $('#msgspan').text(text);
+            $('#msgModal').modal('show');
+            return;
+          }
+
+        }
+
+      } 
+        
+      
 			$('#'+that.id).html('');
       var dataObj;
       if (typeof data =='object'){

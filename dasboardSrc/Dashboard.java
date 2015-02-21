@@ -328,8 +328,10 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			}//else
 					
 		}catch(Exception e){
-			System.out.println("error in dashboard "+e.getStackTrace());
-			out.write(res.getBytes("error: "+e.getMessage()));
+			System.out.println("error in dashboard ");
+			e.printStackTrace();
+			res = "error: "+e.getMessage();
+			out.write(res.getBytes("UTF8"));
 			out.flush();
 			out.close();
 			
