@@ -32,9 +32,9 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSys','change','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSys','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings,Deploy,fileSys,Change) {
+ function (domReady,API,$,Tracker,ChartFX,Settings,Deploy,fileSys) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -49,8 +49,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       var fileObj;
       context.init({preventDoubleContext: false},model);
       var file = new fileSys(model,fileTableModel,2);
-      var change = new Change(model);
-      change.configure();
       setLiseners();
        $("[rel='tooltip']").tooltip();
        
@@ -86,14 +84,68 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         alert('You are logged out');
         window.location.href = xhr.getResponseHeader("Location");
       }
-     
+      // $(document).find('input[type=file]').on('click',function(){
+      //   this.value = null;
+
+      // })
+      
+      // $(document).find('input[type=file]').bind("change", function (e) {
+      //      var file = this.files[0];
+
+      //      if (file) {
+      //          // if file selected, do something
+      //          //S$('#uploadedModal').modal('show');
+      //          prepareUpload(e);
+      //     } else {
+      //         // if user clicks 'Cancel', do something
+      //     }
+      // });
+
+
 
       $(document).on("click","#logout",function(){
         api.logout();
 
       });
       
-     
+      // $(document).on("click",'#createFolderOK', function(){
+      //   var pathA = new Array();
+      //   var path='';
+      //   var study;
+      //   var info = {};
+      //   info.found = false;
+      //   $('#uploadedModal').modal('show');
+      //   var folderToCreate = $('#folderName').val();
+      //   $('#folderName').val('');
+      //   if (model.elementID==='0'){
+      //     path=fileSeperator();
+          
+      //     if (model.study==='all' || model.study===undefined){
+      //       study='all';
+      //       model.tempFolder = takespaces(folderToCreate)+fileSeperator();
+      //     }else{
+      //       model.tempFolder=model.study+fileSeperator()+takespaces(folderToCreate)+fileSeperator();
+      //       study=model.study;
+      //     }
+          
+          
+      //   }else{// if the folder is not a root folder
+      //     getPath(model.fileSystem,model.elementID,pathA,info);
+      //     for (var i=0;i<pathA.length;i++){
+      //       path+=pathA[i]+fileSeperator();
+      //     }
+      //     study='all';
+      //     model.tempFolder = path+takespaces(folderToCreate)+fileSeperator();
+          
+          
+          
+      //   }
+       
+      //   //if (model.activePage === 'file') model.study='all';
+      //   api.createFolder(model.key,takespaces(path),takespaces(folderToCreate),model.study,folderCreated);
+
+      // });
+      
       function getStudyPath(study){
         var study = findStudy(study);
         var folder = study.folder;
@@ -111,7 +163,118 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         }
         return res;
       }
-     
+      // function setModals(model){
+      //   var existFiles = model.exist;
+      //   var info = model.Modalinfo;
+        
+      //   if (info.index >= existFiles.length){
+      //       model.done=true;
+      //       console.log('done');
+      //       return;
+      //     }
+      //   var participant = existFiles[info.index];
+      //   console.log(participant.key);
+      //   $('#overwriteFileName').text('A file with the name '+participant.key+' already exist, overwrite?');
+      //   $('#uploadedModal').modal('hide');
+      //   $('#overwrite').modal('show');
+
+
+      // }
+      // function createExistFilesArray(files,path,data,study,callback){
+      //    var existFiles = new Array();
+      //    var that=this; 
+      //   for (var i=0;i<files.length;i++){
+      //     var key = i;
+      //     var value = files[i];
+        
+      //   //$.each(files, function(key, value){
+      //       console.log(key);
+      //       console.log(value);
+      //     //data.append(key, value);
+      //       api.fileExist(key,model.key,takespaces(path),study,value.name,function(resdata){
+      //         var res;
+      //         if (resdata=='yes'){
+      //           res=true;
+      //         }else{
+      //           res=false;
+      //         }
+      //         if (res){
+      //           var file={};
+      //           file.key =value.name;
+      //           file.formkey = key;
+      //           file.formvalue = value;
+      //           existFiles.push(file);
+      //         }else{
+      //           data.append(key, value);
+      //         }
+      //         if (i===files.length-1){
+      //           var info={};
+      //           info.index=0;
+      //           info.visited=0;
+      //           info.data=data;
+      //           info.study=study;
+      //           info.path=path;
+      //           model.Modalinfo=info;
+      //           model.exist=existFiles;
+      //           callback();
+      //         }
+      //       });
+      //   }    
+      //   //});
+      //   // var info={};
+      //   // info.index=0;
+      //   // info.visited=0;
+      //   // info.data=data;
+      //   // info.study=study;
+      //   // info.path=path;
+      //   // model.Modalinfo=info;
+      //   // return existFiles;
+      // }
+      // function prepareUpload(event){
+        
+      //   //$('#uploadedModal').modal('show');
+      //   var data =new FormData();
+      //   var pathA = new Array();
+      //   var study;
+      //   var info={};
+      //   info.found=false;
+      //   var path='';
+      //   if (model.elementID==='0'){//if root
+      //     path=fileSeperator();
+      //     study=model.study;
+          
+      //   }else{// not root using all method
+      //     getPath(model.fileSystem,model.elementID,pathA,info);
+      //     for (var i=0;i<pathA.length;i++){
+      //       path+=pathA[i]+fileSeperator();
+      //     }
+      //     if (model.study==='user'){
+      //       study='user';
+      //     }else{
+      //       study='all';
+
+      //     }
+      //   }
+       
+      //   createExistFilesArray(event.target.files,path,data,study,function(){
+      //     if (model.exist.length>0){
+      //       setModals(model);
+      //      }else{
+      //     //if (model.activePage === 'file') model.study='all';
+      //       data.append('UserKey',model.key);
+      //       data.append('folder',takespaces(path));
+      //       data.append('study',model.study);
+      //       data.append('cmd','UploadFile');
+      //       $('#uploadedModal').modal('show');
+      //       api.uploadFile(data,fileOpSuccess);
+
+      //     }
+
+
+      //   });
+        
+        
+      // }
 
       function getStudyFromFileSys(fileSystem,info){
         
@@ -128,7 +291,34 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
 
       }
-    
+      // $(document).on('click','[type=checkbox]',function(){
+      //   var check =$(this);
+      //   var td = $(check).parent().parent();
+      //   if ($(td).attr("id").indexOf("folder")==-1) return;
+      //   var span = $(td).find('#folderNameR');
+      //   if (span===undefined) return;
+      //   var folderName = $(span).text();
+      //   if ($(check).prop('checked')){
+      //     var currentFolder={};
+      //     currentFolder.name = folderName;
+      //     currentFolder.id = id;
+      //     //currentFolder.state=state;
+      //     model.currentFolder = currentFolder;
+        
+      //     $('#currentName').text(folderName);
+      //   }else{
+      //     var current = model.currentFolder;
+      //     var name = current.name;
+      //     if(name===folderName){
+      //       $('#currentName').text('');
+      //       model.currentFolder=undefined;
+
+      //     }
+          
+      //   }
+        
+
+      // });
       $(document).on('click','.review',function(){
         var butt = $(this);
         var tr = $(this).parent();
@@ -152,8 +342,220 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         api.getFiles(model.key,model.study,setStudyTable);
       });
 
-    
-    
+      // $(document).on('click','#multipleDelete', function(){
+      //   var modelid=[];
+      //   $( '.check' ).each(function( index ) {
+      //     var input = $(this);
+      //     if ($(input).prop('checked')){
+
+      //       var span  = $(input).parent();
+      //       var td = $(span).parent();
+      //       var id = $(td).attr("id");
+      //       var current = model.currentFolder;
+      //       var name = $(span).text();
+      //       var type='file';
+      //       var obj={};
+      //       obj.id =id;
+      //       obj.name=name;
+      //       obj.type=type;
+      //       if (current===undefined || current===null || current.id!=id){
+      //         modelid.push(obj);  
+      //       }
+            
+            
+
+      //     } 
+      //   });
+      //   var text='';
+      //   for (var i=0;i<modelid.length;i++){ text=text+modelid[i].name+'<br>';}
+      //   $('#listOfFiles').html(text);
+      //   $('#deleteMultipleModal').modal('show');
+      //   $(document).one("click",'#deleteMultipleOK',function(){
+      //     console.log('inside delete dialog');          
+      //     for (var i=0;i<modelid.length;i++){
+      //       var obj =modelid[i];
+      //       var input = $('#'+obj.id);
+      //       model.elementID = obj.id;
+      //       if (obj.type==='folder'){
+
+      //         $('#uploadedModal').modal('show');
+      //         var path = getPathToFile();
+      //         api.deleteFolder(path,model.key,model.study,function(){
+      //           if (i===modelid.length){
+      //             fileOpSuccess();
+      //           }
+      //         });
+              
+
+      //       }else{
+      //         $('#uploadedModal').modal('show');
+
+      //         //deleteFile();
+      //         var path = getPathToFile();
+      //         api.deleteFolder(path,model.key,model.study,function(){
+      //           if (i===modelid.length){
+      //             fileOpSuccess();
+      //           }
+      //         });
+      //       } 
+            
+      //     }
+      //   });
+        
+
+      // });
+      
+        
+      // $(document).on('click','#multiple', function(){
+      //   var count=0;
+      //   $( '.check' ).each(function( index ) {
+      //     var input = $(this);
+      //     var tr  = $(input).parent().parent();
+      //     var id = $(tr).attr("id");
+      //     if (id===undefined){
+      //       var upTD = $(tr).find('.file');
+      //       id = $(upTD).attr("id");
+      //     }
+          
+      //     if ($(input).prop('checked')){
+            
+      //       model.elementID = id;
+      //       downloadFile(count++);
+      //       $(this).attr('checked', false);
+
+      //     }
+      //   });
+      // });
+
+      // $(document).on('click','#uploadFile', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.folder').parent().parent();
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   uploadFile();
+
+
+      // });
+      // $(document).on('click','#newFolder', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.folder').parent().parent();
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   newFolder();
+
+      // });
+      // $(document).on('click','#downloadFolder', function(){
+      //   var count=0;
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.folder').parent().parent();
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   var path = getPathToFile();
+      //   var foldername='';
+      //   api.downloadFolder(path,model.study,function(responce){
+      //     if (responce==='success'){
+      //       if (path.indexOf('/')!=-1){
+      //         var array = path.split('/');
+      //         var foldername = array[array.length-1];
+      //         if (foldername==='') foldername = array[array.length-2];
+      //         foldername=foldername+'.zip';
+
+      //       }else{
+      //         var array = path.split('\\');
+      //         var foldername = array[array.length-1];
+      //         if (foldername==='') foldername = array[array.length-2];
+      //         foldername=foldername+'.zip';
+
+      //       }
+      //       var settings = new Settings();
+      //       var zipFolder = settings.getZipFolder();
+      //       path = zipFolder+'/'+foldername+'/';
+      //       var downloadURL =  settings.urlDownload;
+      //       var url = downloadURL+'?path='+path+'&key='+model.key+'&study=user';
+      //       var hiddenIFrameID = 'hiddenDownloader' + count++;
+      //       var iframe = document.createElement('iframe');
+      //       iframe.id = hiddenIFrameID;
+      //       iframe.style.display = 'none';
+      //       document.body.appendChild(iframe);
+      //       iframe.src = url;
+      //       // setTimeout((function(iframe) {
+      //       //    return function() { 
+      //       //      iframe.remove(); 
+      //       //    }
+      //       // })(iframe), 2000);
+
+
+           
+
+      //     }else{
+      //       alert(responce);
+      //     }
+
+      //   });
+      // });
+
+      // $(document).on('click','#deleteFolder', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.folder').parent().parent();
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   model.deleteAction='folder';
+      //   $('#deleteModal').modal('show');
+        
+
+      // });
+
+      // $(document).on('click','#viewFile', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.file');
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   viewFile();
+
+      // });
+      // $(document).on('click','#downloadFile', function(){
+      //   var element =$(this);
+      //   var td = $(element).parent();
+      //   var tr = $(td).parent();
+      //   var upTD = $(tr).find('.file');
+      //   var id = $(upTD).attr("id");
+      //   model.elementID = id;
+      //   downloadFile(0);
+
+      // });
+      // $(document).on('click','#deleteFile', function(){
+      //   var element =$(this);
+      //   var tr = $(element).parent().parent();
+      //   var td = $(tr).find('.file');
+      //   var id = $(td).attr("id");
+      //   model.elementID = id;
+      //   $('#deleteModal').modal('show');
+        
+
+      // });
+      
+      // $(document).on('click','#deleteOK', function(){
+
+      //   if (model.deleteAction==='folder'){
+      //     $('#uploadedModal').modal('show');
+      //     deleteFolder();
+      //   }else{
+      //     $('#uploadedModal').modal('show');
+      //     deleteFile();
+      //   }
+        
+
+      // });
+      // function refreshStudyListInMemory(){
+      //   api.refreshStudy(setStudiesInMemory);  
+        
+
+      // }
       function refreshStudyList(data){
 
             if (typeof data =='string'){
@@ -321,7 +723,28 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         //populateFileTable();
       });
 
-    
+      /**
+      * Desc: main listener for the 
+      * 'deploy' top menu navigetaion bar.
+      *
+      *
+      */
+
+      // $(document).on("click",'#deployButton', function(){
+      //   var button = $(this);
+      //   var span = $(button).parent().parent().find('.fileNameSpan');
+      //   var fname = takespaces($(span).text());
+      //   model.exptFile = fname;
+      //   $('#result').html('');
+      //   $('#studyTable').hide();
+      //   model.activePage = 'deploy';
+      //   var deployObj = new Deploy(model,'design1');
+      //   model.active = deployObj;
+      //   deployObj.setHtml();
+        
+
+
+      // });
       $(document).on("click",'#deploy', function(){
         $('#result').html('');
         $('#studyTable').hide();
@@ -429,7 +852,127 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       });
 
 
-    
+      // $(document).on('hidden.bs.modal','#overwrite', function () {
+      //   //alert('hidden event fired!');
+      //   if (model.clickedYes){
+      //     var info = model.Modalinfo;
+      //      var data= info.data;
+      //      var study = info.study;
+      //      var path = info.path;
+      //      info.visited++;
+      //      var existFiles = model.exist;
+      //      if (info.visited>existFiles.length) return;
+      //      var all = $('#applytoall').prop('checked');
+      //      var fileText = $('#overwriteFileName').text();
+      //      var words = fileText.split(' ');
+      //      var name = words[5];
+      //      for (var x=0;x<existFiles.length;x++){
+      //        var file  = existFiles[x];
+      //        if (file.key===name){
+      //          file.overwrite=true;
+      //        }
+      //      }
+
+      //     $('#overwrite').modal('hide');
+      //     //$('#FileoverwriteYes').unbind();
+      //     //$('#FileoverwriteYes').remove();
+      //     //$('body').removeClass('modal-open');
+      //     //$('.modal-backdrop').remove();
+      //     //setTimeout(doNothing,10000);
+      //     info.index++;
+      //     if (!all){
+      //       setModals(model);  
+      //     }else{
+      //       model.done=true;
+      //       model.all=true;
+      //     }
+          
+      //     if (model.done===true){
+      //       if (model.all===true){
+      //       for (var z=0;z<existFiles.length;z++){
+      //         var file = existFiles[z];
+      //         data.append(file.key, file.val);
+      //       }
+      //       }else{
+      //         for (var t=0;t<existFiles.length;t++){
+      //           var file = existFiles[t];
+      //           if (file.overwrite=true){
+      //             data.append(file.formkey, file.formvalue);  
+      //           }
+      //         }
+      //       }
+      //       if (model.activePage === 'file' && model.study!='user') model.study='all';
+      //       data.append('UserKey',model.key);
+      //       data.append('folder',takespaces(path));
+      //       data.append('study',model.study);
+      //       data.append('cmd','UploadFile');
+      //       $('#uploadedModal').modal('show');
+      //       api.uploadFile(data,fileOpSuccess);
+      //     }
+
+      //   }
+      //   model.clickedYes=false;
+      // })
+      // $(document).on('click','#FileoverwriteYes',function(e){
+      //   model.clickedYes=true;
+      //   $('#overwrite').modal('hide');
+          //  var info = model.Modalinfo;
+          //  var data= info.data;
+          //  var study = info.study;
+          //  var path = info.path;
+          //  info.visited++;
+          //  var existFiles = model.exist;
+          //  if (info.visited>existFiles.length) return;
+          //  var all = $('#applytoall').prop('checked');
+          //  var fileText = $('#overwriteFileName').text();
+          //  var words = fileText.split(' ');
+          //  var name = words[5];
+          //  for (var x=0;x<existFiles.length;x++){
+          //    var file  = existFiles[x];
+          //    if (file.key===name){
+          //      file.overwrite=true;
+          //    }
+          //  }
+
+          // $('#overwrite').modal('hide');
+          // //$('#FileoverwriteYes').unbind();
+          // //$('#FileoverwriteYes').remove();
+          // //$('body').removeClass('modal-open');
+          // //$('.modal-backdrop').remove();
+          // //setTimeout(doNothing,10000);
+          // info.index++;
+          // if (!all){
+          //   setModals(model);  
+          // }else{
+          //   model.done=true;
+          //   model.all=true;
+          // }
+          
+          // if (model.done===true){
+          //   if (model.all===true){
+          //   for (var z=0;z<existFiles.length;z++){
+          //     var file = existFiles[z];
+          //     data.append(file.key, file.val);
+          //   }
+          //   }else{
+          //     for (var t=0;t<existFiles.length;t++){
+          //       var file = existFiles[t];
+          //       if (file.overwrite=true){
+          //         data.append(file.formkey, file.formvalue);  
+          //       }
+          //     }
+          //   }
+          //   if (model.activePage === 'file' && model.study!='user') model.study='all';
+          //   data.append('UserKey',model.key);
+          //   data.append('folder',takespaces(path));
+          //   data.append('study',model.study);
+          //   data.append('cmd','UploadFile');
+            
+          //   api.uploadFile(data,fileOpSuccess);
+          // }
+          
+
+    //  })
       /**
       * Desc: main listener for the 
       * 'test' top menu navigetaion bar.
@@ -562,15 +1105,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
       });
       
-
-      $(document).on('click','#changeStudy',function(){
-        
-        change.setHtml();
-
-
-
-      })
-
       /**
       * Desc: Listener for pressing a folder
       * in the file system
@@ -578,7 +1112,34 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       *
       */
 
-      
+      // $(document).on("click",'.folder',function(){
+      //   console.log($(this));
+      //   //debugger;
+      //   console.log('in .folder' +model.study);
+      //   var td = $(this).parent().parent();
+      //   var tr = $(td).parent();
+      //   var folderName = takespaces($(this).text());
+      //   var id = $(td).attr("id");
+      //   var state = changeFolderState(takespaces(folderName),id);
+      //   if (state==='open'){
+      //     var currentFolder={};
+      //     currentFolder.name = folderName;
+      //     currentFolder.id = id;
+      //    //currentFolder.state=state;
+      //     model.currentFolder = currentFolder;
+      //   }else{
+      //     var currnetModel = model.currentFolder;
+      //     if (currnetModel != undefined){
+      //       var name = currnetModel.name;
+      //       if (name===folderName){
+      //        model.currentFolder=undefined;
+      //       }
+      //     }
+          
+      //   }
+      //   createRaws(model.studyFileSystem,false,fileTableModel.user);
+        
+      // });
 
       $(document).on("click",'.test',function(){
         
@@ -651,7 +1212,37 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
           });
         }
       });
-    
+      // $(document).on("click",'#statisticsButton',function(){
+
+      //   $('#result').html('');
+      //   $('#studyTable').hide();
+      //   var button = $(this);
+      //   var span = $(button).parent().parent().find('.fileNameSpan');
+      //   var fname = takespaces($(span).text());
+      //   model.exptFile = fname;
+      //   model.activePage = 'trackmenu';
+      //   var study = findStudy(model.study);
+      //   var exptID = getEXPTIDFromStudy(fname,study);
+      //   var studyExpt=[];
+      //   studyExpt[0]=exptID;
+      //   if (model.study!=undefined){
+      //     if (studyExpt==='not_set'){
+      //       api.getExpt(model.key,model.study,function(data){
+      //         studyExpt = data;
+      //         appendTracker(studyExpt);
+      //       })
+      //     }else{
+      //       appendTracker(studyExpt);
+      //     }
+          
+      //   }else{
+      //     api.getUserName(takespaces(model.key),function(data){
+      //     appendTracker(data);
+           
+      //     });
+      //   }
+
+      // });
 
       $(document).on("click",'.statistics',function(){
 
@@ -697,8 +1288,6 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
                     '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
                     '<!--<li><a href="#" class="disabled"><i class="fa fa-tasks" ></i> Data </a></li>-->'+                    
                     '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
-                    '<li><a href="#" id="changeStudy"><i class="fa fa-tasks" ></i> Study Change Request </a></li>'+
-                    '<li><a href="#" id="removeStudy"><i class="fa fa-tasks" ></i> Study Removal </a></li>'+
                     '<!--<li><a href="#" id="submitReview"><i class="fa fa-tasks" ></i> Submit for Review </a></li>-->'+
                     '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
                   );
@@ -731,8 +1320,74 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         return id;
       }
 
-    
-    
+      // function deleteFolder(){
+      //   var pathA = new Array();
+      //   var path='';
+      //   var info = {};
+      //   info.found = false;
+      //   getPath(model.fileSystem,model.elementID,pathA,info);
+      //   for (var i=0;i<pathA.length;i++){
+      //     path+=pathA[i]+fileSeperator();
+      //   }
+      //   api.deleteFolder(path,model.key,model.study,fileOpSuccess);
+      // }
+
+      // function deleteSuccess(){
+      //   //alert('folder deleted');
+      //   $('#fileSys').click();
+      // }
+
+      function populateFileTable(){
+        // $('#uploadedModal').modal('show');
+        // $('#result').html('');
+        // $('#studyTablePanel').hide();
+        // $('#studyTable').hide();
+        // model.activePage = 'test';
+        // model.active='';
+        // // if (model.study!='all'){
+        // //   var filesystem  = new FileSys(model);
+        // //   api.getFiles(model.key,model.study,function(data){
+        // //     $('#uploadedModal').modal('hide');
+        // //     fileObj = jQuery.parseJSON( data );
+        // //     model.openStruct={};
+        // //     model.fileSystem = fileObj;
+        // //     var index ={};
+        // //     index.index=0;
+        // //     filesystem.setIds(model.fileSystem,index);
+        // //     filesystem.setOpenStruct(model.fileSystem);
+        // //     fileTableModel.user = false;
+        // //     createRaws(model.fileSystem,false,fileTableModel.user);
+
+        // //   });
+
+        // // }else{
+        //   api.getFiles(model.key,'all',function(data){
+        //     $('#uploadedModal').modal('hide');
+        //     var dataObj = jQuery.parseJSON( data );
+        //     fileObj = dataObj.filesys;
+        //     model.openStruct= dataObj.openfilesys;
+        //     createTable();
+        //     var index ={};
+        //     index.index=0;
+        //     setIds(fileObj,index);
+        //     //model.openStruct={};
+        //     model.fileSystem = fileObj;
+        //     //setOpenStruct(fileObj,model.openStruct);
+        //     fileTableModel.user = false;
+        //     var info={};
+        //     info.study=model.study;
+        //     getStudyFromFileSys(fileObj,info);
+        //     model.studyFileSystem=info.studyObj;
+        //     createRaws(info.studyObj,false,fileTableModel.user);
+
+        //   });
+
+       // }
+        
+
+
+      }
+
       function newStudySuccess(studyname){
         //alert('study was created');
         var studies = model.studyNames;
@@ -751,7 +1406,43 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         //populateFileTable();
       }
 
-   
+        // function folderCreated(){
+         
+        //   var open =model.openStruct;
+        //   open[model.tempFolder] = 'close';  
+        //   model.active='';
+        //   //if (study===null || study===undefined) study='all';
+        //   api.getFiles(model.key,model.study,function(data){
+
+        //     $('#uploadedModal').modal('hide');
+        //     $('#result').html('');
+        //     $('#studyTablePanel').hide();
+        //     $('#studyTable').hide();
+        //     var dataObj = jQuery.parseJSON( data );
+        //     fileObj = dataObj.filesys;
+        //     createTable();
+        //     var index ={};
+        //     index.index=0;
+        //     setIds(fileObj,index);
+        //     model.fileSystem = fileObj;
+        //     model.studyFileSystem = fileObj;
+        //     fileTableModel.user = false;
+        //     if (model.activePage!='file'){
+        //       var info={};
+        //       info.study=model.study;
+        //       getStudyFromFileSys(fileObj,info);
+        //       model.studyFileSystem=info.studyObj;
+        //       $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+        //       createRaws(model.studyFileSystem,false,fileTableModel.user);
+        //     }else{
+        //       $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+        //       createRaws(fileObj,false,fileTableModel.user);
+
+        //     }
+            
+
+        //   });
+        // }
         
       function folderID(fileSystem){
         var res;
@@ -848,18 +1539,131 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         return path;
       }
 
-   
+      // function deleteFile(e){
+      //   var path = getPathToFile();
+      //   //if (model.activePage === 'file') model.study='all';
+      //   api.deleteFile(path,model.key,model.study,fileOpSuccess);
+      // }
+
+
+      // function viewFile(e){
+      //   var path = getPathToFile();
+      //   var settings = new Settings();
+      //   var viewURL = settings.urlView;
+      //   window.open(viewURL+'?path='+path+'&key='+model.key+'&study='+model.study);
+        
+    //  }
+
+      // function downloadFile(count){
+
+      //   var pathA = new Array();
+      //   var path='';
+      //   var info = {};
+      //   info.found = false;
+      //   var study;
+      //   getPath(model.fileSystem,model.elementID,pathA,info);
+      //   for (var i=0;i<pathA.length;i++){
+      //     path+=pathA[i]+fileSeperator();
+      //   }
+        
+      //   var settings = new Settings();
+      //   var downloadURL = settings.urlDownload;
+      //   var url = downloadURL+'?path='+path+'&key='+model.key+'&study='+model.study;
+      //   var time = new Date().getTime();
+      //   var hiddenIFrameID = 'hiddenDownloader' +time+count;
+      //   var iframe = document.createElement('iframe');
+      //   iframe.id = hiddenIFrameID;
+      //   iframe.style.display = 'none';
+      //   document.body.appendChild(iframe);
+      //   iframe.src = url;
+      //   iframe.load = function(){
+      //      iframe.remove();
+      //   }
+      //   // setTimeout((function(iframe) {
+      //   //    return function() { 
+      //   //      iframe.remove(); 
+      //   //    }
+      //   // })(iframe), 50000);
+        
+        
+      // }
+      // $("iframe").on("load", function () {
+      //   $(this).remove();
+    
+      // });
       function downLoadSuccess(data){
         //alert('download syccesfull');
         
       }
       
-    
+       /**
+      * Desc: update the file component
+      * after a file operation like upload or delete.
+      * 
+      */
+
+      // function fileOpSuccess(data){
+
+        
+      //   //model.activePage = 'test';
+      //   if (data!=undefined && (typeof data==='string') && data.indexOf(":")!=-1){
+      //     var msg = data.split(":")[1];
+      //     alert(msg);
+      //   }
+      //   model.elementID = undefined;
+      //   model.active='';
+      //   var study = model.study;
+      //   model.done=false;
+      //   $('#applytoall').attr('checked', false);
+      //   if (study===null || study===undefined) study='all';
+      //   api.getFiles(model.key,model.study,function(data){
+
+          
+      //     $('#result').html('');
+      //     $('#studyTablePanel').hide();
+      //     $('#studyTable').hide();
+      //     var dataObj = jQuery.parseJSON( data );
+      //     fileObj = dataObj.filesys;
+      //     createTable();
+      //     var index ={};
+      //     index.index=0;
+      //     setIds(fileObj,index);
+      //     model.fileSystem = fileObj;
+      //     model.studyFileSystem = fileObj;
+      //    // model.openStruct={};
+      //     //setOpenStruct(fileObj,model.openStruct);
+      //     fileTableModel.user = false;
+      //     if (model.activePage!='file'){
+      //       var info={};
+      //       info.study=model.study;
+      //       getStudyFromFileSys(fileObj,info);
+      //       model.studyFileSystem=info.studyObj;
+      //       $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+      //       createRaws(model.studyFileSystem,false,fileTableModel.user);
+      //     }else{
+      //       $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
+      //       createRaws(fileObj,false,fileTableModel.user);
+
+      //     }
+          
+      //     $('#uploadedModal').modal('hide');
+      //   });
+        
+        
+      // }
       function uploadError(jqXHR, textStatus, errorThrown){
         console.log('ERRORS: ' + textStatus);
 
       }
-     
+      // function newFolder(e){
+      //   console.log('upload folder: '+model.elementID);
+      //   $('#createFolderModal').modal('show');
+      // }
+      // function uploadFile(e){
+      //   console.log('upload folder: '+model.elementID);
+      //   $("input[name='fileName']" ).click();
+        
+      // }
       
       function setChartData(study){
          var data = {};
@@ -906,7 +1710,28 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
           console.log(result);
           var resultRaws = result.replace( /\n/g, " " ).split( " " );
-         
+           // var datatry = {
+           //   labels: ["January", "February", "March", "April", "May", "June", "July"],
+           //   datasets: [
+           //       {
+           //           label: "My First dataset",
+           //           fillColor: "rgba(220,220,220,0.5)",
+           //           strokeColor: "rgba(220,220,220,0.8)",
+           //           highlightFill: "rgba(220,220,220,0.75)",
+           //           highlightStroke: "rgba(220,220,220,1)",
+           //           data: [65, 59, 80, 81, 56, 55, 40]
+           //       }//,
+           //       // {
+           //       //     label: "My Second dataset",
+           //       //     fillColor: "rgba(151,187,205,0.5)",
+           //       //     strokeColor: "rgba(151,187,205,0.8)",
+           //       //     highlightFill: "rgba(151,187,205,0.75)",
+           //       //     highlightStroke: "rgba(151,187,205,1)",
+           //       //     data: [28, 48, 40, 19, 86, 27, 90]
+           //       // }
+           //   ]
+           // };
+          
           var datactx = {};
           var labels =[];
           var datasets = [{
@@ -952,7 +1777,31 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         $('#userName').html('<i class="glyphicon glyphicon-user"></i><span class="caret"></span>'+userObj.name);
         api.getStudies('',setStudies);
       }
-     
+      // function getExptOfStudy(studyName){
+      //   var exptRes=[];
+      //   var studyObj = model.studyNames;
+      //   $.each(studyObj, function(key, value) {
+      //       $.each(value, function(key2, value2) {
+      //           if (key2.indexOf('name')!=-1){
+      //             var studyName = value2;
+      //             if (studyName.indexOf("(")!=-1){
+      //               var names = studyName.split("(");
+      //               var name = names[0];                   
+      //               if (name===studyName){
+      //                 exptRes.push(names[1]);
+      //               }
+
+      //             }else{
+
+                    
+      //             }
+                  
+      //           }
+                 
+      //        });    
+      //   });
+
+      // }
       function sortStudies(studyArray){
         var sortArray= new Array();
         $.each(studyArray, function(key, value) {
@@ -964,7 +1813,24 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         sortArray.sort();
         return sortArray;
       }
-     
+      // function setStudiesInMemory(data){
+      //   var obj;
+      //   var studies=[];
+      //   if(typeof data =='object'){
+      //     obj = data;
+      //   }else{
+      //     obj = $.parseJSON( data );
+      //   }
+      //   model.studyNames=obj;
+      //   model.selectedName='';
+      //   $('.dropdownLI').html('');
+      //   var sortArray = sortStudies(obj);
+      //   for (var i=0;i<sortArray.length;i++){
+      //     var key = sortArray[i];
+      //     var value = obj[key];
+      //     $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="0" href="#">'+key+'</a></li>');
+      //   }
+      // }
 
       function isStudyExist(studyname){
         var studies = model.studyNames;
@@ -1095,7 +1961,23 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
 
 
-   
+      // function changeFolderState(name,id){
+      //   var info = {};
+      //   info.found = false;
+      //   var element;
+      //   findElement(fileObj,id,info);
+      //   var folder = info.folder;
+      //   if (folder.state!=null){
+      //     if (folder.state==='open'){
+      //       folder.state = 'close';
+      //     }else{
+      //       folder.state = 'open';
+
+      //     }
+      //   }else{
+      //     folder.state='open';
+      //   }
+      // }
 
       function takespaces(name){ return name.replace(/\s+/g, '');}
 
@@ -1430,7 +2312,23 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         });
          
       }
-     
+      // function setUserFileTable(data){
+      //   //console.log(data);
+      //   $('#uploadedModal').modal('hide');
+      //   fileObj = jQuery.parseJSON( data );
+      //   createTable();
+      //   var index ={};
+      //   index.index=0;
+      //   setIds(fileObj,index);
+      //   model.openStruct={};
+      //   model.fileSystem = fileObj;
+      //   setOpenStruct(fileObj,model.openStruct);
+      //   //createRaws(fileObj,false,fileTableModel.user);
+      //   createRawsWButt(fileObj,false);
+        
+        
+
+      // }
 
       function addFolderRawB (file,level,v){
           
@@ -1474,7 +2372,33 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
             '</tr>');
      }
       
-      
+      // function createRawsWButt(filesObj,recursive){
+
+      //     fileTableModel.level=fileTableModel.level+1;
+      //     if (recursive===false){
+      //       $('#result').html('');
+      //       createTable();
+      //     }
+      //     $.each(filesObj, function(k, v) {
+      //       var extension = k.split(".");
+      //       if (extension.length>1){
+      //       addFileRawB(k,fileTableModel.level,v);
+      //       }else{
+      //         if (k!='state' && k!='id'){
+      //           addFolderRawB(k,fileTableModel.level,v);
+      //           $.each(v, function(k2, v2) {
+      //             if (k2==='state'){
+      //               if (v2==='open'){
+      //                 createRawsWButt(v,true);
+      //                 fileTableModel.level=fileTableModel.level-1;
+      //               }
+      //             }
+      //           });
+      //         }
+              
+      //       }
+      //     });
+      // }
       function setIds(filesObj,index){
 
         $.each(filesObj, function(k, v) {
@@ -1562,11 +2486,92 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         });
       }
 
-   
+      // function DrophandleFileUpload(files,obj){
+
+      //   model.elementID=undefined;
+      //   var cmd='UploadFile';
+      //   var folderpath='';
+
+      //   $( '.check' ).each(function( index ) {
+      //     var input = $(this);
+      //     var tr  = $(input).parent().parent();
+      //     var id = $(tr).attr("id");
+      //     if (id===undefined){
+      //       var upTD = $(tr).find('.folder');
+      //       id = $(upTD).attr("id");
+      //     }
+      //     if ($(input).prop('checked')){
+      //       model.elementID = id;
+      //       $(this).attr('checked', false);
+      //     }
+      //   });
+      //   if (model.elementID===undefined) model.elementID='0';
+      //   var data =new FormData();
+      //   var pathA = new Array();
+      //   var study;
+      //   var info={};
+      //   info.found=false;
+      //   var path='';
+      //   if (model.elementID==='0'){
+      //     path=fileSeperator();
+      //     study=model.study;
+      //     if (study===undefined) study='all';
+      //   }else{//this is not a root file operation so use full path study='all'
+      //     getPath(model.fileSystem,model.elementID,pathA,info);
+      //     for (var i=0;i<pathA.length;i++){
+      //       path+=pathA[i]+fileSeperator();
+      //     }
+      //     study='all';
+      //   }
+      //   updateDatawithFiles(files,data,cmd,folderpath);
+      //   //if (model.activePage === 'file') model.study='all';
+      //   createExistFilesArray(files,path,data,study,function(){
+      //     if (model.exist.length>0){
+      //     setModals(model);
+      //     }else{
+      //       data.append('UserKey',model.key);
+      //       data.append('folder',takespaces(path));
+      //       data.append('study',model.study);
+      //       data.append('cmd','UploadFile');
+      //       $('#uploadedModal').modal('show');
+      //       api.uploadFile(data,fileOpSuccess);
+      //     }
+
+      //   });
+        
+
+      // }
       function errorHandler(data){
         console.log(data);
       }
+      // function updateDatawithFiles(files,data,cmd){
+
+      //   if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
+      //     $.each(files, function(key, value){
+      //       data.append(key, value);
+      //     });
+      //   }else{
+      //     for (var i=0;i<files.length;i++){
+      //       var item = files[i];
+      //       var entry = item.webkitGetAsEntry();
+      //       if (entry.isFile){
+      //          var file = item.getAsFile();
+      //          data.append(i, file);
+      //       }else{ 
+      //         if (entry.isDirectory){
+      //          //cmd='uploadFolder';
+      //          //var direntry=entry.createReader();
+      //          // direntry.readEntries(function(results){
+      //          //    updateDatawithFiles(results,data,cmd);
+      //          // }, errorHandler);
+      //         }
+      //       }
+      
+      //     }       
+      //   }
+
     
+      // }
       /**
       * Desc: returns the satet of the folder
       * input: folder key/value object

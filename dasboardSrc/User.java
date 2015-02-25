@@ -148,7 +148,7 @@ public class User implements Serializable{
 			String studyFullPath = mng.getFolderBase()+this.getFolderName()+File.separator+studypath;
 			File folder = new File(studyFullPath);
 			if (!mng.isStudy(this, folder)) throw new Exception("This is not a study");
-			if (fileMng.deleteFile(this, mng, studyFullPath)){
+			if (!fileMng.deleteFile(this, mng, studyFullPath).equals("")){
 				this.deleteStudy(studyName);
 				api.deleteStudy(id);
 			}

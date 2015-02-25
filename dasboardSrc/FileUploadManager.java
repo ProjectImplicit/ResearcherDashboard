@@ -206,10 +206,10 @@ public class FileUploadManager {
 		
 	return false;
 	}
-	protected boolean deleteFile(User user,Manager mng,String path) throws Exception{
+	protected String deleteFile(User user,Manager mng,String path) throws Exception{
 		
 		boolean result=false;
-
+		String msg="";
 
 		try{
 		
@@ -236,6 +236,7 @@ public class FileUploadManager {
 				if(file.delete()){
 	    			System.out.println(file.getName() + " is deleted!");
 	    			result=true;
+	    			msg=msg+file.getName();
 	    		}else{
 	    			System.out.println(" file was not deleted, path: "+file.getName() );
 	    			result= false;
@@ -247,7 +248,7 @@ public class FileUploadManager {
     		e.printStackTrace();
     		throw e;
     	}
-		return result;
+		return msg;
 	}
 	protected void setpath(String study,String fileName, Manager mng,User user){
 		
@@ -328,9 +329,9 @@ public class FileUploadManager {
 		
 	}
 	
-	 protected boolean UploadFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, Exception {
+	 protected String UploadFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, Exception {
 		 
-		boolean uploaded=false;
+		 String msg="";
 		 if(!ServletFileUpload.isMultipartContent(request)){
 			 throw new ServletException("Content type is not multipart/form-data");
 		 }
@@ -360,7 +361,7 @@ public class FileUploadManager {
 
                 FileItem fileItem = fileItemsIterator.next();
                 if (!fileItem.isFormField()) {
-                	uploaded=processUploadedFile(fileItem,user,mng,study);
+                	msg=msg+processUploadedFile(fileItem,user,mng,study);
                 }
 			}
 			
@@ -373,7 +374,7 @@ public class FileUploadManager {
 			e.printStackTrace();
 			throw e;
 		}
-		return uploaded; 
+		return msg; 
 		 
 	 }
 	 private void processFormField(FileItem item){
@@ -402,9 +403,10 @@ public class FileUploadManager {
 		 return false;
 		 
 	 }
-	 private boolean processUploadedFile(FileItem fileItem,User user,Manager mng,String study) throws Exception{
+	 private String processUploadedFile(FileItem fileItem,User user,Manager mng,String study) throws Exception{
 		 
 		 boolean uploaded = false;
+		 String msg="";
 		 System.out.println("FieldName="+fileItem.getFieldName());
          System.out.println("FileName="+fileItem.getName());
          System.out.println("ContentType="+fileItem.getContentType());
@@ -437,6 +439,7 @@ public class FileUploadManager {
                 	if (exptfiles.size()==0){//if there are no expt files
                 		fileItem.write(file);
                 		uploaded=true;
+                		msg=msg+","+file.getName();
                 		String exptID = mng.getExptID(file);
             			mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,false,true,user);
             			s.addorUpdateEXPT(file.getName(), exptID);
@@ -447,6 +450,7 @@ public class FileUploadManager {
                 		if (existEXPT(exptfiles,file)){//expt exist
                 			fileItem.write(file);
                     		uploaded=true;
+                    		msg=msg+","+file.getName();
                     		String exptID = mng.getExptID(file);
                     		mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,true,true,user);
                     		s.addorUpdateEXPT(file.getName(), exptID);
@@ -454,6 +458,7 @@ public class FileUploadManager {
                 		}else{//new expt
                 			fileItem.write(file);
                     		uploaded=true;
+                    		msg=msg+","+file.getName();
                     		String exptID = mng.getExptID(file);
                     		mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,false,false,user);
                     		s.addorUpdateEXPT(file.getName(), exptID);
@@ -478,6 +483,7 @@ public class FileUploadManager {
         	 try {
      			fileItem.write(file);
      			uploaded=true;
+     			msg=msg+","+file.getName();
      		} catch (Exception e) {
      			// TODO Auto-generated catch block
      			e.printStackTrace();
@@ -485,7 +491,7 @@ public class FileUploadManager {
      		}
          }
          
-         return uploaded;
+         return msg;
 		 
 	 }
 

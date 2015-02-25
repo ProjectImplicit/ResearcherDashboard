@@ -3,6 +3,7 @@ package org.implicit.dashboard;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -305,10 +306,12 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							res=url;
 						}
 						if (cmd.equals("deleteStudy")){
-							mng.deleteStudy(request.getParameter("studyname"),user,mng,api);
+							res=mng.deleteStudy(request.getParameter("studyname"),user,mng,api);
 							
 						}
-							
+						if (cmd.equals("change")){
+							submitChange(request, mng);
+						}
 						if (cmd.equals("renamestudy")){
 							renameStudy(request,user,mng,api);
 						}
@@ -344,6 +347,21 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 	}
 	
+	protected void submitChange (HttpServletRequest request,Manager mng) throws IOException{
+		try{
+			FileWriter out;
+			String tr = request.getParameter("tr");
+			String filepath = mng.changeForm;
+			out = new FileWriter(filepath, true);
+	        out.write(tr);
+	        out.close();
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+		
+	}
 	protected String zipfolder(HttpServletRequest request,HttpServletResponse response,Manager mng) throws Exception{
 		
 		String returnPath="";
@@ -372,15 +390,26 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 	protected String multipleDelete(HttpServletRequest request,User user,Manager mng) throws Exception{
 		String study = request.getParameter("study");
 		String model = request.getParameter("modelarray");
+		String msg="";
 		HashMap res= new HashMap();
 		Object obj=JSONValue.parse(model);
 		JSONArray array=(JSONArray)obj;
 		for (int i=0;i<array.size();i++){
 			JSONObject obj1 = (JSONObject)array.get(i);
 			String id = (String) obj1.get("id");
-			mng.deleteFile(id,"", user, study);
+			if (i==array.size()){
+				msg=msg+mng.deleteFile(id,"", user, study);
+				
+			}else{
+				msg=msg+mng.deleteFile(id,"", user, study)+",";
+			}
+			
+		}
+		if (!msg.equals("")){
+			msg="The followgin Files were deleted: "+msg;
 		}
 		user.getComposite().refresh();
+		res.put("msg", msg);
 		res.put("filesys", user.getComposite().toHashMap());
 		String jsonText = JSONValue.toJSONString(res);
 		return jsonText;
@@ -460,7 +489,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			e.printStackTrace();
 			throw e;
 		}
-		
+		 
 		
 	}
 	protected HashMap getName(User user,Manager mng){
@@ -658,15 +687,16 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		String path;
 		String study;
 		Boolean result;
+		String msg="";
 		key = request.getParameter("key");
 		path = request.getParameter("path");
 		study = request.getParameter("study");
 		
 		FileUploadManager fileMng = new FileUploadManager();
 		ServletContext ctx = getServletContext();
-		result = mng.deleteFile(path,key,user,study);
+		msg = mng.deleteFile(path,key,user,study);
 		//result = fileMng.deleteFile(path,key,user,mng,study);
-		if (result){
+		if (!msg.equals("")){
 			if (path.contains(".expt")){
 				String[] splits = path.split("\\"+File.separator);
 				int size = splits.length;
@@ -681,14 +711,15 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 				mng.deleteExptFromDB(user, study, fileName);
 				Study s = user.getStudy(study);
 				s.deleteExpt(fileName);
-				
-				
+
 			}
 		}
-		if (result){
+		if (!msg.equals("")){
+			msg="The following file has been deleted: "+msg;
 			user.getComposite().refresh();
 			HashMap res = new HashMap();
 			res.put("filesys", user.getComposite().toHashMap());
+			res.put("msg", msg);
 			String jsonText = JSONValue.toJSONString(res);
 			return jsonText;
 			
@@ -751,13 +782,15 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 	}
 	private void ManageFiles(HttpServletRequest request,HttpServletResponse response) throws Exception{
 		FileUploadManager fileMng = new FileUploadManager();
-		
-		if (fileMng.UploadFile(request, response)){
+		String msg="";
+		if (!(msg=fileMng.UploadFile(request, response)).equals("")){
+			msg="Uploaded the following files: "+msg;
 			HashMap res = new HashMap();
 			HttpSession session = request.getSession();
 			User user = (User) session.getAttribute("userobject");
 			user.getComposite().refresh();
 			res.put("filesys", user.getComposite().toHashMap());
+			res.put("msg", msg);
 			String jsonText = JSONValue.toJSONString(res);
 			ServletOutputStream out = response.getOutputStream();
 			out.write(jsonText.getBytes("UTF8"));
@@ -816,6 +849,9 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			HashMap res = new HashMap();
 			String newname = request.getParameter("newname");
 			String studyname = request.getParameter("study");
+			if (user.existStudy(newname)){
+				throw new Exception ("A study with this name already exist.");
+			}
 			Study s =user.getStudy(studyname);
 			String studyfolder = s.getFolderName();
 			String fullpath = mng.getFolderBase()+user.getFolderName()+File.separator+studyfolder;

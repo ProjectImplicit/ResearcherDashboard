@@ -101,9 +101,11 @@ define(['api','settings'], function (API,Settings) {
           var element =$(this);
           var tr = $(element).parent().parent();
           var td = $(tr).find('.file');
+          var name = $(tr).find('.fileNameSpan').text();
           var id = $(td).attr("id");
           that.data.elementID = id;
           that.data.deleteAction='file';
+          $('#deleteFileMsg').text('Delete file \''+name+'\' ?');
           $('#deleteModal').modal('show');
         });
 
@@ -477,6 +479,7 @@ define(['api','settings'], function (API,Settings) {
 
 		}
     this.prepareUpload = function(event){
+      $('#uploadedModal').modal('show');
       var data =new FormData();
       that.createExistFilesArray(event.target.files,data);
       var exist = that.data.existfiles;
@@ -511,7 +514,7 @@ define(['api','settings'], function (API,Settings) {
             file.formkey = key;
             file.formvalue = value;
             existFiles.push(file);
-            $('#overwriteFileName').append('<input type="checkbox" class="mycheckbox" name="vehicle" value="'+value.name+'"> '+value.name+'<br>');
+            $('#overwriteFileName').append('<input type="checkbox" class="mycheckbox" checked name="vehicle" value="'+value.name+'"> '+value.name+'<br>');
           }else{
             data.append(key, value);
           }
@@ -568,7 +571,8 @@ define(['api','settings'], function (API,Settings) {
     }
 
 		this.updateView = function(data){
-      debugger;
+      //debugger;
+      $('#uploadedModal').modal('hide');
 			console.log(data);
       if (typeof data =='string'){
         if (data.indexOf('msg:')!=-1){
@@ -598,15 +602,22 @@ define(['api','settings'], function (API,Settings) {
       }
 			fileObj = dataObj.filesys;
       var updatestudy = dataObj.updatestudy;
+      var msg = dataObj.msg;
       if (updatestudy!= undefined && updatestudy != null && updatestudy === 'true' ){
         that.appContext.refreshStudyList();
       }
+      if (msg!= undefined && msg != null ){
+        $('#msgspan').text(msg);
+        $('#msgModal').modal('show');
+        
+      }
+
       that.topPath = fileObj.toppath;
 	    //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
 	    that.createRaws(fileObj);
 
 		}
-		this.createTable = function(id){
+		  this.createTable = function(id){
 	        
           $('#'+that.id).append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
           var html= '<tr>'+

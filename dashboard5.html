@@ -72,6 +72,8 @@
         .nohref{
             cursor:pointer;
         }
+        #deployTable    { border-collapse: separate; }
+        #deployTable td { border-spacing: 2em; }
     </style>
 
 </head>
@@ -315,11 +317,12 @@
 
             </div>
             <div class="modal-body">
-                Enter New Name: <input type="text" id="newstudyName">
+                Enter New Name: <input type="text" id="newstudyName"><br>
+                <div style="display:none;margin-top:20px;" id="studyexistalert" class="alert alert-danger" role="alert"></div><br>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="newStudyNamePressOK" data-dismiss="modal">Ok</button>
+                <button type="button" class="btn btn-default" id="newStudyNamePressCLOSE" >Close</button>
+                <button type="button" class="btn btn-primary" id="newStudyNamePressOK" >Ok</button>
                 <!--<button type="button" class="btn btn-primary">Save changes</button>-->
             </div>
         </div>
@@ -413,7 +416,7 @@
     
 </div>
 <div class="modal fade modal-wide img-rounded" id="uploadedModal" >
-    <div class="modal-dialog" style="width:140px;">
+    <div class="modal-dialog" style="width:120px;">
         <div class="modal-content" style="background-color: #99CCFF;">
             <div class="modal-body" >
                 <!--<img src="img/loading.gif" alt="Refreshing File System...">-->
@@ -446,7 +449,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                 <h4 class="modal-title"></h4>
+                 
             </div>
             <div class="modal-body">
                 <h5 id="msgspan" style="margin-left:10px;">  </h5>
@@ -467,7 +470,7 @@
                  <h4 class="modal-title">Delete Study</h4>
             </div>
             <div class="modal-body">
-                <span style="margin-left:10px;"> Are You Sure ? </span>
+                <span id="studyDeleteMsg" style="margin-left:10px;"></span>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -484,7 +487,7 @@
                  <h4 class="modal-title">Delete File</h4>
             </div>
             <div class="modal-body">
-                <span style="margin-left:10px;"> Are You Sure ? </span>
+                <span id="deleteFileMsg" style="margin-left:10px;"> </span>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -501,9 +504,9 @@
                  <h4 class="modal-title">Delete File</h4>
             </div>
             <div class="modal-body">
-                <span style="margin-left:10px;"> Are You Sure ? </span>
+                <span style="margin-left:10px;"> Are You Sure You would like to delete the following files? </span>
+                <p id="listOfFiles" style="margin-left:10px;"></p>
             </div>
-            <p id="listOfFiles" style="margin-left:10px;"></p>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="deleteMultipleOK" data-dismiss="modal">Ok</button>
@@ -656,12 +659,13 @@
 
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">The Following Files Alreay Exist, Overwrite? </h4>
+        <h4 class="modal-title" id="myModalLabel">The Following Files will be overwriten,</h4><br>
+        <h5>uncheck if you dont want to overwritte the files</h5>
       </div>
 
       <div class="modal-body">
         <p><span id="overwriteFileName"></span></p>
-        <p><input type="checkbox" class="mycheckbox" id="applytoall"/> Apply to all?</p>
+        <!--<p><input type="checkbox" class="mycheckbox" id="applytoall"/> Apply to all?</p>-->
       </div>
 
       <div class="modal-footer">

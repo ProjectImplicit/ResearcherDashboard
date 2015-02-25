@@ -55,10 +55,10 @@ define(['api'], function (API) {
     
 		this.addHTML = function(name,email,folder,chosenEXPT){
 			var that=this;
-			var html ='</br></br><table style ="width=500" class=""><tr><td><label>Researcher name: </label></td><td><input type="text" id="researchName" value='+name+'> </input></td></tr>'+
-				'<tr><td><label> Researcher email address: </label></td><td><input type="text" id="researchEmail" value='+email+'></input></td></tr>'+
-				'<tr><td><label> Study folder location: </label></td><td ><input type="text" id="folder" value='+folder+'></input></td></tr>'+
-				'<tr><td><label>Name of experiment file: </label></td><td><input type="text" id="experimentFile" value='+chosenEXPT+'></input></td></tr></table></br>'+
+			var html ='</br></br><table id="deployTable" style ="width=500" class=""><tr><td><label>Researcher name: </label></td><td><input type="text" id="researchName" value='+name+' class="form-control"> </input></td></tr>'+
+				'<tr><td><label> Researcher email address: </label></td><td><input type="text" id="researchEmail" value='+email+' class="form-control"></input></td></tr>'+
+				'<tr><td><label> Study folder location: </label></td><td ><input type="text" id="folder" value='+folder+' class="form-control"></input></td></tr>'+
+				'<tr><td><label>Name of experiment file: </label></td><td><input type="text" id="experimentFile" value='+chosenEXPT+' class="form-control"></input></td></tr></table></br>'+
 				'<h5 style="float: left;">Target number of completed study sessions: </h5><div class="col-lg-1" style="float: left;"><input type="text" id="targetNumber" class="form-control" ></div></br></br>'+
 				'<h5><small>For private studies (not in the Project Implicit research pool), enter n/a</small></h5>'+
 				'<label id="targetNumber_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+

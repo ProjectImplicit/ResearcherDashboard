@@ -216,6 +216,18 @@ define([], function () {
             });
 
         }
+        this.submitChange = function(data,callback){
+            var url = '/implicit/dashboard';
+            data.cmd='change';
+            $.ajax({
+                type: "POST",
+                data:data,
+                url: url,
+                success: callback
+                
+            });
+
+        }
         this.rename = function (id,study,newname,callback){
             var url = '/implicit/dashboard';
             data={};

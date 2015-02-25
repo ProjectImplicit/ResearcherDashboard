@@ -31,6 +31,7 @@ public class Manager implements Serializable{
 	String projectPath;
 	String downloadDir;
 	String REDIRECTTTESTLOGIN;
+	String changeForm;
 	private static final long serialVersionUID = 1L;
 	 
 	public Manager(){
@@ -40,6 +41,7 @@ public class Manager implements Serializable{
 			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
 			projectPath = "research/dashBoard/";
 			downloadDir ="C:\\projects\\workspace\\rc5\\app\\research\\dashBoard\\ZipFolder";
+			changeForm = "C:\\projects\\workspace\\rc5\\app\\forms\\changeform.html";
 			DbAPI api = DbAPI.getInstance(false);
 			api.setMethod("cloude");
 			System.out.println("Using folder:"+folderBase);
@@ -147,14 +149,15 @@ public class Manager implements Serializable{
 			throw e;
 		}
 	}
-	protected boolean deleteFile(String id,String key,User user,String study) throws Exception{
+	protected String deleteFile(String id,String key,User user,String study) throws Exception{
 		try{
+			String msg="";
 			String pathToFile = this.getpath(study, id, user);
 			FileUploadManager fileMng = new FileUploadManager();
 			File folder = new File(pathToFile);
 			if (isStudy(user, folder)) throw new Exception("Cannot delete study folder" );
-			boolean result =fileMng.deleteFile(user,this,pathToFile);
-			return result;
+			msg =fileMng.deleteFile(user,this,pathToFile);
+			return msg;
 			
 		}catch(Exception e){
 
@@ -861,23 +864,7 @@ public class Manager implements Serializable{
 				res.put("openfilesys", openStruct);
 			}
 			
-//			String folderName=user.getFolderName();
-//			if (study.equals("user")){
-//				directory = new File(folderBase);
-//			}else{
-//				if (study.equals("all")){
-//					directory = new File(folderBase+File.separator+folderName);
-//					//System.out.println("directory"+directory);
-//				}else{
-//					directory = new File(folderBase+File.separator+folderName);
-//					//Study s = user.getStudy(study);
-//					//String studyFolder = s.getFolderName();
-//					//directory = new File(folderBase+"//"+folderName+"//"+studyFolder);
-//					//directory = new File(studyFolder);
-//				}
-//				
-//			}
-			
+
 			
 			
 		
@@ -896,10 +883,14 @@ public class Manager implements Serializable{
 	 *  User memory object.
 	 * 
 	 */
-	protected void deleteStudy(String studyname,User user,Manager mng,DbAPI api) throws Exception{
+	protected String deleteStudy(String studyname,User user,Manager mng,DbAPI api) throws Exception{
 		try{
 			FileUploadManager fileMng = new FileUploadManager();
-			user.deleteStudy(studyname, api, mng, fileMng);
+			String msg="";
+			if (user.deleteStudy(studyname, api, mng, fileMng)){
+				msg="Study: "+ studyname+ " has been deleted.";
+			}
+			return msg;
 		}catch(Exception e){
 			e.printStackTrace();
 			throw e;
