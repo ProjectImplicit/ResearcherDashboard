@@ -216,6 +216,18 @@ define([], function () {
             });
 
         }
+        this.submitRemove = function(data,callback){
+            var url = '/implicit/dashboard';
+            data.cmd='remove';
+            $.ajax({
+                type: "POST",
+                data:data,
+                url: url,
+                success: callback
+                
+            });
+
+        }
         this.submitChange = function(data,callback){
             var url = '/implicit/dashboard';
             data.cmd='change';

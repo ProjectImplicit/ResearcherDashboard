@@ -32,6 +32,7 @@ public class Manager implements Serializable{
 	String downloadDir;
 	String REDIRECTTTESTLOGIN;
 	String changeForm;
+	String removeForm;
 	private static final long serialVersionUID = 1L;
 	 
 	public Manager(){
@@ -42,6 +43,7 @@ public class Manager implements Serializable{
 			projectPath = "research/dashBoard/";
 			downloadDir ="C:\\projects\\workspace\\rc5\\app\\research\\dashBoard\\ZipFolder";
 			changeForm = "C:\\projects\\workspace\\rc5\\app\\forms\\changeform.html";
+			removeForm = "C:\\projects\\workspace\\rc5\\app\\forms\\removeform.html";
 			DbAPI api = DbAPI.getInstance(false);
 			api.setMethod("cloude");
 			System.out.println("Using folder:"+folderBase);
@@ -56,6 +58,8 @@ public class Manager implements Serializable{
 			folderBase="//home//dev2//user//";
 			projectPath = "research//dashBoard//";
 			downloadDir ="//home//dev2//app//research//dashBoard//ZipFolder";
+			changeForm = "//home//dev2//app////forms//changeform.html";
+			removeForm = "//home//dev2//app////forms//removeform.html";
 			LOGINURL = "research/dashBoard/newlogin.html";
 			REDIRECTLOGIN="research/dashBoard/dashboard5.html?cmd=start";
 			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
@@ -888,7 +892,7 @@ public class Manager implements Serializable{
 			FileUploadManager fileMng = new FileUploadManager();
 			String msg="";
 			if (user.deleteStudy(studyname, api, mng, fileMng)){
-				msg="Study: "+ studyname+ " has been deleted.";
+				msg="Study "+ studyname+ " has been deleted.";
 			}
 			return msg;
 		}catch(Exception e){

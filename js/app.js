@@ -32,9 +32,9 @@
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSys','change','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSys','change','remove','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings,Deploy,fileSys,Change) {
+ function (domReady,API,$,Tracker,ChartFX,Settings,Deploy,fileSys,Change,Remove) {
  
     // do something with the loaded modules
   domReady(function () {
@@ -51,6 +51,8 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       var file = new fileSys(model,fileTableModel,2);
       var change = new Change(model);
       change.configure();
+      var remove = new Remove(model);
+      remove.configure();
       setLiseners();
        $("[rel='tooltip']").tooltip();
        
@@ -173,7 +175,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
             }
 
           } 
-          $('#msgspan').text('Study name has changed ');
+          $('#msgspan').text(data);
           $('#msgModal').modal('show');
           api.refreshStudy(setStudies);  
         
@@ -196,10 +198,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
             $('#newStudyNameModal').modal('hide');
             $('#newstudyName').val('');
             if(model.chosenStudy){
-               api.renameStudy(model.chosenStudy,newname,refreshStudyList);
+               api.renameStudy(model.chosenStudy,newname,function(data){
+                refreshStudyList('Study was renamed');
+               });
             }else{
               model.newname = newname;
-              api.renameStudy(model.study,newname,refreshStudyList);
+              api.renameStudy(model.study,newname,function(data){
+                refreshStudyList('Study was renamed');
+
+              });
             }
 
           }
@@ -239,18 +246,17 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         var chosenStudy = $(tr).find('.studyRaw').text();
         $('#studyDeleteMsg').text('Study, \''+chosenStudy+'\' are going to be deleted, Are You Sure ? ');
          $('#deleteStudyModal').modal('show');
-         $(document).on('click','#deleteStudyOK', function(){
+         $(document).one('click','#deleteStudyOK', function(){
            api.deleteStudy(chosenStudy,function(data){
-              if (typeof data =='string'){
+              if (typeof data ==='string'){
                 $('#msgspan').text(data);
                 $('#msgModal').modal('show');
 
               } 
-              refreshStudyList();
+              refreshStudyList(data);
            });    
 
          });
-
       });
       $(document).on('click','#newStudy', function(){
         $('#NewStudyModal').modal('show');
@@ -562,13 +568,14 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
       });
       
+      
+
+      $(document).on('click','#removeStudy',function(){
+        remove.setHtml();
+      })
 
       $(document).on('click','#changeStudy',function(){
-        
         change.setHtml();
-
-
-
       })
 
       /**

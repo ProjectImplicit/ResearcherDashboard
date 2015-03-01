@@ -309,8 +309,11 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							res=mng.deleteStudy(request.getParameter("studyname"),user,mng,api);
 							
 						}
+						if (cmd.equals("remove")){
+							res = submitRemove(request, mng);
+						}
 						if (cmd.equals("change")){
-							submitChange(request, mng);
+							res = submitChange(request, mng);
 						}
 						if (cmd.equals("renamestudy")){
 							renameStudy(request,user,mng,api);
@@ -347,7 +350,22 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 	}
 	
-	protected void submitChange (HttpServletRequest request,Manager mng) throws IOException{
+	protected String submitRemove (HttpServletRequest request,Manager mng) throws IOException{
+		try{
+			FileWriter out;
+			String tr = request.getParameter("tr");
+			String filepath = mng.removeForm;
+			out = new FileWriter(filepath, true);
+			out.write(tr);
+	        out.close();
+			return "Study remove request submitted";
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}
+	
+	}
+	protected String submitChange (HttpServletRequest request,Manager mng) throws IOException{
 		try{
 			FileWriter out;
 			String tr = request.getParameter("tr");
@@ -355,7 +373,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			out = new FileWriter(filepath, true);
 	        out.write(tr);
 	        out.close();
-			
+			return "Study changet request submitted";
 		}catch(Exception e){
 			e.printStackTrace();
 			throw e;
@@ -397,16 +415,15 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		for (int i=0;i<array.size();i++){
 			JSONObject obj1 = (JSONObject)array.get(i);
 			String id = (String) obj1.get("id");
-			if (i==array.size()){
+			if (i==array.size()-1){
 				msg=msg+mng.deleteFile(id,"", user, study);
-				
 			}else{
 				msg=msg+mng.deleteFile(id,"", user, study)+",";
 			}
 			
 		}
 		if (!msg.equals("")){
-			msg="The followgin Files were deleted: "+msg;
+			msg="alert:The following Files were deleted "+msg;
 		}
 		user.getComposite().refresh();
 		res.put("msg", msg);
@@ -715,7 +732,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			}
 		}
 		if (!msg.equals("")){
-			msg="The following file has been deleted: "+msg;
+			msg="alert:The following file has been deleted "+msg;
 			user.getComposite().refresh();
 			HashMap res = new HashMap();
 			res.put("filesys", user.getComposite().toHashMap());
@@ -802,9 +819,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			System.out.println(e.getMessage());
 			throw e;
 		}
-		
-		
-		
+	
 		
 	}
 	private void processValidate(HttpServletRequest request,String key,Manager mng,ServletOutputStream out,User user) throws Exception{

@@ -606,60 +606,69 @@ define(['api','settings'], function (API,Settings) {
       if (updatestudy!= undefined && updatestudy != null && updatestudy === 'true' ){
         that.appContext.refreshStudyList();
       }
-      if (msg!= undefined && msg != null ){
-        $('#msgspan').text(msg);
-        $('#msgModal').modal('show');
-        
-      }
+      
 
       that.topPath = fileObj.toppath;
 	    //$('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">Studies</a></li>');
 	    that.createRaws(fileObj);
+      if (msg!= undefined && msg != null ){
+        if (msg.indexOf('alert')!=-1){
+          var realmsg = msg.split(':')[1];
+          $('#alert').css("display", "block");
+          $('#alertclosebutton').css("display", "block");
+          $(document).find('#alertmsg').text(realmsg);
+  
+        }else{
+          $('#msgspan').text(msg);
+          $('#msgModal').modal('show');
+        }
+      }
 
 		}
-		  this.createTable = function(id){
+
+		this.createTable = function(id){
 	        
-          $('#'+that.id).append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
-          var html= '<tr>'+
-              '<td id="'+id+'">'+
-                '<span style="margin-left:0px;">';
-          //if (that.level!=0 || that.data.role==='SU'){
-          if (that.base.indexOf('ROUTER')===-1){//file system
-            if (that.data.role!='SU' ){// if user
-              if (that.level>0){
-                html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
-              }
-            }else{// super user
-              html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
-            }  
-
-          }else{// study
-            if (that.level>0){
-              html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
-            }else{
-              html=html+'<span>..</span>';
-
-            }
-            
+      $('#'+that.id).append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
+      var html= '<tr>'+
+          '<td id="'+id+'">'+
+            '<span style="margin-left:0px;">';
+      //if (that.level!=0 || that.data.role==='SU'){
+      if (that.base.indexOf('ROUTER')===-1){//file system
+        if (that.data.role!='SU' ){// if user
+          if (that.level>0){
+            html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
           }
-          
-          	
-		      
-		      html=html+'<span class="folder" ></span></span>'+
-	              '</td>'+
-	              '<td>'+
-	                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
-	                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
-	                '<button type="button" style="margin-left:20px;" id="multiple" class="btn btn-primary btn-xs">Multiple Download</button>'+
-	                '<button type="button" style="margin-left:20px;" id="multipleDelete" class="btn btn-primary btn-xs">Multiple Delete</button>';
-                  if (that.base.indexOf('ROUTER')!=-1){
-                    html=html+'<button type="button" style="margin-left:20px;" id="renamestudy" class="btn btn-primary btn-xs">Rename Study</button>';
-                  }
-                  html=html+'</td></tr>';
+        }else{// super user
+          html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
+        }  
 
-	          $('#fileTabale > tbody').append(html);
+      }else{// study
+        if (that.level>0){
+          html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
+        }else{
+          html=html+'<span>..</span>';
+
+        }
         
-      	}
+      }
+      
+      	
+      
+      html=html+'<span class="folder" ></span></span>'+
+            '</td>'+
+            '<td>'+
+              '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
+              '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
+              '<button type="button" style="margin-left:20px;" id="multiple" class="btn btn-primary btn-xs">Multiple Download</button>'+
+              '<button type="button" style="margin-left:20px;" id="multipleDelete" class="btn btn-primary btn-xs">Multiple Delete</button>';
+              if (that.base.indexOf('ROUTER')!=-1){
+                html=html+'<button type="button" style="margin-left:20px;" id="renamestudy" class="btn btn-primary btn-xs">Rename Study</button>';
+              }
+              html=html+'</td></tr>';
+
+        $('#fileTabale > tbody').append(html);
+        
+    }
 		// this.createUserButtons = function(){
 	 //        var user = model.user;
 	 //        var role = user.role;
@@ -792,7 +801,13 @@ define(['api','settings'], function (API,Settings) {
       this.setToPath = function(){
         $('#'+that.id).append('<div>'+that.topPath+'</div>');
       }
+      this.addALert = function(){
+        $('#'+this.id).append('<div id="alert" class="alert alert-success alert-dismissible" style="display:none;width:50%;" role="alert">'+
+          '<div id="alertmsg"></div><button id="alertclosebutton" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+
+      }
   	  this.createRaws = function(fileObj){
+        this.addALert();
   	  	this.createDandD();
         this.setToPath();
         this.createTable(fileObj.current.id);
@@ -899,7 +914,7 @@ define(['api','settings'], function (API,Settings) {
 
       
       var data =new FormData();
-      that.updateDatawithFiles(files,data);
+      //that.updateDatawithFiles(files,data);
       //if (model.activePage === 'file') model.study='all';
       that.createExistFilesArray(files,data);
       var exist = that.data.existfiles;

@@ -151,6 +151,7 @@ public class User implements Serializable{
 			if (!fileMng.deleteFile(this, mng, studyFullPath).equals("")){
 				this.deleteStudy(studyName);
 				api.deleteStudy(id);
+				return true;
 			}
 			return false;
 		}catch(Exception e){

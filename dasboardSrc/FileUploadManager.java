@@ -212,9 +212,13 @@ public class FileUploadManager {
 		String msg="";
 
 		try{
-		
+
 			File file = new File(path);
-//			if (file.isDirectory()){
+			if (file.isDirectory()){
+				FileUtils util = new FileUtils();
+				util.deleteDirectory(file);
+				result=true;
+				msg=msg+file.getName();
 //				String studyName = file.getName();
 //				if( user.existStudy(studyName) ){// in user study list, but need to check if it is indeed a study
 //					String folder = user.getFolderName();
@@ -228,11 +232,9 @@ public class FileUploadManager {
 //						result=true;
 //					}
 //				}else{// not in the user study list, not a study can delete
-//						FileUtils util = new FileUtils();
-//						util.deleteDirectory(file);
-//						result=true;
+						
 //				}
-//			}else{// it is a file not a directory
+			}else{// it is a file not a directory
 				if(file.delete()){
 	    			System.out.println(file.getName() + " is deleted!");
 	    			result=true;
@@ -241,7 +243,7 @@ public class FileUploadManager {
 	    			System.out.println(" file was not deleted, path: "+file.getName() );
 	    			result= false;
 	    		}
-		//	}
+			}
 			
     	}catch(Exception e){
  
@@ -361,7 +363,8 @@ public class FileUploadManager {
 
                 FileItem fileItem = fileItemsIterator.next();
                 if (!fileItem.isFormField()) {
-                	msg=msg+processUploadedFile(fileItem,user,mng,study);
+                	boolean notlast = fileItemsIterator.hasNext();
+                	msg=msg+processUploadedFile(fileItem,user,mng,study,notlast);
                 }
 			}
 			
@@ -403,7 +406,7 @@ public class FileUploadManager {
 		 return false;
 		 
 	 }
-	 private String processUploadedFile(FileItem fileItem,User user,Manager mng,String study) throws Exception{
+	 private String processUploadedFile(FileItem fileItem,User user,Manager mng,String study,boolean notlast) throws Exception{
 		 
 		 boolean uploaded = false;
 		 String msg="";
@@ -439,7 +442,12 @@ public class FileUploadManager {
                 	if (exptfiles.size()==0){//if there are no expt files
                 		fileItem.write(file);
                 		uploaded=true;
-                		msg=msg+","+file.getName();
+                		if(notlast){
+                			msg=msg+file.getName()+",";
+                		}else{
+                			msg=msg+file.getName();
+                		}
+                		
                 		String exptID = mng.getExptID(file);
             			mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,false,true,user);
             			s.addorUpdateEXPT(file.getName(), exptID);
@@ -450,7 +458,12 @@ public class FileUploadManager {
                 		if (existEXPT(exptfiles,file)){//expt exist
                 			fileItem.write(file);
                     		uploaded=true;
-                    		msg=msg+","+file.getName();
+                    		if(notlast){
+                    			msg=msg+file.getName()+",";
+                    		}else{
+                    			msg=msg+file.getName();
+                    		}
+
                     		String exptID = mng.getExptID(file);
                     		mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,true,true,user);
                     		s.addorUpdateEXPT(file.getName(), exptID);
@@ -458,7 +471,12 @@ public class FileUploadManager {
                 		}else{//new expt
                 			fileItem.write(file);
                     		uploaded=true;
-                    		msg=msg+","+file.getName();
+                    		if(notlast){
+                    			msg=msg+file.getName()+",";
+                    		}else{
+                    			msg=msg+file.getName();
+                    		}
+
                     		String exptID = mng.getExptID(file);
                     		mng.updateStudy(exptID,file.getName(),mng.getSchema(file),studyFolderName,false,false,user);
                     		s.addorUpdateEXPT(file.getName(), exptID);
@@ -483,7 +501,11 @@ public class FileUploadManager {
         	 try {
      			fileItem.write(file);
      			uploaded=true;
-     			msg=msg+","+file.getName();
+     			if(notlast){
+        			msg=msg+file.getName()+",";
+        		}else{
+        			msg=msg+file.getName();
+        		}
      		} catch (Exception e) {
      			// TODO Auto-generated catch block
      			e.printStackTrace();
