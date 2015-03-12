@@ -267,6 +267,9 @@ define(['api','settings'], function (API,Settings) {
 
         });
       });
+      $(document).on('click','#FileoverwriteClose',function(){
+        $('#uploadedModal').modal('hide');
+      });
       $(document).on('click','#FileoverwriteYes',function(e){
         var existfiles = that.data.existfiles;
         var formdata = that.data.formdata;
@@ -798,8 +801,14 @@ define(['api','settings'], function (API,Settings) {
           '</tr>');
 
       }
+      this.cleandoubleBraclets = function (topPath){
+        if (topPath.indexOf('//')!=-1){
+          topPath.replace('//','/');
+        }
+      }
       this.setToPath = function(){
-        $('#'+that.id).append('<div>'+that.topPath+'</div>');
+        that.cleandoubleBraclets(that.topPath);
+        $('#'+that.id).append('<div id="toppath">'+that.topPath+'</div>');
       }
       this.addALert = function(){
         $('#'+this.id).append('<div id="alert" class="alert alert-success alert-dismissible" style="display:none;width:50%;" role="alert">'+

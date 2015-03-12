@@ -6,16 +6,18 @@ define(['api'], function (API) {
 		var that=this;
 		
 		this.setHtml = function(){
-			var html='<div><h4>Researcher name: *</h4><input type="text" id="changeName" class="form-control" style="width: 15%;" ><br/>'+
-			'<h4>Researcher email address: * </h4><input id="changeEmail" type="text" class="form-control" style="width: 15%;">'+
-			'<br/><h4>Study showfiles link * </h4>'+
-			'For example: <a href="https://dw2.psyc.virginia.edu/implicit/showfiles.jsp?user=emily&study=sample/train" >https://dw2.psyc.virginia.edu/implicit/showfiles.jsp?user=emily&study=sample/train</a><input id="changeShow" type="text" class="form-control" style="width: 10%;">'+
-			'<br/><h4>Change Request *</h4>List all file names involved in the change request. Specify for each file whether file is being updated or added to production.<br/>'+
-			'<textarea style="margin-top:10px;" id="changeList"  rows="4" cols="50"></textarea><br/><br/><h4>Use the space below for any additional comments</h4><textarea id="changeComment" rows="4" cols="50"></textarea>'+
-			'<br/><br/><button id="changeSubmit" type="submit" class="btn btn-primary">Submit</button>';
 			var user = model.user;
 			var email = user.email;
 			var name = user.name;
+			var study = model.studsyObj;
+			var html='<div><h4>Researcher name: *</h4><input type="text" id="changeName" class="form-control" style="width: 15%;" ><br/>'+
+			'<h4>Researcher email address: * </h4><input id="changeEmail" type="text" class="form-control" style="width: 15%;">'+
+			'<br/><h4>Study showfiles link * </h4>'+
+			'For example: <a href="http://app-dev-01.implicit.harvard.edu/implicit/showfiles.jsp?user='+name+'&study='+study.folder+'" target="_blank">http://app-dev-01.implicit.harvard.edu/implicit/showfiles.jsp?user='+name+'&study='+study.folder+'</a><input id="changeShow" type="text" class="form-control" style="width: 10%;">'+
+			'<br/><h4>Change Request *</h4>List all file names involved in the change request. Specify for each file whether file is being updated or added to production.<br/>'+
+			'<textarea style="margin-top:10px;" id="changeList"  rows="4" cols="50"></textarea><br/><br/><h4>Use the space below for any additional comments</h4><textarea id="changeComment" rows="4" cols="50"></textarea>'+
+			'<br/><br/><button id="changeSubmit" type="submit" class="btn btn-primary">Submit</button>';
+			
 			$('#result').html(html);
 			$('#changeName').val(name);
 			$('#changeEmail').val(email);

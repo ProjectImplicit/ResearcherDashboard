@@ -10,11 +10,11 @@ define(['api'], function (API) {
 			var user=model.user;
 			var name = user.name;
 			var email = user.email;
-			var study = model.study;
-			var folder = this.getFolder(study);
+			var studyID = model.studyID;
+			var folder = this.getFolder(studyID);
 			var exptFile;
 			if (model.exptFile===undefined || model.exptFile===null){
-				exptFile = this.getEXPT(study);
+				exptFile = this.getEXPT(studyID);
 
 			}else{
 				exptFile = model.exptFile;
@@ -560,9 +560,16 @@ define(['api'], function (API) {
 			'</div>';
 			return html;
 	   	}
-	    this.getFolder = function (study){
+	   	this.getStudybyID = function(studies,id){
+	   		var study;
+	   		$.each(studies,function(key,value){
+	    		if (id === value.id) study = value;
+	    	});
+	    	return study;
+	   	}
+	    this.getFolder = function (studyid){
 	    	var studies = model.studyNames;
-	    	var study = studies[study];
+	    	var study = this.getStudybyID(studies,studyid);
 	    	var studyfolder = study.folder;
 	    	var user = model.user;
 	    	var userfolder = user.folder;
@@ -571,13 +578,13 @@ define(['api'], function (API) {
 	    	return userfolder+this.fileSeperator()+studyfolder;
 	    }
 	    
-	    this.getEXPT = function(studyname){
+	    this.getEXPT = function(studyID){
 	    	var expt=[];
 	    	var numOfExpt=0;
 	    	var studies= model.studyNames;
-	    	var study = studies[studyname];   	
+	    	var study = this.getStudybyID(studies,studyID);   	
 	 		var api = new API();
-			api.getExpt(model.key,model.study,function(data){
+			api.getExpt(model.key,model.studyID,function(data){
 	            var obj = jQuery.parseJSON( data );
 	            $.each(obj, function(key, value){
 	              numOfExpt++;

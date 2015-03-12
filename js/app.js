@@ -4,13 +4,12 @@
     paths: {
         'jQuery': 'https://code.jquery.com/jquery-2.1.3.min',
         'bootstrap': 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min',
-        'jshint': 'jshint',
+        'jshint': 'jshint.min',
         'csvToTable':'jquery.csvToTable',
         'tablesorter':'tablesorter/jquery.tablesorter',
         'datepicker':'datepicker/js/bootstrap-datepicker',
-        'chart': 'chart',
-        'context':'Contextmaster/context',
-        'knobmin':'knobmin'
+        'context':'Contextmaster/context'
+        
 
         
 
@@ -25,23 +24,26 @@
         'tablesorter':['jQuery'],
         'datepicker': ['jQuery','bootstrap'],
         'jshint':['jQuery'],
-        'context':['jQuery'],
-        'chart':['jQuery'],
-        'knobmin':['jQuery']
+        'context':['jQuery']
+        
         
         
     }
 });
-require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSys','change','remove','bootstrap','jshint','csvToTable',
+require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','change','remove','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,ChartFX,Settings,Deploy,fileSys,Change,Remove) {
+ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
  
+
+  window.onload = function() {
+    $('#studyModel').modal('show');
+  };  
     // do something with the loaded modules
   domReady(function () {
       
       var model={};
       var api = new API();
-      $('#studyModel').modal('show');
+      //$('#studyModel').modal('show');
       api.init(model,setStudies,SetUser);
       var id=0;
       var fileTableModel ={};
@@ -244,10 +246,13 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       $(document).on('click','#deleteStudy', function(){
         var tr =$(this).parent().parent();
         var chosenStudy = $(tr).find('.studyRaw').text();
+        var studyid = $(tr).attr('id');
         $('#studyDeleteMsg').text('Study, \''+chosenStudy+'\' are going to be deleted, Are You Sure ? ');
          $('#deleteStudyModal').modal('show');
          $(document).one('click','#deleteStudyOK', function(){
-           api.deleteStudy(chosenStudy,function(data){
+          $('#uploadedModal').modal('show');
+           api.deleteStudy(studyid,function(data){
+              $('#uploadedModal').modal('hide');
               if (typeof data ==='string'){
                 $('#msgspan').text(data);
                 $('#msgModal').modal('show');
@@ -259,6 +264,9 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
          });
       });
       $(document).on('click','#newStudy', function(){
+        if (model.activePage==='file'){
+          $('#location').html('<input id="locationcheck" type="checkbox"/> Create study in current location?');
+        }
         $('#NewStudyModal').modal('show');
 
       });
@@ -268,6 +276,11 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         $('#studyName').val('');
         model.study=studyName;
         //$('#uploadedModal').modal('show');
+        if ($('#locationcheck').prop('checked')){
+          model.key='CURRENT';
+
+        }
+
         api.newStudy(takespaces(studyName),model.key,function(data){
           if (data.indexOf(":")!=-1){
             var msg = data.split(":")[1];
@@ -316,15 +329,16 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         model.activePage = 'study';
         var tr =$(this).parent();
         var chosenStudy = $(tr).find('.studyRaw').text();
-        model.study= chosenStudy;
+        var chosenStudyID = $(tr).attr('id');
+        model.studyID= chosenStudyID;
+        model.studsyObj = model.studyNames[chosenStudy];
         $('#instruct').hide();
         $('#result').html('');
-        //$('#studyTablePanel').html('');
         $('#studyTablePanel').hide();
         $('#studyTable').hide();
         file.setFileSysTable();
         setSideMenu();
-        //populateFileTable();
+        
       });
 
     
@@ -442,15 +456,14 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
       *
       */ 
 
-      $(document).on("click",'#test', function(){
-
-
+      $(document).on("click",'#managestudy', function(){
+        
         $('#instruct').hide();
         $('#result').html('');
         $('#studyTablePanel').hide();
         $('#studyTable').hide();
-        populateFileTable();
-
+        file.setFileSysTable();
+        setSideMenu();
 
       });
 
@@ -468,28 +481,32 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
          api.getUser(takespaces(model.key),function(data){
            var userObj = jQuery.parseJSON( data );
            var user = userObj.folder;
-           var studyName = model.study;
-           //studyName = takeOutBraclet(studyName);
-           if (studyName==='all' || studyName==='user'){
-            var pathA = new Array();
-            var path='';
-            var info = {};
-            info.found = false;
-            getPath(model.fileSystem,model.elementID,pathA,info);
-            for (var i=0;i<pathA.length;i++){
-              path+=pathA[i]+"/";// dont change this is the right seperator for a URL.
+           var path='';
+           if (model.activePage = 'file'){
+            var toppath = $('#toppath').text();
+            var array;
+            var found=false;
+           
+            if (toppath.indexOf('\\')!=-1){
+              array = toppath.split('\\');
+            }else{
+              array = toppath.split('/');
             }
-            studyName=path;
-            fname='';
-            if (model.study==='user') user='';
+            for (var i=0;i<array.length;i++){
+              if (found){
+                path=path+array[i]+'/';
+              }
 
+              if (array[i]===user) found=true;
+            }
            }
+           
            var settings = new Settings();
            var url = settings.gettestStudyURL();
            $('#copytextinput').val(url+user+"/"+studyName+"/"+fname+"&refresh=true");
            $('#CopyModal').modal('show');
            $(document).find('#CopyModal').on('shown.bs.modal',function(){
-            $('#copytextinput').select();
+           $('#copytextinput').select();
              //$(this).select();
            });
            
@@ -510,29 +527,46 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
          var tr = $(span).parent();
          var id = $(tr).attr("id");
          model.elementID = id;
+         var path='';
          api.getUser(takespaces(model.key),function(data){
+
            var userObj = jQuery.parseJSON( data );
            var user = userObj.folder;
-           var studyName = model.study;
-           //studyName = takeOutBraclet(studyName);
-           if (studyName==='all' || studyName==='user'){
-            var pathA = new Array();
-            var path='';
-            var info = {};
-            info.found = false;
-            getPath(model.fileSystem,model.elementID,pathA,info);
-            for (var i=0;i<pathA.length;i++){
-              path+=pathA[i]+"/";// dont change this is the right seperator for a URL.
+           if (model.activePage = 'file'){
+            var toppath = $('#toppath').text();
+            var array;
+            var found=false;
+           
+            if (toppath.indexOf('\\')!=-1){
+              array = toppath.split('\\');
+            }else{
+              array = toppath.split('/');
             }
-            studyName=path;
-            fname='';
-            if (model.study==='user') user='';
+            for (var i=0;i<array.length;i++){
+              if (found){
+                path=path+array[i]+'/';
+              }
+
+              if (array[i]===user) found=true;
+            }
+            
+            // var pathA = new Array();
+            // var path='';
+            // var info = {};
+            // info.found = false;
+            // getPath(model.fileSystem,model.elementID,pathA,info);
+            // for (var i=0;i<pathA.length;i++){
+            //   path+=pathA[i]+"/";// dont change this is the right seperator for a URL.
+            // }
+            // studyName=path;
+            // fname='';
+            // if (model.study==='user') user='';
 
            }
            var settings = new Settings();
            var url = settings.gettestStudyURL();
            var random =Math.random();
-           window.open(url+user+"/"+studyName+"/"+fname+"&refresh=true&_="+random);
+           window.open(url+user+"/"+path+fname+"&refresh=true&_="+random);
 
          });
       });
@@ -556,15 +590,15 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
          var fname = $(span).text();
          var id = $(span).parent().attr("id");
          model.elementID = id;
-         var pathA = new Array();
-         var path='';
-         var info = {};
-         info.found = false;
-         getPath(model.fileSystem,model.elementID,pathA,info);
-         for (var i=0;i<pathA.length;i++){
-          path+=pathA[i]+fileSeperator();
-         }
-         api.validateFile(model.key,model.study,path,takespaces(fname),openValidation);
+         // var pathA = new Array();
+         // var path='';
+         // var info = {};
+         // info.found = false;
+         // getPath(model.fileSystem,model.elementID,pathA,info);
+         // for (var i=0;i<pathA.length;i++){
+         //  path+=pathA[i]+fileSeperator();
+         // }
+         api.validateFile('','_ID',model.elementID,'',openValidation);
 
       });
       
@@ -633,10 +667,10 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         $('#studyTable').hide();
         model.activePage = 'trackmenu';
         var studyExpt=[];
-        if (model.study!=undefined){
+        if (model.studyID!=undefined){
           //studyExpt = getExptid(model.study);
           //if (studyExpt==='not_set'){
-          api.getExpt(model.key,model.study,function(data){
+          api.getExpt(model.key,model.studyID,function(data){
             var obj = jQuery.parseJSON( data );
             $.each(obj, function(key, value){
               if (key.indexOf('exptID')!=-1){
@@ -700,7 +734,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
                     '</div>'+
                     '<hr>'+
                     '<li ><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
-                    '<li class="active"><a href="#" id="test"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
+                    '<li class="active"><a href="#" id="managestudy"><i class="fa fa-tasks" ></i> Manage Study </a></li>'+
                     '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
                     '<!--<li><a href="#" class="disabled"><i class="fa fa-tasks" ></i> Data </a></li>-->'+                    
                     '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
@@ -964,11 +998,21 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         var sortArray= new Array();
         $.each(studyArray, function(key, value) {
             console.log(key + "/"+value);
-            sortArray.push(key);
+            sortArray.push(value);
             //update(key);
             
         });
-        sortArray.sort();
+        sortArray.sort(function (a, b) {
+          var namea= a.name;
+          var nameb = b.name;
+
+          if (namea.toLowerCase() < nameb.toLowerCase()) return -1;
+          if (namea.toLowerCase() > nameb.toLowerCase()) return 1;
+          return 0;
+
+          //return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
+        //sortArray.sort();
         return sortArray;
       }
      
@@ -985,6 +1029,24 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
        
         return false;
       }
+
+      function setFilters (array){
+        var filterArray=[];
+        for (var i=0;i<array.length;i++){
+          var study = array[i];
+          var path = study.folder;
+          var studyarray;
+          if (path.indexOf('/')!=-1){
+            studyarray = path.split('/');
+          }else{
+            studyarray = path.split('\\');
+          }
+          filterArray.push(studyarray);
+
+        }
+        return filterArray;
+      }
+
       function setStudies (data){
         
        console.log(data);
@@ -1001,10 +1063,55 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         model.studyNames=obj;
         model.selectedName='';
         var sortArray = sortStudies(obj);
+        var filterArray = setFilters(sortArray);
+        setFilterDropDowns(filterArray,0);
+        createStudyTable(sortArray);
+      }
+
+      function setFilterDropDowns(array,level){
+        var filterarray=[];
+        $('#filterbox').append('<div >Filter: '+
+          '<div class="dropdown" style="display:inline;">'+
+            '<button style="display:inline;" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">'+
+              'Studies'+
+              '<span class="caret"></span>'+
+            '</button>'+
+            '<ul id="dropoptions"class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">'+
+                            
+            '</ul>'+
+          '</div>'+
+
+        '</div>');
+        for (x=0;x<array.length;x++){
+          var a = array[x];
+          var object = a[level];
+          if (a[level].length>0){
+            filterarray.push(a[level]);  
+          }
+          
+        }
+        for (var i=0;i<filterarray.length;i++){
+          $('#dropoptions').append('<li role="presentation"><a class="optionselect" role="menuitem" tabindex="-1" href="#">'+filterarray[i]+'</a></li>');
+        }
+
+
+      }
+      $(document).on('click','.optionselect',function(){
+        var newstudyarray=[];
+        var option = $(this);
+        var selection = $(option).text();
+        var studies = model.studyNames;
+        $.each(studies,function(key,value){
+          if (value.name===selection) newstudyarray.push(value);
+        })
+        createStudyTable(newstudyarray);
+
+      });
+      function createStudyTable(sortArray){
+        $('#studyTable > tbody').html('');
         for (var i=0;i<sortArray.length;i++){
-          var key = sortArray[i];
-          var value = obj[key];
-          update(key,value);
+          var value = sortArray[i];
+          update(value.name,value);
         }
         if (model.newname!=undefined){
           $('.studyButt').html(model.newname+' <span class="caret"></span>');
@@ -1014,7 +1121,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
            //$('#fileSys').click();
 
         }
-        $('#studyModel').modal('hide');    
+        $('#studyModel').modal('hide');  
       }
 
       function openStudyValidation(data){
@@ -1613,7 +1720,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
 
       }
       function update(name,value){
-        $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="0" href="#">'+name+'</a></li>');
+        $('.dropdownLI').append('<li id="'+value.id+'" role="presentation"><a class="tableVal" role="menuitem" tabindex="0" href="#">'+name+'</a></li>');
         $('#studyTable > tbody').append(makerow(name,value));
 
       }
@@ -1625,7 +1732,7 @@ require(['domReady','api','jQuery','tracker','chart','settings','deploy','fileSy
         if (status===null || status=='N'){
           status='NA';
         }
-        html+='<tr class="tableRaw" style="cursor:pointer">'+
+        html+='<tr id="'+obj.id+'" class="tableRaw" style="cursor:pointer">'+
                 '<td class="studyRaw"><span href="#" data-toggle="modal" data-target="#myModal" class="studyspan">'+val+'</span>'+
                 '</td>'+
                 '<td class=""><button type="button" id="deleteStudy" class="btn btn-primary btn-xs">Delete Study</button>'+

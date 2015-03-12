@@ -58,8 +58,8 @@ public class Manager implements Serializable{
 			folderBase="//home//dev2//user//";
 			projectPath = "research//dashBoard//";
 			downloadDir ="//home//dev2//app//research//dashBoard//ZipFolder";
-			changeForm = "//home//dev2//app////forms//changeform.html";
-			removeForm = "//home//dev2//app////forms//removeform.html";
+			changeForm = "//home//dev2//app//forms//changeform.html";
+			removeForm = "//home//dev2//app//forms//removeform.html";
 			LOGINURL = "research/dashBoard/newlogin.html";
 			REDIRECTLOGIN="research/dashBoard/dashboard5.html?cmd=start";
 			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
@@ -183,8 +183,9 @@ public class Manager implements Serializable{
 				}
 				if (study.contains("ROUTER")){
 					String[] array = study.split("_");
-					String studyName = array[2];
-					path = this.getFolderBase()+folder+File.separator+studyName;
+					String studyID = array[2];
+					String studyFolder = user.getStudyByID(studyID).getFolderName();
+					path = this.getFolderBase()+folder+File.separator+studyFolder;
 				}
 				if (study.contains("ID")){
 					FileComposite compose = user.getComposite();
@@ -315,21 +316,22 @@ public class Manager implements Serializable{
 	public String getFile(User user,String study,String fileName,String path) throws Exception{
 		
 		
-		String folderName=user.getFolderName();
-		String filePath="";
-		if (study.equals("user")){
-			filePath = folderBase+File.separator+path;
-		}else{
-			if (!study.equals("all")){
-				//mng.setStudyIdFromDB(user);
-				Study s =user.getStudy(study);
-				filePath = folderBase+File.separator+folderName+File.separator+path;
-				
-			}else{
-				filePath = folderBase+File.separator+folderName+File.separator+path;
-			}
-			
-		}
+//		String folderName=user.getFolderName();
+//		String filePath="";
+//		if (study.equals("user")){
+//			filePath = folderBase+File.separator+path;
+//		}else{
+//			if (!study.equals("all")){
+//				//mng.setStudyIdFromDB(user);
+//				Study s =user.getStudy(study);
+//				filePath = folderBase+File.separator+folderName+File.separator+path;
+//				
+//			}else{
+//				filePath = folderBase+File.separator+folderName+File.separator+path;
+//			}
+//			
+//		}
+		String filePath = this.getpath(study, path, user);
 		File file = new File(filePath);
 		BufferedReader br =null;
 		StringBuilder sb =  null;
@@ -887,12 +889,12 @@ public class Manager implements Serializable{
 	 *  User memory object.
 	 * 
 	 */
-	protected String deleteStudy(String studyname,User user,Manager mng,DbAPI api) throws Exception{
+	protected String deleteStudy(String studyid,User user,Manager mng,DbAPI api) throws Exception{
 		try{
 			FileUploadManager fileMng = new FileUploadManager();
 			String msg="";
-			if (user.deleteStudy(studyname, api, mng, fileMng)){
-				msg="Study "+ studyname+ " has been deleted.";
+			if (user.deleteStudy(studyid, api, mng, fileMng)){
+				msg="Study "+ user.getStudyByID(studyid).getName()+ " has been deleted.";
 			}
 			return msg;
 		}catch(Exception e){

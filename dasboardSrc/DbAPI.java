@@ -44,8 +44,10 @@ public class DbAPI implements Serializable  {
 		return singleton;
 	}
 	protected boolean resetUser(String userid) throws Exception{
+		
+		Connection connection = null;
 		try{
-			Connection connection = null;
+			connection = null;
 			DashBoardConnect.getInstance(false);
 			connection = DashBoardConnect.getConnection(db);
 			connection.setAutoCommit(true);
@@ -64,12 +66,22 @@ public class DbAPI implements Serializable  {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			throw e;
+		}finally{
+			if (connection!=null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 		return true;
 	}
 	protected boolean deleteStudy(String studyid) throws Exception{
+		
+		Connection connection = null;
 		try{
-			Connection connection = null;
+			connection = null;
 			DashBoardConnect.getInstance(false);
 			connection = DashBoardConnect.getConnection(db);
 			connection.setAutoCommit(true);
@@ -87,7 +99,16 @@ public class DbAPI implements Serializable  {
 		}catch(Exception e){
 			System.out.println(e.getMessage());
 			throw e;
+		}finally{
+			if (connection!=null)
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
+
 		return true;
 	}
 	protected boolean deleteFromExptTable(String studyID,String exptFileName){

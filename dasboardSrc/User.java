@@ -90,6 +90,14 @@ public class User implements Serializable{
 	protected void addStudy(Study o){
 		Studies.add(o);
 	}
+	protected Study getStudyByID (String studyId){
+		for (int i=0;i<Studies.size();i++){
+			Study s = (Study) Studies.get(i);
+			if (s.getID().equals(studyId)) return s;
+		}
+		return null;
+		
+	}
 	protected Study getStudy (String studyName){
 		for (int i=0;i<Studies.size();i++){
 			Study s = (Study) Studies.get(i);
@@ -139,17 +147,16 @@ public class User implements Serializable{
 		
 		
 	}
-	protected boolean deleteStudy(String studyName,DbAPI api,Manager mng,FileUploadManager fileMng) throws Exception{
+	protected boolean deleteStudy(String studyId,DbAPI api,Manager mng,FileUploadManager fileMng) throws Exception{
 		try{
-			Study s = this.getStudy(studyName);
-			String id = s.getID();
+			Study s = this.getStudyByID(studyId);
 			String studypath = s.getFolderName();
 			if (studypath.equals("") || studypath.equals(File.separator) || studypath==null) throw new Exception ("Cannot delete wrong path");
 			String studyFullPath = mng.getFolderBase()+this.getFolderName()+File.separator+studypath;
 			File folder = new File(studyFullPath);
 			if (!mng.isStudy(this, folder)) throw new Exception("This is not a study");
 			if (!fileMng.deleteFile(this, mng, studyFullPath).equals("")){
-				this.deleteStudy(studyName);
+				this.deleteStudy(s.getName());
 				api.deleteStudy(id);
 				return true;
 			}
@@ -195,8 +202,10 @@ public class User implements Serializable{
 			String name = study.getName();
 			String foler = study.getFolderName();
 			String status = study.getStatus();
+			String id = study.getID();
 			ArrayList exptArray = study.getstudyEXPTID();
 			HashMap record = new HashMap();
+			record.put("id", id);
 			record.put("name", name);
 			record.put("folder", foler);
 			record.put("status", status);

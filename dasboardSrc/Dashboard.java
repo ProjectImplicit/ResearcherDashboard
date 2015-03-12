@@ -306,7 +306,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 							res=url;
 						}
 						if (cmd.equals("deleteStudy")){
-							res=mng.deleteStudy(request.getParameter("studyname"),user,mng,api);
+							res=mng.deleteStudy(request.getParameter("studyid"),user,mng,api);
 							
 						}
 						if (cmd.equals("remove")){
@@ -672,8 +672,8 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 	}
 	protected ArrayList getEXPT(String[] arr,Manager mng,User user){
 		
-		String study = (String)arr[7];
-		Study mainstudy = user.getStudy(study);
+		String studyID = (String)arr[7];
+		Study mainstudy = user.getStudyByID(studyID);
 		
 		return mainstudy.getstudyEXPTID();
 	}
@@ -685,9 +685,17 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			return "ERROR:Study with this name already exists.";
 		}
 		FileUploadManager fileMng = new FileUploadManager();
-		String createPath = mng.getPath("/", studyName,"all",user,mng);
+		String createPath = "";
+		String path="";
+		if (key.equals("CURRENT")){
+			createPath = user.getComposite().getCurrentFolder().getPath()+File.separator+studyName;
+			path = mng.getStudyRelativePath(createPath, user.getFolderName());
+		}else{
+			createPath = mng.getPath("/", studyName,"all",user,mng);
+			path = studyName+File.separator;
+		}
+		
 		boolean success = fileMng.createFolder(createPath);
-		String path = studyName+File.separator;
 		Integer id = api.createStudy(studyName, "not_set","not_set","not_set", path, user.getID());
 		user.addStudy(mng.createStudy("not_set","not_set",studyName,path,String.valueOf(id)));
 		

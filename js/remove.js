@@ -11,7 +11,7 @@ define(['api'], function (API) {
 			'<br/><h4>Study name * </h4>'+
 			'This is the name you submitted to the RDE (e.g., colinsmith.elmcogload) <br/><input id="studyname" type="text" class="form-control" style="width: 10%;margin-top:10px;">'+
 			'<br/><h4>Please enter your completed n below *</h4>you can use the following link <a href="https://app-dev-01.implicit.harvard.edu/implicit/research/pitracker/PITracking.html#3"'+
-			'>https://app-dev-01.implicit.harvard.edu/implicit/research/pitracker/PITracking.html#3</a><br/><br/>'+
+			' target="_blank">https://app-dev-01.implicit.harvard.edu/implicit/research/pitracker/PITracking.html#3</a><br/><br/>'+
 			'<h4>Additional comments </h4>(e.g., anything unusual about the data collection, consistent participant comments, etc.)<br/>'+
 			'<textarea style="margin-top:10px;" id="commentsText"  rows="4" cols="50"></textarea><br/>'+
 			'<br/><button id="removeSubmit" type="submit" class="btn btn-primary">Submit</button>';

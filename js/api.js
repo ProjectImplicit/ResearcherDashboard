@@ -273,9 +273,9 @@ define([], function () {
             });
 
         }
-        this.deleteStudy = function(studyname,callback){
+        this.deleteStudy = function(studyid,callback){
             var data ={};
-            data.studyname = studyname;
+            data.studyid = studyid;
             data.cmd='deleteStudy';
             $.ajax({
                 url: '/implicit/dashboard',

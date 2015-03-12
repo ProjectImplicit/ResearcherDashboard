@@ -17,7 +17,7 @@ define(['api','fileComposer'], function (API,Composer) {
 				var api = new API();
 				if (model.activePage==='file'){
 					this.setListeners();
-	        		api.getFiles(model.key,model.study,this.setStudyTable);
+	        		api.getFiles(model.key,model.studyID,this.setStudyTable);
 				}
 	        	
 	        	
@@ -25,10 +25,10 @@ define(['api','fileComposer'], function (API,Composer) {
 			if (method===2){
 				if (model.activePage==='file'){
 					compose.start('result','_USER');
+	      		}else{
+	      			compose.start('result','_ROUTER_'+model.studyID);
 	      		}
-	      		if (model.activePage==='study'){
-	      			compose.start('result','_ROUTER_'+model.study);
-	      		}
+	      		
 	        	
 
 			}
