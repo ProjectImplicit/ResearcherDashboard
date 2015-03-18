@@ -382,7 +382,7 @@ public class DbAPI implements Serializable  {
 			}
 			DashBoardConnect.getInstance(false);
 			connection = DashBoardConnect.getConnection(db);
-			connection.setAutoCommit(false);
+			//connection.setAutoCommit(false);
 			PreparedStatement ps = connection.prepareStatement(questionare);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){

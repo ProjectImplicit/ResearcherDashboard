@@ -157,7 +157,7 @@ public class User implements Serializable{
 			if (!mng.isStudy(this, folder)) throw new Exception("This is not a study");
 			if (!fileMng.deleteFile(this, mng, studyFullPath).equals("")){
 				this.deleteStudy(s.getName());
-				api.deleteStudy(id);
+				api.deleteStudy(studyId);
 				return true;
 			}
 			return false;

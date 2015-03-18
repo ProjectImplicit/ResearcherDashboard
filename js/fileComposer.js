@@ -268,6 +268,7 @@ define(['api','settings'], function (API,Settings) {
         });
       });
       $(document).on('click','#FileoverwriteClose',function(){
+        $('#overwriteFileName').html('');
         $('#uploadedModal').modal('hide');
       });
       $(document).on('click','#FileoverwriteYes',function(e){
@@ -807,7 +808,7 @@ define(['api','settings'], function (API,Settings) {
         }
       }
       this.setToPath = function(){
-        that.cleandoubleBraclets(that.topPath);
+        //that.cleandoubleBraclets(that.topPath);
         $('#'+that.id).append('<div id="toppath">'+that.topPath+'</div>');
       }
       this.addALert = function(){

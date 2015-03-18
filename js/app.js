@@ -35,12 +35,12 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
  function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
  
 
-  window.onload = function() {
-    $('#studyModel').modal('show');
-  };  
+  // window.onload = function() {
+  //   $('#studyModel').modal('show');
+  // };  
     // do something with the loaded modules
   domReady(function () {
-      
+      $('#studyModel').modal('show');
       var model={};
       var api = new API();
       //$('#studyModel').modal('show');
@@ -275,6 +275,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         var studyName = $('#studyName').val();
         $('#studyName').val('');
         model.study=studyName;
+
         //$('#uploadedModal').modal('show');
         if ($('#locationcheck').prop('checked')){
           model.key='CURRENT';
@@ -287,6 +288,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
             alert(msg);
             //$('#uploadedModal').modal('hide');
           }else{
+            model.studyID = data;
             var studies = model.studyNames;
             var user = model.user;
             var studyname = model.study;
@@ -1063,47 +1065,95 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         model.studyNames=obj;
         model.selectedName='';
         var sortArray = sortStudies(obj);
-        var filterArray = setFilters(sortArray);
-        setFilterDropDowns(filterArray,0);
+        //model.filterArray = setFilters(sortArray);
+        //setFilterDropDowns(model.filterArray,0);
         createStudyTable(sortArray);
       }
 
-      function setFilterDropDowns(array,level){
-        var filterarray=[];
+      function addFilter(level,filterarray){
         $('#filterbox').append('<div >Filter: '+
           '<div class="dropdown" style="display:inline;">'+
             '<button style="display:inline;" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">'+
               'Studies'+
               '<span class="caret"></span>'+
             '</button>'+
-            '<ul id="dropoptions"class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">'+
+            '<ul id="dropoptions'+level+'"class="dropdown-menu level" role="menu" aria-labelledby="dropdownMenu1">'+
                             
             '</ul>'+
           '</div>'+
 
         '</div>');
-        for (x=0;x<array.length;x++){
-          var a = array[x];
-          var object = a[level];
-          if (a[level].length>0){
-            filterarray.push(a[level]);  
+        $('.level').each(function(i, obj) {
+          var id = $(obj).attr('id');
+          var Objlevel= id.charAt(11);
+          if (Objlevel===level.toString()){
+            for (var i=0;i<filterarray.length;i++){
+              $(obj).append('<li role="presentation"><a class="optionselect" role="menuitem" tabindex="-1" href="#">'+filterarray[i]+'</a></li>');
+            }
           }
+        });
+        
+      }
+      function numberOfTimes(name,array){
+        var num=0;
+        for (var i=0;i<array.length;i++){
+          if (array[i]===name) num++;
+        }
+        return num;
+      }
+
+      function setFilterDropDowns(selection,level){
+        var pathsArray =model.filterArray;
+        var filterarries=[];
+
+        if (level===0){
+          for (var x=0;x<pathsArray.length;x++){
+            var a = pathsArray[x];
+            var object = a[level];
+            if (object.length>0){
+              filterarries.push(object);  
+            }
+          }
+          addFilter(level,filterarries);
+        }else{
+          var arrayIndex=[];
+          for (var z=0;z<pathsArray.length;z++){
+            var a = pathsArray[z];
+            var object = a[level-1];
+            if (object===selection){
+              arrayIndex.push(z);
+            }
+          }
+          if (arrayIndex.length>1){
+            for (var y=0;y<arrayIndex.length;y++){
+              var index=arrayIndex[y];
+              var pathArray = pathsArray[index];
+              var oneSubPath = pathArray[level];
+              filterarries.push(oneSubPath);
+
+
+            }
+          }
+          addFilter(level,filterarries);
           
         }
-        for (var i=0;i<filterarray.length;i++){
-          $('#dropoptions').append('<li role="presentation"><a class="optionselect" role="menuitem" tabindex="-1" href="#">'+filterarray[i]+'</a></li>');
-        }
-
-
       }
+
       $(document).on('click','.optionselect',function(){
         var newstudyarray=[];
         var option = $(this);
         var selection = $(option).text();
+        var id = $(option).parent().parent().attr('id');
+        level = id.charAt(11);
         var studies = model.studyNames;
+
         $.each(studies,function(key,value){
+
           if (value.name===selection) newstudyarray.push(value);
         })
+        if (newstudyarray.length>1){
+          setFilterDropDowns(selection,++level)
+        }
         createStudyTable(newstudyarray);
 
       });
@@ -1720,7 +1770,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
 
       }
       function update(name,value){
-        $('.dropdownLI').append('<li id="'+value.id+'" role="presentation"><a class="tableVal" role="menuitem" tabindex="0" href="#">'+name+'</a></li>');
+        $('.dropdownLI').append('<li id="'+value.id+'" role="presentation"><a class="tableVal" role="menuitem" tabindex="0" href="#">'+value.name+'</a></li>');
         $('#studyTable > tbody').append(makerow(name,value));
 
       }

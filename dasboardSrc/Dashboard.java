@@ -618,12 +618,13 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 				e.printStackTrace();
 				throw e;
 			} catch (IOException e) {
+				System.out.println("error: error in login "+e.getStackTrace());
 				// TODO Auto-generated catch block
-				System.out.println("error  login");
 				e.printStackTrace();
 				throw e;
 			} catch (ServletException e) {
 				// TODO Auto-generated catch block
+				System.out.println("error: error in login "+e.getStackTrace());
 				e.printStackTrace();
 				throw e;
 			}
@@ -700,7 +701,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		user.addStudy(mng.createStudy("not_set","not_set",studyName,path,String.valueOf(id)));
 		
 		if (success){
-			return "Study was created";
+			return id.toString();
 		}else{
 			return "ERROR:There was a problem creating the study";
 		}

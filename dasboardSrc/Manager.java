@@ -57,9 +57,9 @@ public class Manager implements Serializable{
 		}else{
 			folderBase="//home//dev2//user//";
 			projectPath = "research//dashBoard//";
-			downloadDir ="//home//dev2//app//research//dashBoard//ZipFolder";
-			changeForm = "//home//dev2//app//forms//changeform.html";
-			removeForm = "//home//dev2//app//forms//removeform.html";
+			downloadDir ="//home//dev2//research//dashBoard//ZipFolder";
+			changeForm = "//home//dev2//forms//changeform.html";
+			removeForm = "//home//dev2//forms//removeform.html";
 			LOGINURL = "research/dashBoard/newlogin.html";
 			REDIRECTLOGIN="research/dashBoard/dashboard5.html?cmd=start";
 			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
@@ -894,7 +894,7 @@ public class Manager implements Serializable{
 			FileUploadManager fileMng = new FileUploadManager();
 			String msg="";
 			if (user.deleteStudy(studyid, api, mng, fileMng)){
-				msg="Study "+ user.getStudyByID(studyid).getName()+ " has been deleted.";
+				msg="Study has been deleted";
 			}
 			return msg;
 		}catch(Exception e){
