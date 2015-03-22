@@ -292,7 +292,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
             var studies = model.studyNames;
             var user = model.user;
             var studyname = model.study;
-            studies[studyname] = {name:studyname,exptID:'not_set',folder:user.folder+"/"+studyname,status:null};
+            studies[studyname] = {name:studyname,exptID:'not_set',id:data,folder:user.folder+"/"+studyname,status:null};
             setStudies(studies);
             $('#instruct').hide();
             $('#result').html('');
@@ -313,7 +313,9 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         console.log($(this).text());
         model.activePage = 'study';
         var study = $(this).text();
+        var id = $(this).parent().attr('id');
         model.study = $(this).text();
+        model.studyID = id;
 
         $('#instruct').hide();
         $('#result').html('');
@@ -332,6 +334,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         var tr =$(this).parent();
         var chosenStudy = $(tr).find('.studyRaw').text();
         var chosenStudyID = $(tr).attr('id');
+        model.study = chosenStudy;
         model.studyID= chosenStudyID;
         model.studsyObj = model.studyNames[chosenStudy];
         $('#instruct').hide();
@@ -413,7 +416,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
                   );
         var sortedArray = sortStudies(model.studyNames);
         $.each(sortedArray, function(key, value) {
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value+'</a></li>');
+            $('.dropdownLI').append('<li id="'+value.id+'" role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value.name+'</a></li>');
         });
         setLiseners();
         $('#studyTablePanel').show();
@@ -749,7 +752,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
 
         var sortedArray = sortStudies(model.studyNames);
         $.each(sortedArray, function(key, value) {
-            $('.dropdownLI').append('<li role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value+'</a></li>');
+            $('.dropdownLI').append('<li id="'+value.id+'" role="presentation"><a class="tableVal" role="menuitem" tabindex="-1" href="#">'+value.name+'</a></li>');
         });
         $('.studyButt').html(model.study+'<span class="caret"></span>');
         setLiseners();

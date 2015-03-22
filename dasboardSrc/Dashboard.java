@@ -423,7 +423,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			
 		}
 		if (!msg.equals("")){
-			msg="alert:The following Files were deleted "+msg;
+			msg="alert-The following Files were deleted: "+msg;
 		}
 		user.getComposite().refresh();
 		res.put("msg", msg);
@@ -718,30 +718,23 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		path = request.getParameter("path");
 		study = request.getParameter("study");
 		
+		
+		String pathToFile = mng.getpath(study, path, user);
+		File studyFolder = (new File(pathToFile)).getParentFile();
 		FileUploadManager fileMng = new FileUploadManager();
 		ServletContext ctx = getServletContext();
 		msg = mng.deleteFile(path,key,user,study);
 		//result = fileMng.deleteFile(path,key,user,mng,study);
 		if (!msg.equals("")){
-			if (path.contains(".expt")){
-				String[] splits = path.split("\\"+File.separator);
-				int size = splits.length;
-				String fileName = splits[size-1];
-				//mng.setUserfromDB(user);
-				if ( study.equals("all") ){
-					study = splits[0];
-				}
-				if ( study.equals("user") ){
-					study = splits[1];
-				}
-				mng.deleteExptFromDB(user, study, fileName);
-				Study s = user.getStudy(study);
-				s.deleteExpt(fileName);
+			if (msg.contains(".expt")){
+				mng.deleteExptFromDB(user, studyFolder.getName(), msg);
+				Study s = user.getStudy(studyFolder.getName());
+				s.deleteExpt(msg);
 
 			}
 		}
 		if (!msg.equals("")){
-			msg="alert:The following file has been deleted "+msg;
+			msg="alert-The following file has been deleted: "+msg;
 			user.getComposite().refresh();
 			HashMap res = new HashMap();
 			res.put("filesys", user.getComposite().toHashMap());
@@ -810,7 +803,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		FileUploadManager fileMng = new FileUploadManager();
 		String msg="";
 		if (!(msg=fileMng.UploadFile(request, response)).equals("")){
-			msg="Uploaded the following files: "+msg;
+			msg="alert- Uploaded the following files: "+msg;
 			HashMap res = new HashMap();
 			HttpSession session = request.getSession();
 			User user = (User) session.getAttribute("userobject");

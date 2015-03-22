@@ -617,7 +617,7 @@ define(['api','settings'], function (API,Settings) {
 	    that.createRaws(fileObj);
       if (msg!= undefined && msg != null ){
         if (msg.indexOf('alert')!=-1){
-          var realmsg = msg.split(':')[1];
+          var realmsg = msg.split('-')[1];
           $('#alert').css("display", "block");
           $('#alertclosebutton').css("display", "block");
           $(document).find('#alertmsg').text(realmsg);
@@ -813,7 +813,12 @@ define(['api','settings'], function (API,Settings) {
       }
       this.addALert = function(){
         $('#'+this.id).append('<div id="alert" class="alert alert-success alert-dismissible" style="display:none;width:50%;" role="alert">'+
-          '<div id="alertmsg"></div><button id="alertclosebutton" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                                '<button id="alertclosebutton" type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+                                  '<span aria-hidden="true">&times;</span>'+
+                                '</button>'+
+                                '<div id="alertmsg">'+
+                                '</div>'+
+                              '</div>');
 
       }
   	  this.createRaws = function(fileObj){
