@@ -409,18 +409,30 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		String study = request.getParameter("study");
 		String model = request.getParameter("modelarray");
 		String msg="";
+		String filename;
 		HashMap res= new HashMap();
 		Object obj=JSONValue.parse(model);
 		JSONArray array=(JSONArray)obj;
 		for (int i=0;i<array.size();i++){
 			JSONObject obj1 = (JSONObject)array.get(i);
 			String id = (String) obj1.get("id");
+			String pathToFile = mng.getpath(study, id, user);
+			File studyFolder = (new File(pathToFile)).getParentFile();
 			if (i==array.size()-1){
-				msg=msg+mng.deleteFile(id,"", user, study);
+				filename = mng.deleteFile(id,"", user, study);
+				msg=msg+filename;
 			}else{
-				msg=msg+mng.deleteFile(id,"", user, study)+",";
+				filename = mng.deleteFile(id,"", user, study);
+				msg=msg+filename+",";
 			}
-			
+			if (!filename.equals("")){
+				if (filename.contains(".expt")){
+					mng.deleteExptFromDB(user, studyFolder.getName(), filename);
+					Study s = user.getStudy(studyFolder.getName());
+					s.deleteExpt(filename);
+
+				}
+			}
 		}
 		if (!msg.equals("")){
 			msg="alert-The following Files were deleted: "+msg;
@@ -734,7 +746,12 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			}
 		}
 		if (!msg.equals("")){
-			msg="alert-The following file has been deleted: "+msg;
+			if (new File(pathToFile).isDirectory()){
+				msg="alert-The following folder has been deleted: "+msg;
+			}else{
+				msg="alert-The following file has been deleted: "+msg;
+			}
+			
 			user.getComposite().refresh();
 			HashMap res = new HashMap();
 			res.put("filesys", user.getComposite().toHashMap());

@@ -105,6 +105,7 @@ define(['api','settings'], function (API,Settings) {
           var id = $(td).attr("id");
           that.data.elementID = id;
           that.data.deleteAction='file';
+          $('#deleteHeader').text('Delete File');
           $('#deleteFileMsg').text('Delete file \''+name+'\' ?');
           $('#deleteModal').modal('show');
         });
@@ -127,14 +128,17 @@ define(['api','settings'], function (API,Settings) {
         //   that.api.rename(id,'_ID',that.updateView);
 
         // });  
-        $(document).on('click','#deleteFolder', function(){
-          var element =$(this);
-          var tr = $(element).parent().parent();
-          var td = $(tr).find('.folder').parent().parent();
-          var id = $(td).attr("id");
-          that.data.elementID = id;
-          that.data.deleteAction='folder';
-          $('#deleteModal').modal('show');
+      $(document).on('click','#deleteFolder', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.folder').parent().parent();
+        var id = $(td).attr("id");
+        var name = $(td).text();
+        that.data.elementID = id;
+        that.data.deleteAction='folder';
+        $('#deleteHeader').text('Delete Folder');
+        $('#deleteFileMsg').text('Delete folder \''+name+'\' ?');
+        $('#deleteModal').modal('show');
         
 
       });

@@ -508,7 +508,8 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
            
            var settings = new Settings();
            var url = settings.gettestStudyURL();
-           $('#copytextinput').val(url+user+"/"+studyName+"/"+fname+"&refresh=true");
+           var html=url+user+'/'+path+fname+'&refresh=true';
+           $('#copytextinput').val(html);
            $('#CopyModal').modal('show');
            $(document).find('#CopyModal').on('shown.bs.modal',function(){
            $('#copytextinput').select();
@@ -554,19 +555,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
 
               if (array[i]===user) found=true;
             }
-            
-            // var pathA = new Array();
-            // var path='';
-            // var info = {};
-            // info.found = false;
-            // getPath(model.fileSystem,model.elementID,pathA,info);
-            // for (var i=0;i<pathA.length;i++){
-            //   path+=pathA[i]+"/";// dont change this is the right seperator for a URL.
-            // }
-            // studyName=path;
-            // fname='';
-            // if (model.study==='user') user='';
-
+         
            }
            var settings = new Settings();
            var url = settings.gettestStudyURL();
