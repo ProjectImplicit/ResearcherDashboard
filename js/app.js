@@ -30,20 +30,19 @@
         
     }
 });
+
+
 require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','change','remove','bootstrap','jshint','csvToTable',
   'tablesorter','context'],
- function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
+function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
  
 
-  // window.onload = function() {
-  //   $('#studyModel').modal('show');
-  // };  
-    // do something with the loaded modules
+  
   domReady(function () {
-      $('#studyModel').modal('show');
+  
       var model={};
       var api = new API();
-      //$('#studyModel').modal('show');
+      model.sortedMethod = 'folder'; 
       api.init(model,setStudies,SetUser);
       var id=0;
       var fileTableModel ={};
@@ -86,19 +85,31 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         alert(fullMessage);
         return false;
       }
+
+
+
       function requestUnauthorized(xhr){
+
+
         alert('You are logged out');
         window.location.href = xhr.getResponseHeader("Location");
+
+
       }
      
 
       $(document).on("click","#logout",function(){
+
+
         api.logout();
+
 
       });
       
      
       function getStudyPath(study){
+
+
         var study = findStudy(study);
         var folder = study.folder;
         var user = model.user;
@@ -114,6 +125,8 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
           }
         }
         return res;
+
+
       }
      
 
@@ -134,17 +147,30 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
       }
     
       $(document).on('click','.review',function(){
+
+
         var butt = $(this);
         var tr = $(this).parent();
         var studyName = $(tr).find('#studyRaw').val;
         api.submitforreview(studyName);
         alert('Your study was submitted.');
+
+
       });
       
       $(document).on('click','#personalFolder',function(){
+
+
         $('#fileSys').click();
+
+
       });
+
+
+
       $(document).on('click','#userFolder',function(){
+
+
         $('#uploadedModal').modal('show');
         $('#studyTablePanel').hide();
         $('#instruct').css("display","none");
@@ -154,6 +180,8 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         model.active='';
         model.study='user';
         api.getFiles(model.key,model.study,setStudyTable);
+
+
       });
 
     
@@ -184,11 +212,17 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
       }
 
       $('#newStudyNamePressCLOSE').on('click',function(){
+
+
         $('#studyexistalert').text('');
         $('#studyexistalert').hide();
         $('#newStudyNameModal').modal('hide');
+
+
       })
       $('#newStudyNamePressOK').on('click',function(){
+
+
           $('#studyexistalert').hide();
           var newname = $('#newstudyName').val();
           $('#newstudyName').val('');
@@ -213,7 +247,6 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
 
           }
           
-          
 
       })
       $(document).on('click','#renamestudytable', function(){
@@ -221,28 +254,17 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         var chosenStudy = $(tr).find('.studyRaw').text();
         model.chosenStudy=chosenStudy;
         $('#newStudyNameModal').modal('show');
-        // $('#newStudyNamePressOK').on('click',function(){
-        //   var newname = $('#newstudyName').val();
-        //   $('#newstudyName').val('');
-        //   api.renameStudy(chosenStudy,newname,refreshStudyList);
-
-        // })
-        
+       
         
       })
 
       $(document).on('click','#renamestudy', function(){
-        //var studyname = model.study;
+        
         model.chosenStudy=false;
         $('#newStudyNameModal').modal('show');
-        // $('#newStudyNamePressOK').on('click',function(){
-        //   var newname = $('#newstudyName').val();
-        //   $('#newstudyName').val('');
-        //   model.newname = newname;
-        //   api.renameStudy(model.study,newname,refreshStudyList);
-
-        // })
+        
       })
+
       $(document).on('click','#deleteStudy', function(){
         var tr =$(this).parent().parent();
         var chosenStudy = $(tr).find('.studyRaw').text();
@@ -301,10 +323,10 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
             setSideMenu();
             model.activePage = 'study';
             file.setFileSysTable();
-            //populateFileTable();
+        
           }
         });
-        //api.getStudies(model.key,setStudies);
+        
 
       });
 
@@ -319,7 +341,6 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
 
         $('#instruct').hide();
         $('#result').html('');
-        //$('#studyTablePanel').html('');
         $('#studyTablePanel').hide();
         $('#studyTable').hide();
         $('.studyButt').html(model.study+'<span class="caret"></span>');
@@ -584,14 +605,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
          var fname = $(span).text();
          var id = $(span).parent().attr("id");
          model.elementID = id;
-         // var pathA = new Array();
-         // var path='';
-         // var info = {};
-         // info.found = false;
-         // getPath(model.fileSystem,model.elementID,pathA,info);
-         // for (var i=0;i<pathA.length;i++){
-         //  path+=pathA[i]+fileSeperator();
-         // }
+       
          api.validateFile('','_ID',model.elementID,'',openValidation);
 
       });
@@ -675,9 +689,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
 
             appendTracker(studyExpt);
           })
-          //}else{
-            //appendTracker(studyExpt);
-          ///}
+       
           
         }else{
           api.getUserName(takespaces(model.key),function(data){
@@ -697,10 +709,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         
 
       });
-      // $("input[name='fileName']" ).change(function () {
-      //     $('#upload').click();
-      // });
-///////////////////////////fUNCTIONS////////////////////////////////////
+   
 
       function setLiseners(){
         $('#sideMenu li').click(function(e) {
@@ -826,63 +835,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
           });
         
       }
-      /**
-      * Desc: using file or folder id
-      * get the path of thar file/folder
-      * return an array of path elements.
-      *
-      */
-      
-
-
-      function getPath(fileSystem,elementID,pathA,info){
-        
-          $.each(fileSystem, function(k, v) {
-               if (info.found) return false; 
-               //var extension = k.split(".");
-               if (isFile(k,fileSystem)){
-                 if (v.id===elementID){
-                  if (!info.found) pathA.push(k);
-                  info.found=true;
-                  return false;
-                 }
-               }else{
-                 if (k!='state' && k!='id' && k!='path****'){
-                   if (!info.found) pathA.push(k);
-                   if (folderID(v)===elementID){
-                    info.found=true;
-                    return false;
-                   }else{
-                    getPath(v,elementID,pathA,info);
-                    if (!info.found) pathA.pop();
-
-                   }
-                   
-                 }
-               }
-             
-          });
-    
-      }
-      /**
-      * Desc: Get the path to file or folder
-      * goes over the 'fileSystem' Object and calculate the
-      * path according to the id stored in model.elementID
-      *
-      */
-      function getPathToFile(){
-
-        var pathA = new Array();
-        var path='';
-        var info = {};
-        info.found = false;
-        getPath(model.fileSystem,model.elementID,pathA,info);
-        for (var i=0;i<pathA.length;i++){
-          path+=pathA[i]+fileSeperator();
-        }
-        return path;
-      }
-
+ 
    
       function downLoadSuccess(data){
         //alert('download syccesfull');
@@ -897,6 +850,8 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
      
       
       function setChartData(study){
+
+
          var data = {};
          var studyExpt = getExptid(study);
          var ctx = document.getElementById("myChart").getContext("2d");
@@ -936,12 +891,9 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
          data.threads = 'yes';
          data.threadsNum = '1';
          data.baseURL = settings.getBaseURL();
-
          api.getTracker(data,function(result){
-
           console.log(result);
           var resultRaws = result.replace( /\n/g, " " ).split( " " );
-         
           var datactx = {};
           var labels =[];
           var datasets = [{
@@ -973,41 +925,62 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
 
           
       }
+
+
       function parseline(str,a,b,c,d){
+
+
         var res = str.replace('{a}',a);
         res = res.replace('{b}',b);
         res = res.replace('{c}',c);
         res = res.replace('{d}',d);
         return res;
+
+
       }
 
       function SetUser(data){
+
+
         var userObj = jQuery.parseJSON( data );
         model.user = userObj;
         $('#userName').html('<i class="glyphicon glyphicon-user"></i><span class="caret"></span>'+userObj.name);
         api.getStudies('',setStudies);
+
+
       }
      
+
+
       function sortStudies(studyArray){
+
+
         var sortArray= new Array();
         $.each(studyArray, function(key, value) {
             console.log(key + "/"+value);
             sortArray.push(value);
-            //update(key);
-            
         });
-        sortArray.sort(function (a, b) {
-          var namea= a.name;
-          var nameb = b.name;
-
-          if (namea.toLowerCase() < nameb.toLowerCase()) return -1;
-          if (namea.toLowerCase() > nameb.toLowerCase()) return 1;
-          return 0;
-
-          //return a.toLowerCase().localeCompare(b.toLowerCase());
-        });
-        //sortArray.sort();
+        if (model.sortedMethod==='name'){
+          sortArray.sort(function (a, b) {
+            var namea= a.name;
+            var nameb = b.name;
+            if (namea.toLowerCase() < nameb.toLowerCase()) return -1;
+            if (namea.toLowerCase() > nameb.toLowerCase()) return 1;
+            return 0;
+          });
+        }
+        if (model.sortedMethod==='folder'){
+          sortArray.sort(function (a, b) {
+            var namea= a.folder;
+            var nameb = b.folder;
+            if (namea.toLowerCase() < nameb.toLowerCase()) return -1;
+            if (namea.toLowerCase() > nameb.toLowerCase()) return 1;
+            return 0;
+          });
+        }
         return sortArray;
+
+
       }
      
 
@@ -1024,28 +997,13 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         return false;
       }
 
-      function setFilters (array){
-        var filterArray=[];
-        for (var i=0;i<array.length;i++){
-          var study = array[i];
-          var path = study.folder;
-          var studyarray;
-          if (path.indexOf('/')!=-1){
-            studyarray = path.split('/');
-          }else{
-            studyarray = path.split('\\');
-          }
-          filterArray.push(studyarray);
-
-        }
-        return filterArray;
-      }
-
+    
       function setStudies (data){
         
-       console.log(data);
-       
-       $('.dropdownLI').html('');
+        console.log(data);
+        $('#loader').hide();
+        $('#wrapper').fadeIn();
+        $('.dropdownLI').html('');
         $('#studyTable > tbody').html('');
         var obj;
         var studies=[];
@@ -1057,81 +1015,25 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         model.studyNames=obj;
         model.selectedName='';
         var sortArray = sortStudies(obj);
-        //model.filterArray = setFilters(sortArray);
-        //setFilterDropDowns(model.filterArray,0);
         createStudyTable(sortArray);
+
       }
 
-      function addFilter(level,filterarray){
-        $('#filterbox').append('<div >Filter: '+
-          '<div class="dropdown" style="display:inline;">'+
-            '<button style="display:inline;" class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">'+
-              'Studies'+
-              '<span class="caret"></span>'+
-            '</button>'+
-            '<ul id="dropoptions'+level+'"class="dropdown-menu level" role="menu" aria-labelledby="dropdownMenu1">'+
-                            
-            '</ul>'+
-          '</div>'+
-
-        '</div>');
-        $('.level').each(function(i, obj) {
-          var id = $(obj).attr('id');
-          var Objlevel= id.charAt(11);
-          if (Objlevel===level.toString()){
-            for (var i=0;i<filterarray.length;i++){
-              $(obj).append('<li role="presentation"><a class="optionselect" role="menuitem" tabindex="-1" href="#">'+filterarray[i]+'</a></li>');
-            }
-          }
-        });
-        
-      }
+    
       function numberOfTimes(name,array){
+
         var num=0;
         for (var i=0;i<array.length;i++){
           if (array[i]===name) num++;
         }
         return num;
+
       }
 
-      function setFilterDropDowns(selection,level){
-        var pathsArray =model.filterArray;
-        var filterarries=[];
-
-        if (level===0){
-          for (var x=0;x<pathsArray.length;x++){
-            var a = pathsArray[x];
-            var object = a[level];
-            if (object.length>0){
-              filterarries.push(object);  
-            }
-          }
-          addFilter(level,filterarries);
-        }else{
-          var arrayIndex=[];
-          for (var z=0;z<pathsArray.length;z++){
-            var a = pathsArray[z];
-            var object = a[level-1];
-            if (object===selection){
-              arrayIndex.push(z);
-            }
-          }
-          if (arrayIndex.length>1){
-            for (var y=0;y<arrayIndex.length;y++){
-              var index=arrayIndex[y];
-              var pathArray = pathsArray[index];
-              var oneSubPath = pathArray[level];
-              filterarries.push(oneSubPath);
-
-
-            }
-          }
-          addFilter(level,filterarries);
-          
-        }
-      }
 
       $(document).on('click','.optionselect',function(){
+
+
         var newstudyarray=[];
         var option = $(this);
         var selection = $(option).text();
@@ -1148,8 +1050,14 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         }
         createStudyTable(newstudyarray);
 
+
       });
+
+
+
       function createStudyTable(sortArray){
+
+
         $('#studyTable > tbody').html('');
         for (var i=0;i<sortArray.length;i++){
           var value = sortArray[i];
@@ -1160,14 +1068,17 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
           model.newname=undefined;
         }
         if (model.activePage === 'file'){
-           //$('#fileSys').click();
-
         }
-        $('#studyModel').modal('hide');  
+        //$('#studyModel').modal('hide');  
+
+
       }
 
+
+
       function openStudyValidation(data){
-        //debugger;
+        
+
         var errors = data.split("<br/>");
         console.log(errors);
         var len = errors[0].length;
@@ -1182,38 +1093,41 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
           $('#validateTable > tbody').append('<tr><td>'+error+'</td></tr>');
         }
         $('#validateModal').modal('show');
+
+
       }
 
+
       function openValidation(data){
+
+
         console.log(data);
         var configuration = '/* jshint undef: true, es3:true */';
         var globals = '/* global define,xGetCookie,$,top */';
         var cont =globals+'\n'+configuration+'\n'+data;
         JSHINT(cont);
         console.log(JSHINT.errors);
-         $('#validateTable > tbody').empty();
+        $('#validateTable > tbody').empty();
         for (var i=0;i<JSHINT.errors.length;i++){
-
-              //console.log(JSHINT.errors[i]);
-              var obj = JSHINT.errors[i];
-              var a = obj.a;
-              var b = obj.b;
-              var c = obj.c;            
-              var d = obj.d;            
-              var objerr = obj.id;
-              var rawobj = obj.raw;
-              var rawS = parseline(rawobj,a,b,c,d);
-              var line = obj.line;
-              var char = obj.character;
-              var error = 'Error: '+objerr+'     '+'Description: '+rawS+'     '+'line: '+line+'     '+'charecter: '+char;
-              //var error = JSON.stringify(obj, null, 2);
-              $('#validateTable > tbody').append('<tr><td>'+error+'</td></tr>');
-              
+          var obj = JSHINT.errors[i];
+          var a = obj.a;
+          var b = obj.b;
+          var c = obj.c;            
+          var d = obj.d;            
+          var objerr = obj.id;
+          var rawobj = obj.raw;
+          var rawS = parseline(rawobj,a,b,c,d);
+          var line = obj.line;
+          var char = obj.character;
+          var error = 'Error: '+objerr+'     '+'Description: '+rawS+'     '+'line: '+line+'     '+'charecter: '+char;
+          $('#validateTable > tbody').append('<tr><td>'+error+'</td></tr>');
         }
         if (JSHINT.errors.length===0){
-         $('#validateTable > tbody').append('<tr><td>No Errors Found</td></tr>');
+          $('#validateTable > tbody').append('<tr><td>No Errors Found</td></tr>');
         }
         $('#validateModal').modal('show');
+
+
       }
 
       /**
@@ -1222,66 +1136,24 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
       * it is being clicked.
       */
       function fileSeperator(){
+
+
         if(model.user.os==='unix'){
             return '/';
           }else{
             return '\\';
           }
+
+
       }
-      function changeFolderState(name,id){
-        var obj = model.openStruct;
-        var pathA = new Array();
-        var path='';
-        var info = {};
-        info.found = false;
-        getPath(model.fileSystem,id,pathA,info);
-        for (var i=0;i<pathA.length;i++){
-          path+=pathA[i]+fileSeperator();
-        }
-        var element = obj[path];
-        if (element==='open'){
-          obj[path]='close';
-          return 'close';
-        }else{
-          obj[path]='open';
-          return 'open';
-        }
-                   
-      }
-
-
-
-   
+        
 
       function takespaces(name){ return name.replace(/\s+/g, '');}
 
-      /* Returns the folder object according to name
-
-
-      */
-
-      function findFolder(ObjTree,name,id){
-        var res;
-        //debugger;
-        $.each(ObjTree, function(k, v) {
-          if (k===name){
-            res= v;
-            return false;
-          }
-          if (k.indexOf(".")===-1 && k!='state' && k!='id' && k!='path****'){
-            res = findFolder(v,name);
-            if (res!=undefined){
-              return false;
-            }
-            
-          }
-          
-         });
-        return res;
-      }
-
-      
+           
       function sortedKeys(filesObj){
+
+
         var sortArray= new Array();
         $.each(filesObj, function(key, value) {
             sortArray.push(key);
@@ -1289,20 +1161,12 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         sortArray.sort(function (a, b) {
           return a.toLowerCase().localeCompare(b.toLowerCase());
         });
-        //sortArray.sort();
+      
         return sortArray;
+
+
       }
-      function createUserButtons(){
-        var user = model.user;
-        var role = user.role;
-        if (role==='SU'){
-          if (model.study==='all' || model.study==='user'){
-            $('#result').append('<div><button class="btn btn-success btn-sm" type="button" id="userFolder" type="button">User</button>'+
-            '<button class="btn btn-success btn-sm" type="button" id="personalFolder" type="button" style="margin-left:10px;">Personal</button></div>');
-          }
-  
-        }
-      }
+      
       function isFile(k,obj){
         if (k==='state' || k==='id' || k==='path****'){
           return false;
@@ -1316,79 +1180,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         }
 
       }
-      function createRawsRecursive(filesObj,recursive,user){
-
-         fileTableModel.level=fileTableModel.level+1;
-        var keys = sortedKeys(filesObj);
-        console.log('in create raws:' +model.study);
-        if (recursive===false){//entering this function for the first time
-
-          $('#result').html('');
-          createDandD();
-          createUserButtons();
-          createTable();
-        }
-
-       var numOfElements=0;
-       for (var i=0;i<keys.length;i++){
-          var k = keys[i];
-          if (k!='state' && k!='id' && k!='path****'){
-             numOfElements++;
-          }
-
-          var extension = k.split(".");
-          if (isFile(k,filesObj)){
-            if (extension[1]==='jsp' && user===false){
-             addJspRaw(k,fileTableModel.level,filesObj[k]);
-           }else{
-             if (extension[1]==='expt' && user===false){
-             addExptRaw(k,fileTableModel.level,filesObj[k]);
-             }else{
-               if (extension[1]==='js' && user===false){
-                 addJSRaw(k,fileTableModel.level,filesObj[k]);
-               }else{
-                 addFileRaw(k,fileTableModel.level,filesObj[k]);
-               }
-             }
-           }
-          }else{
-           if (k!='state' && k!='id' && k!='path****'){
-             addFolderRaw(k,fileTableModel.level,filesObj[k]);
-             if (FolderState(filesObj[k])==='open'){
-               createRaws(filesObj[k],true,user);
-               fileTableModel.level=fileTableModel.level-1;
-             }
-           }
-          
-         }
-
-
-            
-         }
-         if (numOfElements===0){
-          addEmptyRaw(fileTableModel.level);
-
-         }
-      }
-      
-      function createRaws(filesObj,recursive,user){
-
-        
-        createRawsRecursive(filesObj,recursive,user);
-        var currentFolder={};
-        var check;
-        if (model.currentFolder != null && model.currentFolder != undefined){
-         currentFolder = model.currentFolder;
-         var td = $(document).find('#'+currentFolder.id);
-         var tr  = td.parent();
-         check = $(tr).find('[type=checkbox]');
-         $(check).prop('checked', true);
-         currentFolder.name = takespaces($(tr).find('.folder').text());
-         
-        }
-        
-        $('#currentName').text(currentFolder.name);
-      }
+    
       
       function getStudyTestlHtml(){
         var html='<div class="dropdown" style="display: inline">'+
@@ -1404,250 +1196,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         return html;
 
       }
-      function addExptRaw(file,level,v){
-        fileTableModel.row = fileTableModel.row+1;
-
-        
-        var html = '<tr>'+
-          '<td class="file" id="'+v.id+'" >'+
-            '<span class="fileNameSpan" style="margin-left:'+level*50+'px" ><input type="checkbox" class="check" style="margin-right:10px;">'+
-              '<i class="fa fa-file-text" ></i> '+file+
-            '</span>'+
-          '</td>'+
-          '<td>'+
-              '<button type="button" class="btn btn-primary btn-xs Svalidate">Run study validator</button>'+getStudyTestlHtml()+
-              '<!--<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs testStudy">Test the study</button>'+
-              '<button type="button" style="margin-left:20px;" class="btn btn-primary btn-xs runData">Run data tester</button>-->'+
-              '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
-              '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
-              '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
-              '<!--<button type="button" id="deployButton" style="margin-left:20px;" class="btn btn-primary btn-xs">Deploy</button>'+
-              '<button type="button" style="margin-left:20px;" id="statisticsButton" class="btn btn-primary btn-xs ">Statistics</button>'+
-              '<button type="button" style="margin-left:20px;" id="dataFile" class="btn btn-primary btn-xs ">Data</button>-->'+
-            '</td>'+
-          '</tr>';
-          
-          
-        $('#fileTabale > tbody').append(html);
-      }
-      function addJspRaw(file,level,v){
-        fileTableModel.row = fileTableModel.row+1;
-        $('#fileTabale > tbody').append('<tr>'+
-          '<td class="file" id="'+v.id+'" >'+
-            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;"><i class="fa fa-file-text" >'+
-            '</i> '+file+
-            '</span>'+
-          '</td>'+
-          '<td>'+
-                '<button type="button" id="viewFile" class="btn btn-primary btn-xs">View File</button>'+
-                '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
-                '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
-          '</td>'+
-        '</tr>');
-      }
-      function addJSRaw(file,level,v){
-        fileTableModel.row = fileTableModel.row+1;
-        $('#fileTabale > tbody').append('<tr>'+
-          '<td class="file" id="'+v.id+'">'+
-            '<span class="fileNameSpan" style="margin-left:'+level*50+'px"> <input type="checkbox" class="check" style="margin-right:10px;">'+
-              '<i class="fa fa-file-text" ></i> '+file+
-            '</span>'+
-          '</td>'+
-          '<td>'+
-            '<button type="button" class="btn btn-primary btn-xs validate">Check js syntax</button>'+
-            '<button type="button" id="viewFile" style="margin-left:20px;" class="btn btn-primary btn-xs">View File</button>'+
-            '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
-            '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+     
-           '</td>'+
-        '</tr>');
-
-      }    
-      function addFileRaw(file,level,v){
-        fileTableModel.row = fileTableModel.row+1;
-        $('#fileTabale > tbody').append('<tr>'+
-          '<td class="file" id="'+v.id+'" >'+
-            '<span class="fileRaw fileNameSpan" style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
-              '<i class="fa fa-file-text"  ></i> '+file+
-            '</span>'+
-          '</td>'+
-          '<td>'+
-                '<button type="button" id="viewFile" class="btn btn-primary btn-xs">View File</button>'+
-                '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
-                '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
-          '</td>'+
-        '</tr>');
-      }
-      
-      function addFolderRaw(file,level,v){
-
-        fileTableModel.row = fileTableModel.row+1;
-        var raw = fileTableModel.row;
-        $('#fileTabale > tbody').append('<tr>'+
-            '<td id="'+v.id+'" >'+
-              '<span  style="margin-left:'+level*50+'px"><input type="checkbox" class="check" style="margin-right:10px;">'+
-                '<span class="folder" style="cursor:pointer"><i class="fa fa-folder" ></i> <span id="folderNameR">'+file+'</span></span>'+
-              '</span>'+
-            '</td>'+
-            '<td>'+
-                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
-                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
-                '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
-                '<button type="button" style="margin-left:20px;" id="downloadFolder" class="btn btn-primary btn-xs ">Download Folder</button>'+
-            '</td>'+
-          '</tr>');
-
-      }
-      function addEmptyRaw(level){
-
-        fileTableModel.row = fileTableModel.row+1;
-        var raw = fileTableModel.row;
-        $('#fileTabale > tbody').append('<tr>'+
-            '<td class="" id="" >'+
-              '<span style="margin-left:'+level*50+'px;">'+
-                'Folder is Empty'+
-              '</span>'+
-            '</td>'+
-            '<td>'+
-            '</td>'+
-          '</tr>');
-
-      }
-
-
-      function setFilePerUser(data){
-
-        fileObj = jQuery.parseJSON( data );
-        createTable();
-        createUserRaws(fileObj,false);
-
-      }
-
-      // function setOpenStruct(fileObj){
-      //   for (var k in fileObj) {
-      //     if (fileObj.hasOwnProperty(k)) {
-      //       var v = fileObj[k];
-      //       //alert(key + " -> " + p[key]);
-      //       var extension = k.split(".");
-      //       if (extension.length>1){//file 
-      //       }else{
-      //         if (k!='state' && k!='id'){
-      //           var obj = model.openStruct;
-      //           for (var k2 in v) {
-      //             if (v.hasOwnProperty(k2)) {
-      //               var v2 = fileObj[k];
-      //               if (k2==='id'){
-      //                 var pathA = new Array();
-      //                 var path='';
-      //                 var info = {};
-      //                 info.found = false;
-      //                 getPath(model.fileSystem,v2,pathA,info);
-      //                 for (var i=0;i<pathA.length;i++){
-      //                   path+=pathA[i]+'/';
-      //                 }
-      //                 obj[path] = 'close';
-      //               }
-      //             }
-      //           }
-      //           setOpenStruct(v);
-                
-      //         }
-              
-      //       }
-
-      //     }
-      //   }
-      // }
-      function setOpenStruct(fileObj){
-      
-       $.each(fileObj, function(k, v) {
-          //var extension = k.split(".");
-          if (isFile(k,fileObj)){//file 
-          }else{
-            if (k!='state' && k!='id' && k!='path****'){
-              var obj = model.openStruct;
-              $.each(v, function(k2, v2) {
-                if (k2==='id'){
-                  var pathA = new Array();
-                  var path='';
-                  var info = {};
-                  info.found = false;
-                  getPath(model.fileSystem,v2,pathA,info);
-                  for (var i=0;i<pathA.length;i++){
-                    path+=pathA[i]+fileSeperator();
-                  }
-                  obj[path] = 'close';
-                }
-              });
-              setOpenStruct(v);
-              
-            }
-            
-          }
-        });
-         
-      }
      
-
-      function addFolderRawB (file,level,v){
-          
-          $('#fileTabale > tbody').append(
-            '<tr>'+
-              '<td class="folder" id="'+v.id+'" >'+
-                '<span  style="margin-left:'+level*50+'px"><i class="fa fa-folder" ></i> '+file+'</span>'+
-              '</td>'+
-              '<td>'+
-                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
-              '</td>'+  
-              '<td>'+  
-                  '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
-              '</td>'+    
-              '<td>'+    
-                  '<button type="button" style="margin-left:20px;" id="deleteFolder" class="btn btn-primary btn-xs ">Delete Folder</button>'+
-              '</td>'+
-            '</tr>'
-          );
-      }
-
-      function addFileRawB (file,level,v){
-
-          
-          $('#fileTabale > tbody').append(
-            '<tr>'+
-             '<td class="file" id="'+v.id+'" >'+
-               '<span class="fileRaw" style="margin-left:'+level*50+'px">'+
-                  '<i class="fa fa-file-text"  ></i> '+file+
-                '</span>'+
-              '</td>'+
-              '<td>'+
-                '<button type="button" id="viewFile" class="btn btn-primary btn-xs">View File</button>'+
-              '</td>'+
-              '<td>'+
-                '<button type="button" style="margin-left:20px;" id="downloadFile" class="btn btn-primary btn-xs">Download File</button>'+
-              '</td>'+  
-              '<td>'+
-                '<button type="button" style="margin-left:20px;" id="deleteFile" class="btn btn-primary btn-xs ">Delete File</button>'+
-              '</td>'+
-            '</tr>');
-     }
-      
-      
-      function setIds(filesObj,index){
-
-        $.each(filesObj, function(k, v) {
-          index.index++;
-          //var extension = k.split(".");
-          if (isFile(k,filesObj)){
-            v.id='file'+index.index;
-          }else{
-            if (k!='state' && k!='id' && k!='path****'){
-              v.id="folder"+index.index;
-              setIds(v,index);
-              
-            }
-          }
-        });
-
-      }
       /**
       * Desc: Used as a callback function to 
       * render the list of files.
@@ -1676,91 +1225,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         
 
       }
-      function createDandD(){
-        var name;
-        if (model.currentFolder != null && model.currentFolder != undefined){
-          var currentFolder = model.currentFolder;
-          name = currentFolder.name;
-        }else{
-          name='';
-        }
-
-        $('#result').append('<label style="position:relative;left:-10px;color:#92AAB0;" id="currentfolder">Current folder: <span id="currentName">'+name+'</span></label></br><div id="dragandrophandler">Drag & Drop Files Here</div>');
-        var obj = $("#dragandrophandler");
-        obj.on('dragenter', function (e) 
-        {
-            e.stopPropagation();
-            e.preventDefault();
-            $(this).css('border', '2px solid #0B85A1');
-        });
-        obj.on('dragover', function (e) 
-        {
-             e.stopPropagation();
-             e.preventDefault();
-        });
-        obj.on('drop', function (e) 
-        {
-         
-             $(this).css('border', '2px dotted #0B85A1');
-             e.preventDefault();
-             var filesI = e.originalEvent.dataTransfer.files;
-             var files = e.originalEvent.dataTransfer.items;
-             //var length = e.originalEvent.dataTransfer.items.length;
-             //We need to send dropped files to Server
-             $('#uploadedModal').modal('show');
-             if (   (navigator.userAgent).indexOf('Mozilla')!=-1    ) {
-              DrophandleFileUpload(filesI,obj);
-
-             }else{
-              DrophandleFileUpload(files,obj);
-             }
-             
-        });
-      }
-
-   
-      function errorHandler(data){
-        console.log(data);
-      }
-    
-      /**
-      * Desc: returns the satet of the folder
-      * input: folder key/value object
-      *
-      */
-      function FolderState(folder){
-        var id;
-        var state;
-        var path=folder['path****'];
-        id = folder['id'];
-        var obj = model.openStruct;
-        return obj[path];
-      }
-      
-      function createTable(){
-        fileTableModel.row =0;
-        fileTableModel.level =0;
-        //if (model.activePage === 'file'){                    
-          //$('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');          
-        //}else{
-          $('#result').append('<table id="fileTabale" class="table table-striped table-hover"><thead><th></th><th></th></thead><tbody id="body"></tbody></table>');
-          $('#fileTabale > tbody').append(
-            '<tr>'+
-              '<td id="0" >'+
-                '<span  style="margin-left:0px;">+<span class="folder" ></span></span>'+
-              '</td>'+
-              '<td>'+
-                '<button type="button" id="uploadFile" class="btn btn-primary btn-xs">Upload File</button>'+
-                '<button type="button" style="margin-left:20px;" id="newFolder" class="btn btn-primary btn-xs">Create New Folder</button>'+
-                '<button type="button" style="margin-left:20px;" id="multiple" class="btn btn-primary btn-xs">Multiple Download</button>'+
-                '<button type="button" style="margin-left:20px;" id="multipleDelete" class="btn btn-primary btn-xs">Multiple Delete</button>'+
-              '</td>'+    
-            '</tr>'
-          );
-        //}
-        
-
-      }
+     
       function update(name,value){
         $('.dropdownLI').append('<li id="'+value.id+'" role="presentation"><a class="tableVal" role="menuitem" tabindex="0" href="#">'+value.name+'</a></li>');
         $('#studyTable > tbody').append(makerow(name,value));
@@ -1777,6 +1242,7 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
         html+='<tr id="'+obj.id+'" class="tableRaw" style="cursor:pointer">'+
                 '<td class="studyRaw"><span href="#" data-toggle="modal" data-target="#myModal" class="studyspan">'+val+'</span>'+
                 '</td>'+
+                '<td >'+obj.folder+'</td>'+
                 '<td class=""><button type="button" id="deleteStudy" class="btn btn-primary btn-xs">Delete Study</button>'+
                 '</td>'+
                 '<td class="">'+
@@ -1817,19 +1283,11 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
          api.getEXPT(study.name,function(data){
           res=data;
          })
-        // $.each(study, function(key, value) {
-        //     if (key.indexOf('exptID')!=-1){
-        //       res.push(value);
-              
-        //     }
-               
-        // });
+     
         return res;    
       }
 
-      function doNothing(){
-
-      }
+     
      
       function takeOutBraclet(name){
         var studyName;
@@ -1852,14 +1310,11 @@ require(['domReady','api','jQuery','tracker','settings','deploy','fileSys','chan
           model.activeTracker =track;
           model.active = track;
         }else{
-          //track = model.activeTracker;
+     
         }
-        
-        //Tracker(model,'design1');
-        
-        //Tracker.getTracker(studyExpt);
+     
         model.activeTracker.getTracker(studyExpt);
-        ////track.getTable(studyExpt,true);
+     
         
       }
 

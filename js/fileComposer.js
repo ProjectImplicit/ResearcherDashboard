@@ -943,6 +943,7 @@ define(['api','settings'], function (API,Settings) {
 
         data.append('study','_CURRENT');
         data.append('cmd','UploadFile');
+        $('#uploadedModal').modal('show');
         that.api.uploadFile(data,that.updateView);
 
       }
