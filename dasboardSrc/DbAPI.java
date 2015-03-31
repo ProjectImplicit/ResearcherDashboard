@@ -1,8 +1,6 @@
 package org.implicit.dashboard;
 import oracle.jdbc.OracleTypes;
 
-import org.uva.dao.ConnectionPool;
-import org.uva.util.PITConnection;
 
 import java.io.Serializable;
 import java.sql.CallableStatement;
@@ -42,6 +40,9 @@ public class DbAPI implements Serializable  {
 			}
 		}
 		return singleton;
+	}
+	protected void CloseAllDataSources(){
+	//	DashBoardConnect.closeDataSouces();
 	}
 	protected boolean resetUser(String userid) throws Exception{
 		

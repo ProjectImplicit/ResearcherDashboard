@@ -67,22 +67,39 @@ public class DashBoardConnect {
 
 	
 	public static Connection getConnection(String databaseId) throws Exception {
+		
+		DataSource dataSource;
+		Connection conn = null;
 		try {
 			
 			if (singleton == null) {
 				singleton = DashBoardConnect.getInstance(false);
 			}
 			
-			DataSource dataSource = (DataSource) singleton.dataSourceHashMap
+			dataSource = (DataSource) singleton.dataSourceHashMap
 					.get(databaseId);
 			
-			return (dataSource.getConnection());
+			conn = dataSource.getConnection();
+//			boolean valid = conn.isValid(1);
+//			while(!valid){
+//				System.out.println("connection is not valid. closing connection.");
+//				conn.close();
+//				conn = dataSource.getConnection();
+//				valid = conn.isValid(0);
+//			}
+			
+			return (conn);
+			//return (dataSource.getConnection());
 		} catch (SQLException e) {
 			
 			throw new Exception("Unable to get connection for database id: "
 					+ databaseId, e);
 			
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
 		}
+		return null;
+		//return (dataSource.getConnection());
 	}
 	
 	
@@ -93,7 +110,13 @@ public class DashBoardConnect {
 		return singleton.dataSourceHashMap.containsKey(databaseId);
 	}
 
-	
+	public static void closeDataSources(){
+		
+		DataSource cloude = (DataSource) singleton.dataSourceHashMap.get("cloude");
+		DataSource oracle = (DataSource) singleton.dataSourceHashMap.get("cloude");
+		
+		
+	}
 	/**
 	 * Returns the connection pool cache date formatted as a date-time stamp
 	 * 

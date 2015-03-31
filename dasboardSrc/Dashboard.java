@@ -602,7 +602,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 					session.setAttribute("userobject", user);
 					session.setAttribute("mng", mng);
 					System.out.println("set user object"+session.getAttribute("userobject"));
-					res= "success";
+					res= "";
 					String url="";
 					if (request.getRequestURI().contains("test")){
 						url = mng.REDIRECTTTESTLOGIN;
@@ -729,9 +729,11 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		key = request.getParameter("key");
 		path = request.getParameter("path");
 		study = request.getParameter("study");
-		
+		boolean folder=false;
 		
 		String pathToFile = mng.getpath(study, path, user);
+		File fileOrFolder = new File(pathToFile);
+		if (fileOrFolder.isDirectory()) folder=true;
 		File studyFolder = (new File(pathToFile)).getParentFile();
 		FileUploadManager fileMng = new FileUploadManager();
 		ServletContext ctx = getServletContext();
@@ -746,7 +748,7 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 			}
 		}
 		if (!msg.equals("")){
-			if (new File(pathToFile).isDirectory()){
+			if (folder){
 				msg="alert-The following folder has been deleted: "+msg;
 			}else{
 				msg="alert-The following file has been deleted: "+msg;

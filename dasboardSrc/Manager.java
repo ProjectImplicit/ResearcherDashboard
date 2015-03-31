@@ -11,7 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.parser.JSONParser;
 import org.uva.util.StudyValidator;
 
 import static java.nio.file.FileVisitResult.*;
@@ -35,9 +40,16 @@ public class Manager implements Serializable{
 	String removeForm;
 	private static final long serialVersionUID = 1L;
 	 
-	public Manager(){
+	public Manager() throws NamingException{
+		//JSONParser parser = new JSONParser();
+		//StringBuilder result = new StringBuilder("");
+    	//ClassLoader classLoader = getClass().getClassLoader();
+    	//File file = new File(classLoader.getResource("../../../../../research/dashBoard/dashboardsettings.txt").getFile());
 		
+    	//System.out.println(file.getAbsolutePath());
 		//api.setMethod("cloude");
+		//Context initContext = new InitialContext();
+		//Context envContext = (Context) initContext.lookup("dashboardSettings");
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
 			projectPath = "research/dashBoard/";
