@@ -41,10 +41,10 @@ public class Manager implements Serializable{
 	private static final long serialVersionUID = 1L;
 	 
 	public Manager() throws NamingException{
-		//JSONParser parser = new JSONParser();
-		//StringBuilder result = new StringBuilder("");
-    	//ClassLoader classLoader = getClass().getClassLoader();
-    	//File file = new File(classLoader.getResource("../../../../../research/dashBoard/dashboardsettings.txt").getFile());
+//		JSONParser parser = new JSONParser();
+//		StringBuilder result = new StringBuilder("");
+//    	ClassLoader classLoader = getClass().getClassLoader();
+//    	File file = new File(classLoader.getResource("../../../../../research/dashBoard/dashboardsettings.txt").getFile());
 		
     	//System.out.println(file.getAbsolutePath());
 		//api.setMethod("cloude");
@@ -67,16 +67,21 @@ public class Manager implements Serializable{
 			userLocation=6;
 			os="windows";
 		}else{
-			folderBase="//home//dev2//user//";
+			//folderBase="/u02/dev2/user";//dev-02
+			folderBase="//home//dev2//user//";//dev-01
 			projectPath = "research//dashBoard//";
-			downloadDir ="//home//dev2//research//dashBoard//ZipFolder";
-			changeForm = "//home//dev2//forms//changeform.html";
-			removeForm = "//home//dev2//forms//removeform.html";
+			//downloadDir ="/u02/dev2/research/dashBoard/ZipFolder";//dev-02
+			//changeForm = "/u02/dev2/forms/changeform.html";//dev-02
+			//removeForm = "/u02/dev2/forms//removeform.html";//dev-02
+			downloadDir ="//home//dev2//research//dashBoard//ZipFolder";//dev-01
+			changeForm = "//home//dev2//forms//changeform.html";//dev-01
+			removeForm = "//home//dev2//forms//removeform.html";//dev-01
 			LOGINURL = "research/dashBoard/newlogin.html";
 			REDIRECTLOGIN="research/dashBoard/dashboard5.html?cmd=start";
 			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
 			LOGIN = "research/dashBoard/login.html";
-			LOGAGAIN = "http://app-dev-01.implicit.harvard.edu/implicit/dashboard";
+			//LOGAGAIN = "https://app-dev-02.implicit.harvard.edu/implicit/dashboard";//dev-02
+			LOGAGAIN = "http://app-dev-01.implicit.harvard.edu/implicit/dashboard";//dev-01
 			DbAPI api = DbAPI.getInstance(false);
 			api.setMethod("oracle");
 			userLocation=4;

@@ -692,31 +692,40 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 	}
 	private String createStudy(String[] arr,DbAPI api,User user,Manager mng){
 		
-		String studyName = arr[8];
-		String key  = arr[6];
-		if(user.existStudy(studyName)){
-			return "ERROR:Study with this name already exists.";
+		try{
+			String studyName = arr[8];
+			String key  = arr[6];
+			if(user.existStudy(studyName)){
+				return "ERROR:Study with this name already exists.";
+			}
+			FileUploadManager fileMng = new FileUploadManager();
+			String createPath = "";
+			String path="";
+			if (key.equals("CURRENT")){
+				createPath = user.getComposite().getCurrentFolder().getPath()+File.separator+studyName;
+				path = mng.getStudyRelativePath(createPath, user.getFolderName());
+			}else{
+				createPath = mng.getPath("/", studyName,"all",user,mng);
+				path = studyName+File.separator;
+			}
+			
+			boolean success = fileMng.createFolder(createPath);
+			Integer id = api.createStudy(studyName, "not_set","not_set","not_set", path, user.getID());
+			user.addStudy(mng.createStudy("not_set","not_set",studyName,path,String.valueOf(id)));
+			
+			if (success){
+				HashMap res= new HashMap();
+				res.put("id", id);
+				res.put("path", path);
+				String jsonText = JSONValue.toJSONString(res);
+				return jsonText;
+			}else{
+				return "ERROR:There was a problem creating the study";
+			}
+		}catch(Exception e){
+			System.out.println(e.getStackTrace());
 		}
-		FileUploadManager fileMng = new FileUploadManager();
-		String createPath = "";
-		String path="";
-		if (key.equals("CURRENT")){
-			createPath = user.getComposite().getCurrentFolder().getPath()+File.separator+studyName;
-			path = mng.getStudyRelativePath(createPath, user.getFolderName());
-		}else{
-			createPath = mng.getPath("/", studyName,"all",user,mng);
-			path = studyName+File.separator;
-		}
-		
-		boolean success = fileMng.createFolder(createPath);
-		Integer id = api.createStudy(studyName, "not_set","not_set","not_set", path, user.getID());
-		user.addStudy(mng.createStudy("not_set","not_set",studyName,path,String.valueOf(id)));
-		
-		if (success){
-			return id.toString();
-		}else{
-			return "ERROR:There was a problem creating the study";
-		}
+		return null;
 	
 		
 	}
