@@ -9,10 +9,21 @@ define([], function () {
         //var db = 'Research';
     	//var current = 'Any';
     	var baseURL = 'http://app-dev-01.implicit.harvard.edu/implicit';
+        // Configure the url for the download folder the folder where the system saves
+        // the zipped folders. 
         var uploadDir ='/research/dashBoard/ZipFolder';
+
+
         var urlDownload = '/implicit/dashboard/download';
+        // Configure the url 
         var urlView = '/implicit/dashboard/view/';
 
+        // Configure the general user folder. Default is 'user'
+        var userFolder ='user';
+        this.getUserFolder = function(){
+
+            return userFolder;
+        }
         this.getUrlView = function(){
             return urlView;
         }

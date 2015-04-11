@@ -49,7 +49,12 @@ define(['api'], function (API) {
 				data.tr='<tr><td>'+timestamp+'</td><td>'+name+'</td><td>'+email+'</td><td>'+show+'</td><td>'+list+'</td><td>'+comment+'</td></tr>';
 				var api = new API();
 				api.submitChange(data,function(data){
-					$('#msgspan').text(data);
+					$('#changeName').prop( "disabled", true );
+					$('#changeEmail').prop( "disabled", true );
+					$('#changeShow').prop( "disabled", true );
+					$('#changeList').prop( "disabled", true );
+					$('#changeComment').prop( "disabled", true );
+					$('#msgspan').html(data + '<br><br><a target="_blank" href="forms/changeform.html">view change form</a>');
           			$('#msgModal').modal('show');
 					
 				});

@@ -305,16 +305,18 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
         }
 
         api.newStudy(takespaces(studyName),model.key,function(data){
-          if (data.indexOf(":")!=-1){
+          model.key='';
+          if (typeof data ===String && data.indexOf(":")!=-1){
             var msg = data.split(":")[1];
             alert(msg);
             //$('#uploadedModal').modal('hide');
           }else{
-            model.studyID = data;
+            var data = jQuery.parseJSON( data );
+            model.studyID = data.id;
             var studies = model.studyNames;
             var user = model.user;
             var studyname = model.study;
-            studies[studyname] = {name:studyname,exptID:'not_set',id:data,folder:user.folder+"/"+studyname,status:null};
+            studies[studyname] = {name:studyname,exptID:'not_set',id:data.id,folder:data.path,status:null};
             setStudies(studies);
             $('#instruct').hide();
             $('#result').html('');
@@ -348,7 +350,21 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
         file.setFileSysTable();
         
       });
-
+      $(document).on('click','.foldercol',function(){
+        model.activePage = 'study';
+        var tr =$(this).parent();
+        var chosenStudy = $(tr).find('.studyRaw').text();
+        var chosenStudyID = $(tr).attr('id');
+        model.study = chosenStudy;
+        model.studyID= chosenStudyID;
+        model.studsyObj = model.studyNames[chosenStudy];
+        $('#instruct').hide();
+        $('#result').html('');
+        $('#studyTablePanel').hide();
+        $('#studyTable').hide();
+        file.setFileSysTable();
+        setSideMenu();
+      })
       $(document).on('click','.studyRaw', function(){
 
         model.activePage = 'study';
@@ -504,6 +520,8 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
          var tr = $(span).parent();
          var id = $(tr).attr("id");
          model.elementID = id;
+         var settings = new Settings();
+
          api.getUser(takespaces(model.key),function(data){
            var userObj = jQuery.parseJSON( data );
            var user = userObj.folder;
@@ -512,7 +530,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
             var toppath = $('#toppath').text();
             var array;
             var found=false;
-           
+            var userfolder = settings.getUserFolder();
             if (toppath.indexOf('\\')!=-1){
               array = toppath.split('\\');
             }else{
@@ -523,13 +541,13 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
                 path=path+array[i]+'/';
               }
 
-              if (array[i]===user) found=true;
+              if (array[i]===userfolder) found=true;
             }
            }
-           
-           var settings = new Settings();
+           path = path.substring(0, path.length - 1);
+                      
            var url = settings.gettestStudyURL();
-           var html=url+user+'/'+path+fname+'&refresh=true';
+           var html=url+path+fname+'&refresh=true';
            $('#copytextinput').val(html);
            $('#CopyModal').modal('show');
            $(document).find('#CopyModal').on('shown.bs.modal',function(){
@@ -555,6 +573,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
          var id = $(tr).attr("id");
          model.elementID = id;
          var path='';
+         var settings = new Settings();
          api.getUser(takespaces(model.key),function(data){
 
            var userObj = jQuery.parseJSON( data );
@@ -563,7 +582,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
             var toppath = $('#toppath').text();
             var array;
             var found=false;
-           
+            var userfolder = settings.getUserFolder();
             if (toppath.indexOf('\\')!=-1){
               array = toppath.split('\\');
             }else{
@@ -574,14 +593,14 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
                 path=path+array[i]+'/';
               }
 
-              if (array[i]===user) found=true;
+              if (array[i]===userfolder) found=true;
             }
          
            }
-           var settings = new Settings();
+           path = path.substring(0, path.length - 1);
            var url = settings.gettestStudyURL();
            var random =Math.random();
-           window.open(url+user+"/"+path+fname+"&refresh=true&_="+random);
+           window.open(url+path+fname+"&refresh=true&_="+random);
 
          });
       });
@@ -777,23 +796,23 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
 
     
     
-      function newStudySuccess(studyname){
-        //alert('study was created');
-        var studies = model.studyNames;
-        var user = model.user;
-        studies[studyname] = {name:studyname,exptID:'not_set',folder:user.folder+"/"+studyname};
-        //studies.push({name:studyname,exptID:'not_set'});
-        setStudies(studies);
-        model.study=studyname;
-        $('#instruct').hide();
-        $('#result').html('');
-        //$('#studyTablePanel').html('');
-        $('#studyTablePanel').hide();
-        $('#studyTable').hide();
-        setSideMenu();
-        file.setFileSysTable();
-        //populateFileTable();
-      }
+      // function newStudySuccess(studyname){
+      //   //alert('study was created');
+      //   var studies = model.studyNames;
+      //   var user = model.user;
+      //   studies[studyname] = {name:studyname,exptID:'not_set',folder:user.folder+"/"+studyname};
+      //   //studies.push({name:studyname,exptID:'not_set'});
+      //   setStudies(studies);
+      //   model.study=studyname;
+      //   $('#instruct').hide();
+      //   $('#result').html('');
+      //   //$('#studyTablePanel').html('');
+      //   $('#studyTablePanel').hide();
+      //   $('#studyTable').hide();
+      //   setSideMenu();
+      //   file.setFileSysTable();
+      //   //populateFileTable();
+      // }
 
    
         
@@ -1242,7 +1261,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
         html+='<tr id="'+obj.id+'" class="tableRaw" style="cursor:pointer">'+
                 '<td class="studyRaw"><span href="#" data-toggle="modal" data-target="#myModal" class="studyspan">'+val+'</span>'+
                 '</td>'+
-                '<td >'+obj.folder+'</td>'+
+                '<td class="foldercol">'+obj.folder+'</td>'+
                 '<td class=""><button type="button" id="deleteStudy" class="btn btn-primary btn-xs">Delete Study</button>'+
                 '</td>'+
                 '<td class="">'+

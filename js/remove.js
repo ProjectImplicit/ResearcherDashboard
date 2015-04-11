@@ -11,7 +11,8 @@ define(['api'], function (API) {
 			'<br/><h4>Study name * </h4>'+
 			'This is the name you submitted to the RDE (e.g., colinsmith.elmcogload) <br/><input id="studyname" type="text" class="form-control" style="width: 10%;margin-top:10px;">'+
 			'<br/><h4>Please enter your completed n below *</h4>you can use the following link <a href="https://app-dev-01.implicit.harvard.edu/implicit/research/pitracker/PITracking.html#3"'+
-			' target="_blank">https://app-dev-01.implicit.harvard.edu/implicit/research/pitracker/PITracking.html#3</a><br/><br/>'+
+			' target="_blank">https://app-dev-01.implicit.harvard.edu/implicit/research/pitracker/PITracking.html#3</a><br/>'+
+			'<input id="n" type="text" class="form-control" style="width: 15%;margin-top:10px;"><br/>'+
 			'<h4>Additional comments </h4>(e.g., anything unusual about the data collection, consistent participant comments, etc.)<br/>'+
 			'<textarea style="margin-top:10px;" id="commentsText"  rows="4" cols="50"></textarea><br/>'+
 			'<br/><button id="removeSubmit" type="submit" class="btn btn-primary">Submit</button>';
@@ -36,6 +37,7 @@ define(['api'], function (API) {
 				var name = $('#changeName').val();
 				var email=$('#changeEmail').val();
 				var studyname = $('#studyname').val();
+				var n = $('#n').val();
 				var comment = $('#commentsText').val();
 				var date = new Date();
 				var year    = date.getFullYear();
@@ -45,10 +47,16 @@ define(['api'], function (API) {
 				var hour    = date.getHours();
 				var minute  = date.getMinutes();
 				var timestamp  = month+ "/"+day+"/"+year+", "+hour+":"+minute;
-				data.tr='<tr><td>'+timestamp+'</td><td>'+name+'</td><td>'+email+'</td><td>'+studyname+'</td><td>'+comment+'</td></tr>';
+				data.tr='<tr><td>'+timestamp+'</td><td>'+name+'</td><td>'+email+'</td><td>'+
+				studyname+'</td><td>'+n+'</td><td>'+comment+'</td></tr>';
 				var api = new API();
 				api.submitRemove(data,function(data){
-					$('#msgspan').text(data);
+					$('#changeName').prop( "disabled", true );
+					$('#changeEmail').prop( "disabled", true );
+					$('#studyname').prop( "disabled", true );
+					$('#n').prop( "disabled", true );
+					$('#commentsText').prop( "disabled", true );
+					$('#msgspan').html(data + '<br><br><a target="_blank" href="forms/removeform.html">view remove form</a>');
           			$('#msgModal').modal('show');
 					
 				});
