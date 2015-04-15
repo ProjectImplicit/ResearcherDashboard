@@ -15,7 +15,7 @@ define(['api'], function (API) {
 			'<input id="n" type="text" class="form-control" style="width: 15%;margin-top:10px;"><br/>'+
 			'<h4>Additional comments </h4>(e.g., anything unusual about the data collection, consistent participant comments, etc.)<br/>'+
 			'<textarea style="margin-top:10px;" id="commentsText"  rows="4" cols="50"></textarea><br/>'+
-			'<br/><button id="removeSubmit" type="submit" class="btn btn-primary">Submit</button>';
+			'<br/><button id="removeSubmit" type="submit" class="btn btn-primary">Submit</button><br><br>';
 			var user = model.user;
 			var email = user.email;
 			var name = user.name;

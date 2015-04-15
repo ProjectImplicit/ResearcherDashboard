@@ -17,8 +17,8 @@ define(['api'], function (API) {
 				exptFile = this.getEXPT(studyID);
 
 			}else{
-				exptFile = model.exptFile;
-				this.addHTML(name,email,folder,exptFile);
+				 exptFile = model.exptFile;
+				 this.addHTML(name,email,folder,exptFile);
 
 			}
 			
@@ -28,7 +28,7 @@ define(['api'], function (API) {
 				chosenEXPT= $(this).next('label').text();
 			});
 
-			////////
+			//////
 			
 			$('.deplotDrop').html('Select '+' <span class="caret"></span>');
 			that.addHTML(name,email,folder,exptFile);
@@ -57,8 +57,8 @@ define(['api'], function (API) {
 			var that=this;
 			var html ='</br></br><table id="deployTable" style ="width=500" class=""><tr><td><label>Researcher name: </label></td><td><input type="text" id="researchName" value='+name+' class="form-control"> </input></td></tr>'+
 				'<tr><td><label> Researcher email address: </label></td><td><input type="text" id="researchEmail" value='+email+' class="form-control"></input></td></tr>'+
-				'<tr><td><label> Study folder location: </label></td><td ><input type="text" id="folder" value='+folder+' class="form-control"></input></td></tr>'+
-				'<tr><td><label>Name of experiment file: </label></td><td><input type="text" id="experimentFile" value='+chosenEXPT+' class="form-control"></input></td></tr></table></br>'+
+				'<tr><td><label> Study folder location: </label></td><td ><input type="text" id="folder" value="'+folder+'" class="form-control"></input></td></tr>'+
+				'<tr><td><label>Name of experiment file: </label></td><td><input type="text" id="experimentFile" value="'+chosenEXPT+'" class="form-control"></input></td></tr></table></br>'+
 				'<h5 style="float: left;">Target number of completed study sessions: </h5><div class="col-lg-1" style="float: left;"><input type="text" id="targetNumber" class="form-control" ></div></br></br>'+
 				'<h5><small>For private studies (not in the Project Implicit research pool), enter n/a</small></h5>'+
 				'<label id="targetNumber_error" class="errorLabel" style="visibility:hidden;color:Red;">* Not Filled</label>'+
@@ -87,7 +87,7 @@ define(['api'], function (API) {
 			' See http://peoplescience.org/node/104 for more information on this item. '+'</br>'+
 			' Type \'n/a\' for private studies (not in the Project Implicit research pool).</br>'+
 			'To create restrictions, open the rules generator.'+
-	    	'<a id ="rulaTableAnch" href="#" onclick="window.open(\'user/bgoldenberg/dashBoard/ruletable.html\',\'Rule Generator\',\'width=1100,height=900,scrollbars=yes\')"> Open the rule generator </a></p>'+
+	    	'<a id ="rulaTableAnch" href="#" onclick="window.open(\'research/dashBoard/ruletable.html\',\'Rule Generator\',\'width=1100,height=900,scrollbars=yes\')"> Open the rule generator </a></p>'+
 	    	'<div style="background-color:#f3f3f3;min-height:70px;width:300px;border:1px solid;border-color:#BDBDBD;">'+
 			'<label id ="restrictions" style="padding:5px;" name="restrictions">None</label>'+
 			'</div><a id ="clearAnch" href="#" onclick="return false;">Clear restrictions</a>'+
@@ -568,6 +568,9 @@ define(['api'], function (API) {
 	    	return study;
 	   	}
 	    this.getFolder = function (studyid){
+	    	if (studyid===undefined){
+	    		return model.user.folder+this.fileSeperator();
+	    	}
 	    	var studies = model.studyNames;
 	    	var study = this.getStudybyID(studies,studyid);
 	    	var studyfolder = study.folder;
@@ -579,6 +582,7 @@ define(['api'], function (API) {
 	    }
 	    
 	    this.getEXPT = function(studyID){
+	    	if (studyID===undefined) return "";
 	    	var expt=[];
 	    	var numOfExpt=0;
 	    	var studies= model.studyNames;

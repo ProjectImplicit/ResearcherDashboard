@@ -72,7 +72,7 @@ public class DashBoardConnect {
 	
 	public static Connection getConnection(String databaseId) throws Exception {
 		
-		DataSource dataSource;
+		DataSource dataSource = null;
 		Connection conn = null;
 		try {
 			
@@ -106,8 +106,18 @@ public class DashBoardConnect {
 
 		} catch (SQLException e) {
 			
-			throw new Exception("Unable to get connection for database id: "
-					+ databaseId, e);
+			System.out.println("Unable to get connection for database trying again ");
+			try{
+				conn =  dataSource.getConnection();
+				return conn;
+				
+			}catch(SQLException e1){
+				System.out.println("Unable to get connection for database trying a second time ");
+				conn =  dataSource.getConnection();
+				return conn;
+				
+			}
+
 			
 		}catch(Exception e){
 			System.out.println(e.getStackTrace());
@@ -143,14 +153,14 @@ public class DashBoardConnect {
 private static void testConnection(String schema) {
 		
 		
-
-		String dataQuery = "SELECT study_name " +
-
-				"FROM yuiat_sessions_v " +
-
-				"WHERE session_id=-9999 " +
-
-				"GROUP BY study_name ORDER BY study_name";
+		String dataQuery = "select * from users where userid=-999";
+//		String dataQuery = "SELECT study_name " +
+//
+//				"FROM yuiat_sessions_v " +
+//
+//				"WHERE session_id=-9999 " +
+//
+//				"GROUP BY study_name ORDER BY study_name";
 
 		Connection connection = null;
 

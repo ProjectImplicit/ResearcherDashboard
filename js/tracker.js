@@ -79,6 +79,7 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 
 		}
 	    this.addTracker = function (exptid){
+	    	if (exptid===undefined) exptid='';
 	    	var currentdate = new Date(); 
 	    	var since = (currentdate.getMonth())+"/01/"+currentdate.getFullYear();
         	var until = (currentdate.getMonth()+1)+"/"+currentdate.getDate()+"/"+currentdate.getFullYear();

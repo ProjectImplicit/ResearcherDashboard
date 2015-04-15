@@ -10,6 +10,10 @@ define(['api'], function (API) {
 			var email = user.email;
 			var name = user.name;
 			var study = model.studsyObj;
+			if (study===undefined){
+				study={};
+				study.folder='examplestudy';
+			}
 			var html='<div><h4>Researcher name: *</h4><input type="text" id="changeName" class="form-control" style="width: 15%;" ><br/>'+
 			'<h4>Researcher email address: * </h4><input id="changeEmail" type="text" class="form-control" style="width: 15%;">'+
 			'<br/><h4>Study showfiles link * </h4>'+

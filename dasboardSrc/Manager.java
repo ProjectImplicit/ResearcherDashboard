@@ -1,8 +1,11 @@
 package org.implicit.dashboard;
 import java.io.BufferedReader;
+import java.util.Properties;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +53,7 @@ public class Manager implements Serializable{
 		//api.setMethod("cloude");
 		//Context initContext = new InitialContext();
 		//Context envContext = (Context) initContext.lookup("dashboardSettings");
+		loadProperties();
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
 			projectPath = "research/dashBoard/";
@@ -88,6 +92,32 @@ public class Manager implements Serializable{
 			os="unix";
 			System.out.println("Using folder:"+folderBase);
 			
+		}
+	}
+	public void loadProperties(){
+		Properties prop = new Properties();
+		InputStream input = null;
+	 
+		try {
+	 
+			input = new FileInputStream("research/dashBoard/dashboard.properties");
+	 
+			// load a properties file
+			prop.load(input);
+	 
+			// get the property value and print it out
+			System.out.println(prop.getProperty("name"));
+	 
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	public Integer getUserLocation(){

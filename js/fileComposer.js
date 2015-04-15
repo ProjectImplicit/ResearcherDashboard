@@ -622,8 +622,9 @@ define(['api','settings'], function (API,Settings) {
       if (msg!= undefined && msg != null ){
         if (msg.indexOf('alert')!=-1){
           var realmsg = msg.split('-')[1];
-          $('#alert').css("display", "block");
-          $('#alertclosebutton').css("display", "block");
+          realmsg = realmsg.replace(/,/g," , ");
+          $('#alert').show();
+          $('#alertclosebutton').show();
           $(document).find('#alertmsg').text(realmsg);
   
         }else{
@@ -677,17 +678,7 @@ define(['api','settings'], function (API,Settings) {
         $('#fileTabale > tbody').append(html);
         
     }
-		// this.createUserButtons = function(){
-	 //        var user = model.user;
-	 //        var role = user.role;
-	 //        if (that.data.role==='SU'){
-	 //          if (model.study==='all' || model.study==='user'){
-	 //            $('#'+this.id).append('<div><button class="btn btn-success btn-sm" type="button" id="userFolder" type="button">User</button>'+
-	 //            '<button class="btn btn-success btn-sm" type="button" id="personalFolder" type="button" style="margin-left:10px;">Personal</button></div>');
-	 //          }
-	  
-	 //        }
-  //     	}
+	
       	this.getStudyTestlHtml = function(){
         	var html='<div class="dropdown" style="display: inline">'+
                     '<button type="button" id="dropdownTest" style="margin-left:20px;" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-expanded="true">'+
@@ -816,12 +807,20 @@ define(['api','settings'], function (API,Settings) {
         $('#'+that.id).append('<div id="toppath">'+that.topPath+'</div>');
       }
       this.addALert = function(){
-        $('#'+this.id).append('<div id="alert" class="alert alert-success alert-dismissible" style="display:none;width:50%;" role="alert">'+
-                                '<button id="alertclosebutton" type="button" class="close" data-dismiss="alert" aria-label="Close">'+
-                                  '<span aria-hidden="true">&times;</span>'+
-                                '</button>'+
-                                '<div id="alertmsg">'+
-                                '</div>'+
+        $('#'+this.id).append('<div class="container-fluid">'+
+                                '<div class="row" style="padding-left:-10px;">'+
+                                  '<div class="col-xs-12" >'+
+                                   '<div id="alert" class="alert alert-success alert-dismissible" style="display:none;" role="alert">'+
+                                      '<button id="alertclosebutton" type="button" class="close" data-dismiss="alert" aria-label="Close">'+
+                                        '<span aria-hidden="true">&times;</span>'+
+                                      '</button>'+
+                                    
+                                      '<span id="alertmsg">'+
+                                      '</span>'+
+                                    
+                                   '</div>'+
+                                  '</div>'+    
+                                '</div>'+  
                               '</div>');
 
       }
@@ -943,7 +942,6 @@ define(['api','settings'], function (API,Settings) {
 
         data.append('study','_CURRENT');
         data.append('cmd','UploadFile');
-        $('#uploadedModal').modal('show');
         that.api.uploadFile(data,that.updateView);
 
       }
@@ -990,9 +988,10 @@ define(['api','settings'], function (API,Settings) {
       });
       obj.on('drop', function (e) 
       {
-       
+          
            $(this).css('border', '2px dotted #0B85A1');
            e.preventDefault();
+           $('#uploadedModal').modal('show');
            var filesI = e.originalEvent.dataTransfer.files;
            var files = e.originalEvent.dataTransfer.items;
            //var length = e.originalEvent.dataTransfer.items.length;

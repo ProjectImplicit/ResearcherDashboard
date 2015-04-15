@@ -3,7 +3,7 @@
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
         'jQuery': 'https://code.jquery.com/jquery-2.1.3.min',
-        'bootstrap': 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min',
+        'bootstrap': 'https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min',
         'jshint': 'jshint.min',
         'csvToTable':'jquery.csvToTable',
         'tablesorter':'tablesorter/jquery.tablesorter',
@@ -287,7 +287,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
       });
       $(document).on('click','#newStudy', function(){
         if (model.activePage==='file'){
-          $('#location').html('<input id="locationcheck" type="checkbox"/> Create study in current location?');
+          $('#location').html('<input id="locationcheck" type="checkbox"/> Create study in current location');
         }
         $('#NewStudyModal').modal('show');
 
@@ -385,7 +385,9 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
 
     
       $(document).on("click",'#deploy', function(){
+        $('#instruct').hide();
         $('#result').html('');
+        $('#studyTablePanel').hide();
         $('#studyTable').hide();
         model.activePage = 'deploy';
         var deployObj = new Deploy(model,'design1');
@@ -435,6 +437,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
       $(document).on("click",'#home', function(){
         $('#result').html('');
         model.activePage = 'home';
+        model.studyID=undefined;
         var menu = $('#sideMenu');
         menu.html( '</br>'+
                      '<strong>My Studies </strong>'+
@@ -448,7 +451,11 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
                     '</div>'+ 
                     '<hr>'+
                     '<li class="active"><a href="#" id="home"><i class="fa fa-bullseye"></i> Home</a></li>'+
-                    '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> File System</a></li>'+                    
+                    '<li><a href="#" id="fileSys"><i class="fa fa-tasks" ></i> File System</a></li>'+
+                    '<li><a href="#" id="deploy"><i class="fa fa-tasks" ></i> Deploy </a></li>'+
+                    '<li><a href="#" id="trackmenu"><i class="fa fa-tasks" ></i> Statistics </a></li>'+
+                    '<li><a href="#" id="removeStudy"><i class="fa fa-tasks" ></i> Study Removal </a></li>'+ 
+                    '<li><a href="#" id="changeStudy"><i class="fa fa-tasks" ></i> Study Change Request </a></li>'+                   
                     '<li><a href="#" id="newStudy"><i class="fa fa-globe"></i> Create Study</a></li>'
                   );
         var sortedArray = sortStudies(model.studyNames);
@@ -632,10 +639,18 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
       
 
       $(document).on('click','#removeStudy',function(){
+        $('#instruct').hide();
+        $('#result').html('');
+        $('#studyTablePanel').hide();
+        $('#studyTable').hide();
         remove.setHtml();
       })
 
       $(document).on('click','#changeStudy',function(){
+        $('#instruct').hide();
+        $('#result').html('');
+        $('#studyTablePanel').hide();
+        $('#studyTable').hide();
         change.setHtml();
       })
 
@@ -690,7 +705,10 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
 
       });
       $(document).on("click",'#trackmenu', function(){
+        
+        $('#instruct').hide();
         $('#result').html('');
+        $('#studyTablePanel').hide();
         $('#studyTable').hide();
         model.activePage = 'trackmenu';
         var studyExpt=[];
@@ -711,23 +729,23 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
        
           
         }else{
-          api.getUserName(takespaces(model.key),function(data){
-          appendTracker(data);
+          //api.getUserName(takespaces(model.key),function(data){
+          appendTracker('');
            
-          });
+          //});
         }
       });
     
 
-      $(document).on("click",'.statistics',function(){
+      // $(document).on("click",'.statistics',function(){
 
-        var button = $(this);
-        var anchor = $(button).parent().parent().find('a');
-        var study = $(anchor).text();
-        setChartData(study);
+      //   var button = $(this);
+      //   var anchor = $(button).parent().parent().find('a');
+      //   var study = $(anchor).text();
+      //   setChartData(study);
         
 
-      });
+      // });
    
 
       function setLiseners(){
