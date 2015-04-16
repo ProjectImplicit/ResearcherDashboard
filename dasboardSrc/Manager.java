@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -41,74 +42,79 @@ public class Manager implements Serializable{
 	String REDIRECTTTESTLOGIN;
 	String changeForm;
 	String removeForm;
+	String method;
+	
 	private static final long serialVersionUID = 1L;
 	 
 	public Manager() throws NamingException{
-//		JSONParser parser = new JSONParser();
-//		StringBuilder result = new StringBuilder("");
-//    	ClassLoader classLoader = getClass().getClassLoader();
-//    	File file = new File(classLoader.getResource("../../../../../research/dashBoard/dashboardsettings.txt").getFile());
+
 		
-    	//System.out.println(file.getAbsolutePath());
-		//api.setMethod("cloude");
-		//Context initContext = new InitialContext();
-		//Context envContext = (Context) initContext.lookup("dashboardSettings");
 		loadProperties();
 		if (System.getProperty("os.name").startsWith("Windows")) {
-			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
-			projectPath = "research/dashBoard/";
-			downloadDir ="C:\\projects\\workspace\\rc5\\app\\research\\dashBoard\\ZipFolder";
-			changeForm = "C:\\projects\\workspace\\rc5\\app\\forms\\changeform.html";
-			removeForm = "C:\\projects\\workspace\\rc5\\app\\forms\\removeform.html";
-			DbAPI api = DbAPI.getInstance(false);
-			api.setMethod("cloude");
-			System.out.println("Using folder:"+folderBase);
-			LOGINURL = "research/dashBoard/newlogin.html";
-			REDIRECTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
-			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
-			LOGAGAIN = "http://localhost/implicit/dashboard";
-			LOGIN = "research/dashBoard/login.html";
-			userLocation=6;
-			os="windows";
+//			folderBase="C:\\projects\\workspace\\rc5\\app\\user\\";
+//			projectPath = "research/dashBoard/";
+//			downloadDir ="C:\\projects\\workspace\\rc5\\app\\research\\dashBoard\\ZipFolder";
+//			changeForm = "C:\\projects\\workspace\\rc5\\app\\forms\\changeform.html";
+//			removeForm = "C:\\projects\\workspace\\rc5\\app\\forms\\removeform.html";
+//			DbAPI api = DbAPI.getInstance(false);
+//			api.setMethod("cloude");
+//			System.out.println("Using folder:"+folderBase);
+//			LOGINURL = "research/dashBoard/newlogin.html";
+//			REDIRECTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
+//			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
+//			LOGAGAIN = "http://localhost/implicit/dashboard";
+//			LOGIN = "research/dashBoard/login.html";
+//			userLocation=6;
+//			os="windows";
 		}else{
-			//folderBase="/u02/dev2/user";//dev-02
-			folderBase="//home//dev2//user//";//dev-01
-			projectPath = "research//dashBoard//";
-			//downloadDir ="/u02/dev2/research/dashBoard/ZipFolder";//dev-02
-			//changeForm = "/u02/dev2/forms/changeform.html";//dev-02
-			//removeForm = "/u02/dev2/forms//removeform.html";//dev-02
-			downloadDir ="//home//dev2//research//dashBoard//ZipFolder";//dev-01
-			changeForm = "//home//dev2//forms//changeform.html";//dev-01
-			removeForm = "//home//dev2//forms//removeform.html";//dev-01
-			LOGINURL = "research/dashBoard/newlogin.html";
-			REDIRECTLOGIN="research/dashBoard/dashboard5.html?cmd=start";
-			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
-			LOGIN = "research/dashBoard/login.html";
-			//LOGAGAIN = "https://app-dev-02.implicit.harvard.edu/implicit/dashboard";//dev-02
-			LOGAGAIN = "http://app-dev-01.implicit.harvard.edu/implicit/dashboard";//dev-01
-			DbAPI api = DbAPI.getInstance(false);
-			api.setMethod("oracle");
-			userLocation=4;
-			os="unix";
-			System.out.println("Using folder:"+folderBase);
+//			//folderBase="/u02/dev2/user";//dev-02
+//			folderBase="//home//dev2//user//";//dev-01
+//			projectPath = "research//dashBoard//";
+//			//downloadDir ="/u02/dev2/research/dashBoard/ZipFolder";//dev-02
+//			//changeForm = "/u02/dev2/forms/changeform.html";//dev-02
+//			//removeForm = "/u02/dev2/forms//removeform.html";//dev-02
+//			downloadDir ="//home//dev2//research//dashBoard//ZipFolder";//dev-01
+//			changeForm = "//home//dev2//forms//changeform.html";//dev-01
+//			removeForm = "//home//dev2//forms//removeform.html";//dev-01
+//			LOGINURL = "research/dashBoard/newlogin.html";
+//			REDIRECTLOGIN="research/dashBoard/dashboard5.html?cmd=start";
+//			REDIRECTTTESTLOGIN = "research/dashBoard/dashboard5.html?cmd=start";
+//			LOGIN = "research/dashBoard/login.html";
+//			//LOGAGAIN = "https://app-dev-02.implicit.harvard.edu/implicit/dashboard";//dev-02
+//			LOGAGAIN = "http://app-dev-01.implicit.harvard.edu/implicit/dashboard";//dev-01
+//			DbAPI api = DbAPI.getInstance(false);
+//			api.setMethod("oracle");
+//			userLocation=4;
+//			os="unix";
+//			System.out.println("Using folder:"+folderBase);
 			
 		}
 	}
+	
 	public void loadProperties(){
 		Properties prop = new Properties();
 		InputStream input = null;
 	 
 		try {
-	 
-			input = new FileInputStream("research/dashBoard/dashboard.properties");
-	 
-			// load a properties file
+			input = this.getClass().getResourceAsStream("dashboard.properties");
 			prop.load(input);
+			folderBase=prop.getProperty("folderBase");
+			projectPath = prop.getProperty("projectPath");
+			downloadDir =prop.getProperty("downloadDir");
+			changeForm = prop.getProperty("changeForm");
+			removeForm = prop.getProperty("removeForm");
+			LOGINURL = prop.getProperty("LOGINURL");
+			REDIRECTLOGIN = prop.getProperty("REDIRECTLOGIN");
+			REDIRECTTTESTLOGIN = prop.getProperty("REDIRECTTTESTLOGIN");
+			LOGAGAIN = prop.getProperty("LOGAGAIN");
+			LOGIN = prop.getProperty("LOGIN");
+			userLocation=Integer.parseInt(prop.getProperty("userLocation"));
+			os=prop.getProperty("os");
+			method= prop.getProperty("method");
+			DbAPI api = DbAPI.getInstance(false);
+			api.setMethod(method);
 	 
-			// get the property value and print it out
-			System.out.println(prop.getProperty("name"));
-	 
-		} catch (IOException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
 			if (input != null) {
