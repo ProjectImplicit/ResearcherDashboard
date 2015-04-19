@@ -803,7 +803,7 @@ define(['api','settings'], function (API,Settings) {
         }
       }
       this.setToPath = function(){
-        //that.cleandoubleBraclets(that.topPath);
+        that.cleandoubleBraclets(that.topPath);
         $('#'+that.id).append('<div id="toppath">'+that.topPath+'</div>');
       }
       this.addALert = function(){
