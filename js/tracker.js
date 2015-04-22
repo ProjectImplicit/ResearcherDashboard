@@ -100,6 +100,7 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 					'</br>'+this.getMoreOptions()+'</div>';
 
 					model.tracker.studyc = 'true';
+					model.tracker.list = 'Current';
 					$('#result').append(html);
 					$('#timeTable').hide();
 					$('#result').append('<div id="CSVTable"></div>');
