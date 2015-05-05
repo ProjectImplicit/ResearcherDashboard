@@ -799,7 +799,22 @@ define(['api','settings'], function (API,Settings) {
       }
       this.cleandoubleBraclets = function (topPath){
         if (topPath.indexOf('//')!=-1){
-          topPath.replace('//','/');
+          var array = topPath.split('//');
+          var newPath = '';
+          for (var i=0;i<array.length;i++){
+            if (i!=array.length-1){
+              if (array[i]!=''){
+                newPath = newPath + array[i]+'/';
+              }
+            }else{
+              if (array[i]!=''){
+                newPath = newPath + array[i];
+              }
+            }
+          }
+          this.topPath = newPath;
+          //topPath = topPath.replace('/[^//]+$/','/');
+          
         }
       }
       this.setToPath = function(){
