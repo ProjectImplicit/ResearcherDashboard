@@ -216,8 +216,9 @@ define(['api','settings'], function (API,Settings) {
         that.data.elementID=id;
 
         $('#newNameModal').modal('show');
-        $('#newNamePressOK').on('click',function(){
+        $('#newNamePressOK').one('click',function(){
           var newname = $('#newNameField').val();
+          $('#newNameField').val('');
           $('#studyName').val('');
           that.api.rename(that.data.elementID,'_ID',newname,that.updateView);
 

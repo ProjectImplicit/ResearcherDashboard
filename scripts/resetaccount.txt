@@ -1,0 +1,5 @@
+
+/*select * from studies where studyid in (select studyid from usersstudies where userid='41')*/
+/*delete from usersstudies where userid='41'*/
+/*delete from studies where studyid not in (select studyid from usersstudies)*/
+delete from expt where studyid not in (select studyid from studies)
