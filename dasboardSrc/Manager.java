@@ -651,8 +651,9 @@ public class Manager implements Serializable{
 	
 	public String getSchema(File file) throws Exception{
 		BufferedReader br =null;
-		String exptID = null;
+		String schema = null;
 		boolean exit=false;
+		String[] list = null;
 		try{
 			br = new BufferedReader( new FileReader(file.getPath()) );
 			StringBuilder sb = new StringBuilder();
@@ -660,8 +661,12 @@ public class Manager implements Serializable{
 	        while (line != null && exit==false) {
 	        	if (line.contains("<Study")){
 	        		
-	        		String[] list = line.split("\"");
-	        		exptID = list[3];
+	        		list = line.split("datagroup");
+	        		if (list==null || list.length==0 ) return ""; // no schema
+	        		System.out.println(list[1]);
+	        		int firstindex = list[1].indexOf("\"", 0);
+	        		int secondindex = list[1].indexOf("\"",firstindex+1);
+	        		schema = list[1].substring(firstindex+1, secondindex);
 	        		exit=true;
 	        		
 	        	}
@@ -670,8 +675,9 @@ public class Manager implements Serializable{
 	            line = br.readLine();
 	        }
 	        //String everything = sb.toString();
-	        return exptID;
+	        return schema;
 		}catch(Exception e){
+			System.out.println(list);
 			System.out.println(e.getMessage());
 			throw e;
 			

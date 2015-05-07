@@ -1,0 +1,93 @@
+CREATE TABLE Users 
+( UserID number NOT NULL primary key,
+username varchar2(16),
+password varchar2(64),
+OSFKey varchar2(64),
+folder_name varchar2(64),
+first_name varchar2(25),
+last_name varchar2(25),
+email varchar2(64),
+work_phone varchar2(25),
+job_title varchar2(25),
+department varchar2(25),
+institution varchar2(125),
+create_date DATE ,
+street varchar2(125),
+zip_code varchar2(16),
+city varchar2(64),
+state varchar2(64),
+country varchar2(64));
+
+
+size: 16b+64b+64b+64b+25b+25b+64b+25b+25b+25b+125b+125b+16b+64b+64b+64b+number:21b+date:7b=883b~1k
+
+
+
+CREATE TABLE Studies 
+( StudyID number NOT NULL primary key,
+name VARCHAR2(255) NOT NULL,
+study_exptid VARCHAR2(255) NOT NULL,
+folder_name VARCHAR2(255) NOT NULL,
+last_modified date,
+status varchar2(1)
+);
+
+size: 21b+255b+255b+255b+7b+1=794b=~1k
+
+CREATE TABLE UsersStudies 
+( UserStudyID number NOT NULL primary key,
+UserID number not null, 
+StudyID number not null,
+CONSTRAINT fk_UserStudies
+    FOREIGN KEY (StudyID)
+    REFERENCES Studies(StudyID)
+);
+
+
+size: 21b+21b+21b+ = 100b
+
+create sequence user_sequence
+start with 1
+increment by 1
+minvalue 1;
+
+create sequence study_sequence
+start with 1
+increment by 1
+minvalue 1;
+
+create sequence userstudy_sequence
+start with 1
+increment by 1
+minvalue 1
+maxvalue 10000;
+
+create sequence expt_sequence
+start with 1
+increment by 1
+minvalue 1;
+
+Updates:
+
+alter table YUIAT_DASH_ADMIN.studies
+add study_schema varchar2(10);
+
+
+CREATE TABLE Expt 
+( Eid number NOT NULL primary key,
+expt_file_name VARCHAR2(50), 
+expt_id VARCHAR2(100)
+);
+
+alter table EXPT
+add STUDYID NUMBER(22,0);
+
+alter table 
+users
+add
+   salt  varchar2(64) 
+
+alter table 
+users
+add
+   ROLE  varchar2(24) 

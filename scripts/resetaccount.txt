@@ -1,7 +1,20 @@
+/*  selects */
+
 /*select * from USERS*/
 /*select * from expt*/
 /*select * from studies where studyid in (select studyid from usersstudies where userid='121')*/
+
+/* reset user */
+
 /*delete from usersstudies where userid='121'*/
 /*delete from studies where studyid not in (select studyid from usersstudies)*/
 /*delete from expt where studyid not in (select studyid from studies)*/
+
+/* reset password */
+
 /*update Users set OSFKEY='testem',SALT='' where userid='121'*/
+
+/* insert user */
+
+/*INSERT INTO users (userid,username,osfkey,folder_name,EMAIL,ROLE)
+VALUES (user_sequence.NEXTVAL,'ben','testkey123456','bgoldenberg','goldenbergben@gmail.com','SU');*/
