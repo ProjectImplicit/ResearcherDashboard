@@ -1,4 +1,13 @@
 
+/**
+
+  The main file module as of version 2.
+  Features a flat design compared to the tree design
+  of version 1.
+  
+**/
+
+
 define(['api','settings'], function (API,Settings) {
 
 
@@ -18,6 +27,18 @@ define(['api','settings'], function (API,Settings) {
     var timer = null;
     var appContext;  
 
+
+
+
+    /**
+    * Configures the module, configuration
+    * is done from the front end. Some  
+    * configuration data is returned from 
+    * the backend ( like user role ).
+    * @param {object} Options object.
+    * @return void
+    */
+
 		this.configure = function (options){
       that.appContext = options.thisContext;
       that.api = new API();
@@ -28,6 +49,19 @@ define(['api','settings'], function (API,Settings) {
       
 
 		}
+
+    /**
+    * Starts the file module.
+    * Sets the div id that will
+    * host the file module and the base
+    * selector that affect the file structure
+    * returned. 
+    * @param {String} the id of the div
+    * that host the file module.
+    * @param {String} 
+    * @return void
+    */
+
 		this.start = function (id,base){
 			this.id =id;
 			this.level=0;
@@ -35,9 +69,25 @@ define(['api','settings'], function (API,Settings) {
 	    this.api.getFiles('',base,this.updateView);
 
 		}
+
+    /**
+    * clear name from empty spaces.
+    * @param {String} name to clear
+    * @return cleared name
+    */
+
 		this.takespaces = function(name){ return name.replace(/\s+/g, '');}
 
+
+    /**
+    * set DOM listeners
+    * @return void
+    */    
+
+
 		this.setListeners = function(){
+
+        // DOM listener for new folder button
 
 		    $(document).on('click','#newFolder', function(){
           debugger;
@@ -48,6 +98,8 @@ define(['api','settings'], function (API,Settings) {
       		that.data.elementID = id;
       		that.newFolder();
     		});
+
+        // DOM listener for clicking on folder name
 
     		$(document).on('click','.folder',function(){
           clicks++;  //count clicks
@@ -83,51 +135,58 @@ define(['api','settings'], function (API,Settings) {
               });  
               clicks = 0;             //after action performed, reset counter
           }
-
-          
-    			
-	        
-	        
 	    });
 
-		    $(document).on('click','#drillUp',function(){
+      // DOM listener for new folder button
+  
+	    $(document).on('click','#drillUp',function(){
 		    	that.level--;
 		    	that.api.drillUp(that.updateView);
 
 
-		    });
+	    });
 
-        $(document).on('click','#deleteFile', function(){
-          var element =$(this);
-          var tr = $(element).parent().parent();
-          var td = $(tr).find('.file');
-          var name = $(tr).find('.fileNameSpan').text();
-          var id = $(td).attr("id");
-          that.data.elementID = id;
-          that.data.deleteAction='file';
-          $('#deleteHeader').text('Delete File');
-          $('#deleteFileMsg').text('Delete file \''+name+'\' ?');
-          $('#deleteModal').modal('show');
-        });
+      // DOM listener for delete file button
 
-        $(document).on('click','#deleteOK', function(){
+      $(document).on('click','#deleteFile', function(){
+        var element =$(this);
+        var tr = $(element).parent().parent();
+        var td = $(tr).find('.file');
+        var name = $(tr).find('.fileNameSpan').text();
+        var id = $(td).attr("id");
+        that.data.elementID = id;
+        that.data.deleteAction='file';
+        $('#deleteHeader').text('Delete File');
+        $('#deleteFileMsg').text('Delete file \''+name+'\' ?');
+        $('#deleteModal').modal('show');
+      });
 
-          if (that.data.deleteAction==='folder'){
-            that.deleteFolder();
-          }else{
-            that.deleteFile();
-          }
-        });
 
-        // $(document).on('click','#uploadFile', function(){
-        //   var element =$(this);
-        //   var tr = $(element).parent().parent();
-        //   var td = $(tr).find('.folder').parent().parent();
-        //   var id = $(td).attr("id");
-        //   that.data.elementID = id;
-        //   that.api.rename(id,'_ID',that.updateView);
+      // DOM listener for OK button of the delete dialog box.
 
-        // });  
+      $(document).on('click','#deleteOK', function(){
+
+        if (that.data.deleteAction==='folder'){
+          that.deleteFolder();
+        }else{
+          that.deleteFile();
+        }
+      });
+
+      // DOM listener for upload file button DEPRECATED
+
+  // $(document).on('click','#uploadFile', function(){
+  //   var element =$(this);
+  //   var tr = $(element).parent().parent();
+  //   var td = $(tr).find('.folder').parent().parent();
+  //   var id = $(td).attr("id");
+  //   that.data.elementID = id;
+  //   that.api.rename(id,'_ID',that.updateView);
+
+  // });  
+
+      // DOM listener for delete folder button
+
       $(document).on('click','#deleteFolder', function(){
         var element =$(this);
         var tr = $(element).parent().parent();
@@ -142,6 +201,9 @@ define(['api','settings'], function (API,Settings) {
         
 
       });
+
+      // DOM listener for upload file button
+
       $(document).on('click','#uploadFile', function(){
         var element =$(this);
         var tr = $(element).parent().parent();
@@ -151,6 +213,9 @@ define(['api','settings'], function (API,Settings) {
         that.uploadFile();
 
       });
+
+      // DOM listener for create folder dialog 
+
       $(document).on("click",'#createFolderOK', function(){
         
         var folderToCreate = $('#folderName').val();
@@ -158,6 +223,9 @@ define(['api','settings'], function (API,Settings) {
         that.api.createFolder('',that.data.elementID,that.takespaces(folderToCreate),'_ID',that.updateView);
 
       });
+
+      // DOM listener for download file button
+
       $(document).on('click','#downloadFile', function(){
         var element =$(this);
         var td = $(element).parent();
@@ -168,6 +236,9 @@ define(['api','settings'], function (API,Settings) {
         that.downloadFile(0);
 
       });
+
+      // DOM listener for view file button
+
        $(document).on('click','#viewFile', function(){
         var element =$(this);
         var tr = $(element).parent().parent();
@@ -177,11 +248,19 @@ define(['api','settings'], function (API,Settings) {
         that.viewFile();
 
       });
+
+       // DOM listener for file dialog 
+
+
       $(document).find('input[type=file]').on('click',function(){
         this.value = null;
 
       })
       
+
+      // DOM listener for change file dialog
+
+
       $(document).find('input[type=file]').bind("change", function (e) {
            var file = this.files[0];
 
@@ -193,6 +272,8 @@ define(['api','settings'], function (API,Settings) {
               // if user clicks 'Cancel', do something
           }
       });
+
+
       // $(document).on('dblclick','.folder',function(){
       //   alert('double');
       //   // var element =$(this);
@@ -209,6 +290,10 @@ define(['api','settings'], function (API,Settings) {
       //   // })
         
       // });
+
+      // DOM listener for double clicking on file name
+
+
       $(document).on('dblclick','.fileNameSpan',function(){
         var element =$(this);
         var tr = $(element).parent();
@@ -225,6 +310,11 @@ define(['api','settings'], function (API,Settings) {
         })
         
       });
+
+
+      // DOM listener for download folder button
+
+
       $(document).on('click','#downloadFolder', function(){
         debugger;
         var count=0;
@@ -257,14 +347,6 @@ define(['api','settings'], function (API,Settings) {
             iframe.style.display = 'none';
             document.body.appendChild(iframe);
             iframe.src = url;
-            // setTimeout((function(iframe) {
-            //    return function() { 
-            //      iframe.remove(); 
-            //    }
-            // })(iframe), 2000);
-
-
-           
 
           }else{
             alert(responce);
@@ -272,10 +354,20 @@ define(['api','settings'], function (API,Settings) {
 
         });
       });
+      
+
+      // DOM listener for uoverwrite dialog 
+
+
       $(document).on('click','#FileoverwriteClose',function(){
         $('#overwriteFileName').html('');
         $('#uploadedModal').modal('hide');
       });
+
+
+      // DOM listener for overwrite dialog
+
+
       $(document).on('click','#FileoverwriteYes',function(e){
         var existfiles = that.data.existfiles;
         var formdata = that.data.formdata;
@@ -293,16 +385,18 @@ define(['api','settings'], function (API,Settings) {
           }
           //alert($(this).attr("value"));
         });
+
         $('#overwrite').modal('hide');
-        if (checked>0){
-          formdata.append('study','_CURRENT');
-          formdata.append('cmd','UploadFile');
-          that.api.uploadFile(formdata,that.updateView);
+          if (checked>0){
+            formdata.append('study','_CURRENT');
+            formdata.append('cmd','UploadFile');
+            that.api.uploadFile(formdata,that.updateView);
         }
         $('#overwriteFileName').html('');
 
       });
       
+
       $(document).on('click','.mycheckbox:checked',function(){
         var check =$(this);
         var id = $(check).attr('id');
@@ -314,6 +408,10 @@ define(['api','settings'], function (API,Settings) {
         }
 
       });
+
+
+
+
       $(document).on('click','[type=checkbox]',function(){
 
            // var check =$(this);
@@ -351,6 +449,10 @@ define(['api','settings'], function (API,Settings) {
           
 
       });
+
+
+      // DOM listener for multiple file button
+
       $(document).on('click','#multiple', function(){
         var count=0;
         $( '.check' ).each(function( index ) {
@@ -371,6 +473,10 @@ define(['api','settings'], function (API,Settings) {
           }
         });
       });
+
+      // DOM listener for multiple delete button
+
+
       $(document).on('click','#multipleDelete', function(){
         var modelid=[];
         $( '.check' ).each(function( index ) {
@@ -398,6 +504,7 @@ define(['api','settings'], function (API,Settings) {
         for (var i=0;i<modelid.length;i++){ text=text+modelid[i].name+'<br>';}
         $('#listOfFiles').html(text);
         $('#deleteMultipleModal').modal('show');
+
         $(document).one("click",'#deleteMultipleOK',function(){
 
           that.api.multipleDelete(modelid,'_ID',that.updateView);
@@ -431,6 +538,9 @@ define(['api','settings'], function (API,Settings) {
         
 
       });
+
+     // DOM listener for overwrite dialof close event
+
       $(document).on('hidden.bs.modal','#overwrite', function () {
         //alert('hidden event fired!');
         if (that.data.clickedYes){
@@ -487,6 +597,8 @@ define(['api','settings'], function (API,Settings) {
       });
 
 		}
+
+    
     this.prepareUpload = function(event){
       $('#uploadedModal').modal('show');
       var data =new FormData();

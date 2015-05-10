@@ -107,44 +107,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
       });
       
      
-      function getStudyPath(study){
-
-
-        var study = findStudy(study);
-        var folder = study.folder;
-        var user = model.user;
-        var found=false;
-        var res='';
-        var splitArray = folder.split(fileSeperator());
-        for(var i=0;i<splitArray.length;i++){
-          if (found){
-            res=res+splitArray[i]+fileSeperator();
-          }
-          if (splitArray[i]===user.folder){
-            found=true;
-          }
-        }
-        return res;
-
-
-      }
      
-
-      function getStudyFromFileSys(fileSystem,info){
-        
-        $.each(fileSystem, function(k, v) {
-          if (k.indexOf(".")===-1&& k!='id'&&k!='state'&&k!='path****'){//if folder
-            if (k===info.study){
-              info.studyObj=v;
-              return false;
-            }else{
-              getStudyFromFileSys(v,info);
-            }
-          }
-        });
-
-
-      }
     
       $(document).on('click','.review',function(){
 
@@ -468,18 +431,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
 
       }); 
 
-      /********************************
-      *   
-      * Listener for the 'File System' menu.
-      * if the currnet request is for the file syste,
-      * and not for a study, then 'model.activepage'    
-      * would be set for 'file'.
-      * We call the api getFiles command with the function
-      * to render the file list.
-      * model.active that is not set here is about to set an object
-      * listener that will be triggerd when there is a changein the view.
-      */
-      
+          
 
 
       $(document).on("click",'#fileSys', function(){
@@ -493,17 +445,12 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
         model.active='';
         model.study='all';
         file.setFileSysTable();
-        // api.getFiles(model.key,model.study,setStudyTable);
+        
 
       });
 
 
-    
-      /**
-      * Desc: main listener for the 
-      * 'test' top menu navigetaion bar.
-      *
-      */ 
+     
 
       $(document).on("click",'#managestudy', function(){
         
@@ -654,12 +601,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
         change.setHtml();
       })
 
-      /**
-      * Desc: Listener for pressing a folder
-      * in the file system
-      * 
-      *
-      */
+    
 
       
 
@@ -736,16 +678,6 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
         }
       });
     
-
-      // $(document).on("click",'.statistics',function(){
-
-      //   var button = $(this);
-      //   var anchor = $(button).parent().parent().find('a');
-      //   var study = $(anchor).text();
-      //   setChartData(study);
-        
-
-      // });
    
 
       function setLiseners(){
@@ -1167,11 +1099,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
 
       }
 
-      /**
-      * Desc: changes the folder from open
-      * to close state or vise versa when
-      * it is being clicked.
-      */
+     
       function fileSeperator(){
 
 
@@ -1234,14 +1162,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
 
       }
      
-      /**
-      * Desc: Used as a callback function to 
-      * render the list of files.
-      * get the list of files and folders
-      * as a jason object from the back end.
-      * 'openfilesys' is a data stracture to save
-      * the state of folders.
-      */
+     
 
       function setStudyTable(data){
         
@@ -1359,3 +1280,44 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
   });
         
 });
+
+// Deprecated code //
+
+ // function getStudyPath(study){
+
+
+      //   var study = findStudy(study);
+      //   var folder = study.folder;
+      //   var user = model.user;
+      //   var found=false;
+      //   var res='';
+      //   var splitArray = folder.split(fileSeperator());
+      //   for(var i=0;i<splitArray.length;i++){
+      //     if (found){
+      //       res=res+splitArray[i]+fileSeperator();
+      //     }
+      //     if (splitArray[i]===user.folder){
+      //       found=true;
+      //     }
+      //   }
+      //   return res;
+
+
+      // }
+     
+
+      // function getStudyFromFileSys(fileSystem,info){
+        
+      //   $.each(fileSystem, function(k, v) {
+      //     if (k.indexOf(".")===-1&& k!='id'&&k!='state'&&k!='path****'){//if folder
+      //       if (k===info.study){
+      //         info.studyObj=v;
+      //         return false;
+      //       }else{
+      //         getStudyFromFileSys(v,info);
+      //       }
+      //     }
+      //   });
+
+
+      // }
