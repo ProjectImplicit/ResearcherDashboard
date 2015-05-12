@@ -49,7 +49,7 @@ import com.google.gson.Gson;
  * return responce in the form of a JSON object.
  * 
  * Date created : 29-Jul-2014
- * 
+ * Last update  : 11-Apr-2015
  * @version $Revision: 10728 $
  * 
  * @author Ben G 
@@ -66,11 +66,11 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 	
 	/**
 	 * 
-	 * Handel Get request redirectde it to doPost.
+	 * Handel Get request redirect  to doPost.
 	 * 
 	 * 	 
 	 * @param 
-	 * 			request and response sevlet objects.
+	 * 			request and response objects.
 	 *            
 	 * 
 	 * @return void
@@ -87,14 +87,10 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 	
 	/**
 	 * 
-	 * Handel POST and redirectde GET request.
-	 * 
-	 * Returns the Data requested as a JSON object.
-	 * 
+	 * Routing the commands to the appropriate 
+	 * Control (Manager class) functions.
 	 * 	 
-	 * @param 
-	 * 			request and response sevlet objects.
-	 *            
+	 * @param request and response objects.
 	 * 
 	 * @return JSON object
 	 * 
@@ -350,6 +346,16 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 	}
 	
+	/**
+	 * 
+	 * Process the submit form request
+	 * @param Request Object
+ 	 * @param Manager Object
+	 *
+	 * @return void
+	 * 
+	 */
+	
 	protected String submitRemove (HttpServletRequest request,Manager mng) throws IOException{
 		try{
 			FileWriter out;
@@ -365,6 +371,17 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 	
 	}
+	
+	/**
+	 * 
+	 * Process the submit change form request
+	 * @param Request Object
+ 	 * @param Manager Object
+	 *
+	 * @return void
+	 * 
+	 */
+	
 	protected String submitChange (HttpServletRequest request,Manager mng) throws IOException{
 		try{
 			FileWriter out;
@@ -380,6 +397,18 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		}
 		
 	}
+	
+	/**
+	 * 
+	 * Process Zipping folder for download 
+	 * @param Request Object
+ 	 * @param Responce Object
+ 	 * @param Manager Object
+	 *
+	 * @return void
+	 * 
+	 */
+	
 	protected String zipfolder(HttpServletRequest request,HttpServletResponse response,Manager mng) throws Exception{
 		
 		String returnPath="";
@@ -405,6 +434,17 @@ public class Dashboard extends HttpServlet implements javax.servlet.Servlet{
 		
 		
 	}
+	
+	/**
+	 * 
+	 * multipleDelete 
+	 *  	 
+	 * @param request and response objects.
+	 * 
+	 * @return JSON object
+	 * 
+	 **/
+	
 	protected String multipleDelete(HttpServletRequest request,User user,Manager mng) throws Exception{
 		String study = request.getParameter("study");
 		String model = request.getParameter("modelarray");

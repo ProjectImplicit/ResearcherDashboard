@@ -17,4 +17,4 @@
 /* insert user */
 
 /*INSERT INTO users (userid,username,osfkey,folder_name,EMAIL,ROLE)
-VALUES (user_sequence.NEXTVAL,'ben','testkey123456','bgoldenberg','goldenbergben@gmail.com','SU');*/
+VALUES (user_sequence.NEXTVAL,'ben','testem','bgoldenberg','goldenbergben@gmail.com','SU');*/
