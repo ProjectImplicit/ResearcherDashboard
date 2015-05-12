@@ -27,28 +27,28 @@ public class ManagerTest {
 	
 	public void testListFiles(){
 
-		User user = new User();
-		Manager mng = new Manager();
-		String key = "testkey123456";
-		user.setKey(key);
-		user.setFolderName("bgoldenberg");
-		//mng.setUserfromDB(user);
-		HashMap filesPresent = new HashMap();
-		filesPresent = mng.listFiles(user, "lateneg3");
-		assertNotNull(filesPresent);
-		String jsonText = JSONValue.toJSONString(filesPresent);
-		assertNotNull(jsonText);
+//		User user = new User();
+//		Manager mng = new Manager();
+//		String key = "testkey123456";
+//		user.setKey(key);
+//		user.setFolderName("bgoldenberg");
+//		//mng.setUserfromDB(user);
+//		HashMap filesPresent = new HashMap();
+//		filesPresent = mng.listFiles(user, "lateneg3");
+//		assertNotNull(filesPresent);
+//		String jsonText = JSONValue.toJSONString(filesPresent);
+//		assertNotNull(jsonText);
 		
 		
 	}
 	public void testGetFile(){
-		User user = new User();
-		Manager mng = new Manager();
-		String key = "testkey123456";
-		user.setKey(key);
-		user.setFolderName("bgoldenberg");
-		String study = "lateneg3";
-		String fileName="ampp.js";
+//		User user = new User();
+//		Manager mng = new Manager();
+//		String key = "testkey123456";
+//		user.setKey(key);
+//		user.setFolderName("bgoldenberg");
+//		String study = "lateneg3";
+//		String fileName="ampp.js";
 		//String fileString = mng.getFile(user,study,fileName);
 		//assertNotNull(fileString);
 		

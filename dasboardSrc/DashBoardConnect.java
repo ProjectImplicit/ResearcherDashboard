@@ -14,7 +14,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.uva.dao.ConnectionPool;
-import org.uva.util.PITConnection;
+//import org.uva.util.PITConnection;
 
 //UPDATED
 public class DashBoardConnect {
@@ -35,7 +35,7 @@ public class DashBoardConnect {
 	}
 
 	public static DashBoardConnect getInstance(boolean refreshCache) {
-		synchronized (PITConnection.class) {
+		synchronized (DashBoardConnect.class) {
 			
 			Context initContext=null;
 			Context envContext=null;
