@@ -107,14 +107,14 @@ define(['api','settings'], function (API,Settings) {
           if(clicks === 1) {
 
               timer = setTimeout(function() {
-
+                  clicks = 0;             //after action performed, reset counter                
                   var td = $(thatII).parent().parent();
                   var tr = $(td).parent();
                   var folderName = that.takespaces($(thatII).text());
                   var id = $(td).attr("id");
                   that.level++;
                   that.api.drillDown(id,that.updateView);
-                  clicks = 0;             //after action performed, reset counter
+                  
 
               }, DELAY);
 
@@ -266,7 +266,7 @@ define(['api','settings'], function (API,Settings) {
 
            if (file) {
                // if file selected, do something
-               //S$('#uploadedModal').modal('show');
+               //$('#uploadedModal').modal('show');
                that.prepareUpload(e);
           } else {
               // if user clicks 'Cancel', do something
@@ -605,7 +605,9 @@ define(['api','settings'], function (API,Settings) {
     */
 
     this.prepareUpload = function(event){
+      
       $('#uploadedModal').modal('show');
+      //$('#uploadmodalshow').click();
       var data =new FormData();
       that.createExistFilesArray(event.target.files,data);
       var exist = that.data.existfiles;
@@ -810,6 +812,17 @@ define(['api','settings'], function (API,Settings) {
 		}
 
 
+    this.isUserLast = function(){
+      var path = that.topPath;
+      var array = path.split('\\');
+      if (array[array.length-1]==='user'){
+        return true;
+      }else{
+        return false;
+      }
+
+
+    }
     /**
     * creates the table of files by manipulatinfg the DOM
     * @param the id of the file or folder
@@ -828,7 +841,12 @@ define(['api','settings'], function (API,Settings) {
             html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
           }
         }else{// super user
-          html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';  
+          if (!that.isUserLast()){// if inside the user folder
+            html=html+'<i id="drillUp" class="fa fa-level-up" style="cursor:pointer"></i>';    
+          }else{
+            html=html+'<span>..</span>';
+          }
+          
         }  
 
       }else{// study
@@ -1205,9 +1223,9 @@ define(['api','settings'], function (API,Settings) {
       obj.on('drop', function (e) 
       {
           
+           $('#uploadedModal').modal('show');          
            $(this).css('border', '2px dotted #0B85A1');
            e.preventDefault();
-           $('#uploadedModal').modal('show');
            var filesI = e.originalEvent.dataTransfer.files;
            var files = e.originalEvent.dataTransfer.items;
            //var length = e.originalEvent.dataTransfer.items.length;

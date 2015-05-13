@@ -14,7 +14,10 @@ define(['api'], function (API) {
 			var folder = this.getFolder(studyID);
 			var exptFile;
 			if (model.exptFile===undefined || model.exptFile===null){
-				exptFile = this.getEXPT(studyID);
+				this.getEXPT(studyID,function(exptFile){
+					$('.deplotDrop').html('Select '+' <span class="caret"></span>');
+					that.addHTML(name,email,folder,exptFile);
+				});
 
 			}else{
 				 exptFile = model.exptFile;
@@ -30,8 +33,7 @@ define(['api'], function (API) {
 
 			//////
 			
-			$('.deplotDrop').html('Select '+' <span class="caret"></span>');
-			that.addHTML(name,email,folder,exptFile);
+			
 			$(document).on('click','#clearAnch',function(){
 				$('#hide').val('parent');
 				$('#rulename').val('parent');
@@ -581,7 +583,7 @@ define(['api'], function (API) {
 	    	return userfolder+this.fileSeperator()+studyfolder;
 	    }
 	    
-	    this.getEXPT = function(studyID){
+	    this.getEXPT = function(studyID,callback){
 	    	if (studyID===undefined) return "";
 	    	var expt=[];
 	    	var numOfExpt=0;
@@ -591,8 +593,8 @@ define(['api'], function (API) {
 			api.getExpt(model.key,model.studyID,function(data){
 	            var obj = jQuery.parseJSON( data );
 	            $.each(obj, function(key, value){
-	              numOfExpt++;
 	              if (key.indexOf('exptFile')!=-1){
+	              	numOfExpt++;
 	              	expt.push(value);
 	              }
 	              
@@ -601,7 +603,7 @@ define(['api'], function (API) {
 					return '';
 				}else{
 					if (numOfExpt==1){
-		    			return expt[0];
+		    			callback(expt[0]);
 			    	}else{
 			    		var exphHtml='<div> There are several expt files for this study, choose one: ';
 			    		for (var i=0;i<expt.length;i++){

@@ -19,7 +19,7 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 		var pihistory = [];
 		var historyLimit =5;
 		var historyIndex=0;
-		var hostoryCurrent=0;
+//		var historyCurrent=0;
 
 
 
@@ -479,7 +479,7 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 
 	    	$('#historyRight').on('click',function(){
 
-				if (historyCurrent===historyIndex) return;
+				if ( typeof historyCurrent === 'undefined' || historyCurrent===historyIndex) return;
 				historyCurrent++;
 				var historyObj = pihistory[historyCurrent-1];
 				var csv = historyObj.csv;
@@ -569,7 +569,8 @@ define(['api','settings','datepicker','FileSaver'], function (API,Settings) {
 				resultCVS= csv;
 			});
 			$('#historyLeft').on('click',function(){
-				if (historyCurrent===1) return;
+
+				if (typeof historyCurrent === 'undefined' || historyCurrent===1 ) return;
 				historyCurrent--;
 				var historyObj = pihistory[historyCurrent-1];
 				var csv = historyObj.csv;

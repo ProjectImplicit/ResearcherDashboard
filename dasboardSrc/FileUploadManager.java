@@ -20,6 +20,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
@@ -36,6 +37,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
+
 
 
 
@@ -290,7 +292,15 @@ public class FileUploadManager {
 				response.setContentType(mimeType);
 				
 			}else{
-				response.setContentType("application/octet-stream");
+				String ext = FilenameUtils.getExtension(file.getAbsolutePath());
+				if (ext.equals("jst")){
+					response.setContentType("text/plain");
+					
+				}else{
+					response.setContentType("application/octet-stream");
+					
+				}
+				
 				
 			}
 			//response.setContentType(mimeType != null? mimeType:"application/octet-stream");
