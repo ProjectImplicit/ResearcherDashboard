@@ -814,12 +814,26 @@ define(['api','settings'], function (API,Settings) {
 
     this.isUserLast = function(){
       var path = that.topPath;
-      var array = path.split('\\');
-      if (array[array.length-1]==='user'){
-        return true;
-      }else{
-        return false;
+      if (path.indexOf('\\')!=-1){//on windows
+        var array = path.split('\\');
+        if (array[array.length-1]==='user'){
+          return true;
+        }else{
+          return false;
+        }
+
+      }else{// on unix
+        var array = path.split('/');
+        var index=1;
+        if (array[array.length-1]==='') index=2;
+        if (array[array.length-index]==='user'){
+          return true;
+        }else{
+          return false;
+        }
+
       }
+      
 
 
     }
