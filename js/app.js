@@ -269,7 +269,7 @@ function (domReady,API,$,Tracker,Settings,Deploy,fileSys,Change,Remove) {
 
         api.newStudy(takespaces(studyName),model.key,function(data){
           model.key='';
-          if (typeof data ===String && data.indexOf(":")!=-1){
+          if (typeof data ==='string' && data.indexOf(":")!=-1){
             var msg = data.split(":")[1];
             alert(msg);
             //$('#uploadedModal').modal('hide');
